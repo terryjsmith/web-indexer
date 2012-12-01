@@ -154,6 +154,9 @@ bool URL::Parse(URL* base) {
 	memcpy(url, base->url, base_copy_length);
 	strcpy(url + base_copy_length, final_path + offset, final_path_length);
 
+	// Free the final path temp
+	free(final_path);
+
 	_split();
 
 	return(true);
