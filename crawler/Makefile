@@ -1,6 +1,6 @@
 
 CC := g++
-CFLAGS=-Wall -g -I./ -lpthread -L/usr/local/lib -lcurl -lmysqlclient
+CFLAGS=-Wall -g -Iinclude -lpthread -L/usr/local/lib -lcurl -lmysqlclient
 
 # Link command:
 crawler: main.cpp databaseconnection.o crawler.o worker.o httprequest.o url.o patternmatch.o *.o
