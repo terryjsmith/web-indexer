@@ -1,4 +1,10 @@
 
+#include <iostream>
+using namespace std;
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <regex.h>
 #include <url.h>
 
@@ -43,14 +49,13 @@ regex_t* URL::GetRegex() {
 bool URL::Parse(URL* base) {
 	// Check if this URL is already absolute
 	if(strncmp(url, "http", 4) == 0) {
-		_split();
-		return(true);
+		return(_split());
 	}
 
 	// Check for a URL relative to the site root
 	if(strncmp(url, "/", 1) == 0) {
 		// Initialize a temporary URL to put it all together
-		unsigned int copy_length = strlen(base->scheme) + 3 + strlen(base->domain);
+		unsigned int copy_length = strlen(base->parts[URL_SCHEME]) + 3 + strlen(base->parts[URL_DOMAIN]);
 		unsigned int length = copy_length + strlen(url);
 		char* complete = (char*)malloc(length + 1);
 
@@ -62,15 +67,14 @@ bool URL::Parse(URL* base) {
 		free(url);
 		url = complete;
 
-		_split();
-		return(true);
+		return(_split());
 	}
 
 	// Check for mailto and javascript links
 	if((strncmp(url, "mailto:", 7) == 0) || (strncmp(url, "javascript:", 11) == 0)) {
 		return(false);
 	}
-
+	
 	// Strip out any "current directory" starting part of the URL (./)
 	if(strncmp(url, "./", 2) == 0) {
 		unsigned int length = strlen(url) - 2;
@@ -85,26 +89,26 @@ bool URL::Parse(URL* base) {
 	// Break the URL into path parts, dividing along each forward slash (/); start by finding the numbers of parts
 	char* pointer = url;
 
-	unsigned int position = 0;
+	char* position = 0;
 	unsigned int count = 1;
 	while((position = strchr(pointer, '/')) != 0) {
 		count++;
-		pointer = pointer + (position + 1);
+		pointer = position + 1;
 	}
 
 	// Now that we know how many parts, separate
 	pointer = url;
-	position = 0;
 	char** path_parts = (char**)malloc(count * sizeof(char*));
 
 	// Loop over each part and copy it in
 	for(unsigned int i = 0; i < count; i++) {
-		unsigned int length = strchr(pointer, '/');
-		if(length == 0)
-			length = strlen(url) - position;
+		char* found = strchr(pointer, '/');
+		int length = found - pointer;
+		if(length <= 0)
+			length = strlen(url) - strlen(pointer);
 
 		char* part = (char*)malloc(length + 1);
-		memcpy(part, position, length);
+		memcpy(part, pointer, length);
 		part[length] = '\0';
 
 		path_parts[i] = part;
@@ -113,30 +117,36 @@ bool URL::Parse(URL* base) {
 		pointer = pointer + (length + 1);
 	}
 
-	// Iterate over the parts, getting rid of any directories that need to be recursed (../)
-	char* final_path = (char*)malloc(strlen(url) + 1);
+	// Iterate over the parts, getting rid of any directories that need to be recursed (../, ./)
+	char* final_path =  (char*)malloc(strlen(url) + 1);
 	final_path[strlen(url)] = '\0';
 
+	// Start from the end of the string
+	int offset = strlen(url);
+
 	// This code is a little bit backwards; to be efficient, we now recurse backwards over the path parts, prepending them to the final path we already have
-	unsigned int offset = strlen(url);
-	unsigned int path_length = 0;
-	counter = 0;
-	for(unsigned int i = count - 1; i >= 0; i--) {
+	for(int i = count - 1; i >= 0; i--) {
 		// If this part is recursed, just move on, skipping the next part as well
 		if(strcmp(path_parts[i], "..") == 0) {
 			i--;
 			continue;
 		}
 
+		if(strcmp(path_parts[i], ".") == 0) {
+			continue;
+		}
+
 		// Otherwise, add it on to the final path, backwards
 		unsigned int part_length = strlen(path_parts[i]);
-		memcpy(final_path + offset - part_length, path_parts[i], part_length);
-
-		// Add the slashes back in as we go
 		offset -= part_length;
-		final_path[offset] = '/';
+		strncpy(final_path + offset, path_parts[i], part_length);
+
 		offset--;
+		if(offset <= 0) break;
+		final_path[offset] = '/';
 	}
+
+	cout << "final path:: " << final_path + offset << "\n";
 
 	// Clean up the path parts
 	for(unsigned int i = 0; i < count; i++) {
@@ -146,25 +156,23 @@ bool URL::Parse(URL* base) {
 
 	// Free the URL as it is now and re-create it
 	unsigned int final_path_length = strlen(url) - offset;
-	unsigned int base_copy_length = strlen(base->scheme) + 3 + strlen(base->domain);
+	unsigned int base_copy_length = strlen(base->parts[URL_SCHEME]) + 3 + strlen(base->parts[URL_DOMAIN]);
 
 	free(url);
 
 	url = (char*)malloc(base_copy_length + final_path_length + 1);
 	memcpy(url, base->url, base_copy_length);
-	strcpy(url + base_copy_length, final_path + offset, final_path_length);
+	strcpy(url + base_copy_length, final_path + offset);
 
 	// Free the final path temp
 	free(final_path);
 
-	_split();
-
-	return(true);
+	return(_split());
 }
 
-void URL::_split() {
+bool URL::_split() {
         // Get our regular expression
-        regex = URL::GetRegex();
+        regex_t* regex = URL::GetRegex();
 
         // Parse the URL
         regmatch_t re_matches[regex->re_nsub + 1];
@@ -174,10 +182,11 @@ void URL::_split() {
                 return(false);
 
 	// Loop through the expected number of matches
-        for(unsigned int i = 0; i <= m_regex->re_nsub; i++) {
-		parts[i] = (char*)malloc(re_matches[i].rm_eo - re_matches[i].rm_so + 1);
-		memcpy(parts[i], url + re_matches[i].rm_so, re_matches[i].rm_eo - re_matches[i].rm_so);
-		parts[i][re_matches[i].rm_eo - re_matches[i].rm_so] = '\0';
+        for(unsigned int i = 1; i <= m_regex->re_nsub; i++) {
+		unsigned int index = i - 1;
+		parts[index] = (char*)malloc(re_matches[i].rm_eo - re_matches[i].rm_so + 1);
+		memcpy(parts[index], url + re_matches[i].rm_so, re_matches[i].rm_eo - re_matches[i].rm_so);
+		parts[index][re_matches[i].rm_eo - re_matches[i].rm_so] = '\0';
 	}
 
         return(true);

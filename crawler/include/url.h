@@ -27,7 +27,7 @@ public:
 
 protected:
 	// Split this URL into it's parts
-	void _split();
+	bool _split();
 
 	// The global URL parsing regex
 	static regex_t* m_regex;
