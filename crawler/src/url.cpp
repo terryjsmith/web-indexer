@@ -40,7 +40,7 @@ regex_t* URL::GetRegex() {
                 m_regex = new regex_t;
 
                 // Compile our regular expression
-                regcomp(m_regex, "([A-Z]+)://([A-Z0-9\\.-]+)/*([^\\?]*)\\?*([^#]*)#*.*", REG_EXTENDED | REG_ICASE);
+                regcomp(m_regex, "([A-Z]+)://([A-Z0-9\\.-]+)(/*[^\\?]*)\\?*([^#]*)#*.*", REG_EXTENDED | REG_ICASE);
         }
 
 	return(m_regex);
@@ -86,6 +86,17 @@ bool URL::Parse(URL* base) {
 		url = temp;
 	}
 
+	// Prepend the path part of the base URL onto this URL
+	unsigned int copy_length = strlen(base->parts[URL_PATH]) - 1;
+	unsigned int url_length = strlen(url);
+
+	char* temp = (char*)malloc(url_length + copy_length);
+	strncpy(temp, base->parts[URL_PATH] + 1, copy_length);
+	strcpy(temp + copy_length, url);
+
+	free(url);
+	url = temp;
+
 	// Break the URL into path parts, dividing along each forward slash (/); start by finding the numbers of parts
 	char* pointer = url;
 
@@ -103,9 +114,7 @@ bool URL::Parse(URL* base) {
 	// Loop over each part and copy it in
 	for(unsigned int i = 0; i < count; i++) {
 		char* found = strchr(pointer, '/');
-		int length = found - pointer;
-		if(length <= 0)
-			length = strlen(url) - strlen(pointer);
+		int length = found ? found - pointer : strlen(pointer);
 
 		char* part = (char*)malloc(length + 1);
 		memcpy(part, pointer, length);
@@ -118,11 +127,11 @@ bool URL::Parse(URL* base) {
 	}
 
 	// Iterate over the parts, getting rid of any directories that need to be recursed (../, ./)
-	char* final_path =  (char*)malloc(strlen(url) + 1);
-	final_path[strlen(url)] = '\0';
+	char* final_path =  (char*)malloc(strlen(url) + 2);
+	final_path[strlen(url) + 1] = '\0';
 
 	// Start from the end of the string
-	int offset = strlen(url);
+	int offset = strlen(url) + 1;
 
 	// This code is a little bit backwards; to be efficient, we now recurse backwards over the path parts, prepending them to the final path we already have
 	for(int i = count - 1; i >= 0; i--) {
@@ -142,11 +151,8 @@ bool URL::Parse(URL* base) {
 		strncpy(final_path + offset, path_parts[i], part_length);
 
 		offset--;
-		if(offset <= 0) break;
 		final_path[offset] = '/';
 	}
-
-	cout << "final path:: " << final_path + offset << "\n";
 
 	// Clean up the path parts
 	for(unsigned int i = 0; i < count; i++) {
