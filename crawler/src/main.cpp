@@ -12,6 +12,7 @@ using namespace std;
 #include <pthread.h>
 #include <curl/curl.h>
 #include <hiredis/hiredis.h>
+#include <openssl/md5.h>
 
 #include <url.h>
 #include <httprequest.h>
@@ -68,23 +69,22 @@ int main(int argc, char** argv) {
 		curl_multi_add_handle(multi, requests[i]->GetHandle());
 	}
 
-	bool new_transfers = true;
 	while(true) {
 		// Main loop, start any transfers that need to be started
 		int running = 0;
 		CURLMcode code = curl_multi_perform(multi, &running);
-		while(code = curl_multi_perform(multi, &running))
+		while((code = curl_multi_perform(multi, &running)))
 			code = curl_multi_perform(multi, &running);
 
 		int msgs = 0;
 		CURLMsg* msg = curl_multi_info_read(multi, &msgs);
 		while(msg != NULL) {
+			// Get the HttpRequest this was associated with
+                        HttpRequest* request = 0;
+                        curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
+
 			// This means that something finished; either with an error or with success
 			if(msg->data.result != CURLE_OK) {
-				// Get the HttpRequest this was associated with
-				HttpRequest* request = 0;
-				curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
-
 				// Get the error and URL to be logged
 				char* curl_error = (char*)curl_easy_strerror(msg->data.result);
 				char* url =  request->GetUrl();
@@ -96,23 +96,38 @@ int main(int argc, char** argv) {
 
 				log(final);
 
-				delete request;
 				free(curl_error);
 				free(final);
 			}
 
-			// Handle a fetched page
+			// Get the URL and parse it; no base path since this should be absolute
+			URL* url = new URL(request->GetUrl());
+			url->Parse(NULL);
+
+			// Get the MD5 hash of the path
+			unsigned char hash[MD5_DIGEST_LENGTH];
+			memset(hash, 0, MD5_DIGEST_LENGTH);
+			MD5((const unsigned char*)url->parts[URL_PATH], strlen(url->parts[URL_PATH]), hash);
+
+			// Convert it to hex
+			char path_hash[MD5_DIGEST_LENGTH * 2];
+			for(unsigned int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+				sprintf(path_hash + (i * 2), "%02x", hash[i]);
+			}
 
 			// Remove it from the stack
 			curl_multi_remove_handle(multi, msg->easy_handle);
 
+			// Clean up
+                        delete request;
+
 			// Grab a new one to add on the stack
                 	redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
-	                HttpRequest* request = new HttpRequest(reply->str);
+	                HttpRequest* new_request = new HttpRequest(reply->str);
         	        freeReplyObject(reply);
 
                 	// Add it to the multi stack
-	                curl_multi_add_handle(multi, request->GetHandle());
+	                curl_multi_add_handle(multi, new_request->GetHandle());
 		}
 
 		sleep(1);

@@ -1,7 +1,7 @@
 
 CC := g++
 CFLAGS=-Wall -g -Iinclude
-LDFLAGS=-lcurl -lmysqlclient -lhiredis
+LDFLAGS=-lcurl -lmysqlclient -lhiredis -lssl
 
 # Link command:
 crawler: src/main.o src/url.o src/httprequest.o
