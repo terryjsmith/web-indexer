@@ -7,6 +7,7 @@ using namespace std;
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <regex.h>
 #include <pthread.h>
 #include <curl/curl.h>
@@ -29,15 +30,15 @@ FILE* log_file = NULL;
 void log(char* line) {
 	char* newline = "\n";
 	time_t timestamp = time(NULL);
-	fprintf(log_file, "[%lld]: ", timestamp);
+	fprintf(log_file, "[%ld]: ", timestamp);
 
 	fwrite(line, strlen(line), 1, log_file);
-	fwrite(newline, 1, 1, logfile);
+	fwrite(newline, 1, 1, log_file);
 }
 
 int main(int argc, char** argv) {
 	// Open a connection to our log file
-	if(!log_file = fopen("/var/log/crawler.log", "w+")) {
+	if(!(log_file = fopen("/var/log/crawler.log", "w+"))) {
 		printf("Unable to open log file.");
 		return(0);
 	}
@@ -70,22 +71,22 @@ int main(int argc, char** argv) {
 	bool new_transfers = true;
 	while(true) {
 		// Main loop, start any transfers that need to be started
-		unsigned int running = 0;
+		int running = 0;
 		CURLMcode code = curl_multi_perform(multi, &running);
 		while(code = curl_multi_perform(multi, &running))
 			code = curl_multi_perform(multi, &running);
 
-		unsigned int msgs = 0;
-		CURLmsg msg = curl_multi_info_read(multi, &msgs);
+		int msgs = 0;
+		CURLMsg* msg = curl_multi_info_read(multi, &msgs);
 		while(msg != NULL) {
 			// This means that something finished; either with an error or with success
-			if(msg->result != CURLE_OK) {
+			if(msg->data.result != CURLE_OK) {
 				// Get the HttpRequest this was associated with
 				HttpRequest* request = 0;
 				curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
 
 				// Get the error and URL to be logged
-				char* curl_error = curl_easy_strerror(msg->result);
+				char* curl_error = (char*)curl_easy_strerror(msg->data.result);
 				char* url =  request->GetUrl();
 
 				unsigned int length = strlen(url) + 2 + strlen(curl_error);
@@ -107,7 +108,7 @@ int main(int argc, char** argv) {
 
 			// Grab a new one to add on the stack
                 	redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
-	                request = new HttpRequest(reply->str);
+	                HttpRequest* request = new HttpRequest(reply->str);
         	        freeReplyObject(reply);
 
                 	// Add it to the multi stack
