@@ -8,8 +8,7 @@ public:
 	~Page();
 
 public:
-	char* domain;
-	char* path;
+	URL* url;
 	char* content;
 };
 

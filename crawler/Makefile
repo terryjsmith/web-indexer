@@ -1,10 +1,10 @@
 
 CC := g++
-CFLAGS=-Wall -g -Iinclude -lpthread -L/usr/local/lib -lcurl -lmysqlclient
+CFLAGS=-Wall -g -Iinclude -lpthread -lcurl -lmysqlclient -lhiredis
 
 # Link command:
-crawler: main.cpp databaseconnection.o crawler.o worker.o httprequest.o url.o patternmatch.o *.o
-  $(CC) $(CFLAGS) -lpthread main.cpp  /usr/local/ssl/lib/libcrypto.a *.o -o $@
+crawler: src/main.cpp src/url.cpp src/parser.cpp
+  $(CC) $(CFLAGS) *.o -o $@
 
 # Individual files
 %.o: %.cpp

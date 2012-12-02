@@ -1,6 +1,11 @@
 
-#include <list>
+#include <vector>
+using namespace std;
+
 #include <pthread.h>
+#include <regex.h>
+#include <url.h>
+#include <page.h>
 #include <parser.h>
 
 Parser::Parser() {

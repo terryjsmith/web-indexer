@@ -15,7 +15,7 @@ public:
 
 protected:
 	// The list of pages to be parsed
-	std::list<Page*> m_pages;
+	vector<Page*> m_pages;
 
 	// The thread and mutex for accessing pages
 	pthread_t m_thread;
