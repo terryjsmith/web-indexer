@@ -1,5 +1,5 @@
-Open Web Index Crawler
-======================
+Open Web Index
+==============
 
 My simple web crawler in C for crawling and parsing the internet.
 
