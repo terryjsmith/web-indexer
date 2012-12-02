@@ -13,6 +13,10 @@ public:
 	// cURL write function
 	static size_t _write_function(char *ptr, size_t size, size_t nmemb, void *userdata);
 
+	// Getters
+	char* GetUrl() { return m_url; }
+	char* GetContent() { return m_content; }
+
 protected:
 	// The URL we'll be fetching from
 	char* m_url;
