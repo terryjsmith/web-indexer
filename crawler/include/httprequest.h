@@ -10,12 +10,15 @@ public:
 	// Get our handle
 	CURL* GetHandle() { return m_curl; }
 
-private:
+	// cURL write function
+	static size_t _write_function(char *ptr, size_t size, size_t nmemb, void *userdata);
+
+protected:
 	// The URL we'll be fetching from
 	char* m_url;
 
 	// The response
-	char* m_response;
+	char* m_content;
 
 	// cURL stuff: internal handle and return HTTP code
 	CURL* m_curl;

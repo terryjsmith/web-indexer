@@ -11,7 +11,6 @@ using namespace std;
 
 #include <url.h>
 #include <httprequest.h>
-#include <parser.h>
 
 /* DEFINITIONS */
 

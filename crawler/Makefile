@@ -1,17 +1,18 @@
 
 CC := g++
-CFLAGS=-Wall -g -Iinclude -lpthread -lcurl -lmysqlclient -lhiredis
+CFLAGS=-Wall -g -Iinclude
+LDFLAGS=-lpthread -lcurl -lmysqlclient -lhiredis
 
 # Link command:
-crawler: src/main.cpp src/url.cpp src/parser.cpp
-  $(CC) $(CFLAGS) *.o -o $@
+crawler: src/main.o src/url.o src/httprequest.o
+	$(CC) $< -o bin/$@ $(LDFLAGS)
 
 # Individual files
 %.o: %.cpp
-  $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build both
 all: crawler
 
 clean:
-  rm *.o
+	rm src/*.o
