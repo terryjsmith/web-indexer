@@ -100,6 +100,9 @@ int main(int argc, char** argv) {
 				free(final);
 			}
 
+			// Remove it from the stack
+                        curl_multi_remove_handle(multi, msg->easy_handle);
+
 			// Get the URL and parse it; no base path since this should be absolute
 			URL* url = new URL(request->GetUrl());
 			url->Parse(NULL);
@@ -115,10 +118,8 @@ int main(int argc, char** argv) {
 				sprintf(path_hash + (i * 2), "%02x", hash[i]);
 			}
 
-			// Remove it from the stack
-			curl_multi_remove_handle(multi, msg->easy_handle);
-
 			// Clean up
+			delete url;
                         delete request;
 
 			// Grab a new one to add on the stack
