@@ -10,12 +10,13 @@ using namespace std;
 #include <hiredis/hiredis.h>
 
 #include <url.h>
-#include <page.h>
+#include <httprequest.h>
 #include <parser.h>
 
 /* DEFINITIONS */
 
 #define NUM_THREADS	1
+#define NUM_CONNECTIONS	10
 
 /* GLOBALS */
 
@@ -25,11 +26,13 @@ int main(int argc, char** argv) {
 	// Get a connection to redis to grab URLs
 	c = redisConnect("localhost", 6379);
 	if(c->err) {
-		printf("Unable to connect to redis: %s", c->errstr);
+		printf("Unable to connect to redis: %s\n", c->errstr);
 		return(0);
 	}
+	printf("Connected to redis.\n");
 
-	
+	// Do global cURL initialization
+	curl_global_init(CURL_GLOBAL_DEFAULT);
 
 	// Set up to start doing transfers
 
