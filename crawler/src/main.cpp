@@ -25,7 +25,7 @@ using namespace std;
 
 /* DEFINITIONS */
 
-#define NUM_CONNECTIONS	10
+#define NUM_CONNECTIONS 2
 #define BASE_PATH	"/mnt/indexer/"
 #define MIN_ACCESS_TIME 600
 
@@ -33,7 +33,6 @@ using namespace std;
 
 FILE* log_file = NULL;
 MYSQL* conn = NULL;
-HttpRequest** requests = NULL;
 
 /* FUNCTIONS */
 
@@ -82,17 +81,32 @@ int main(int argc, char** argv) {
 	CURLM* multi = curl_multi_init();
 
 	// Set up to start doing transfers
-	requests = (HttpRequest**)malloc(NUM_CONNECTIONS * sizeof(HttpRequest*));
-	memset(requests, 0, NUM_CONNECTIONS * sizeof(HttpRequest*));
+	unsigned int max_tries = 100;
 
+	redisReply* reply = (redisReply*)redisCommand(context, "LLEN url_queue");
+	max_tries = max(max_tries, reply->integer);
+	freeReplyObject(reply);
+
+	unsigned int counter = 0;
 	for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
+		if(counter >= max_tries) break;
+		counter++;
+
 		// Fetch a URL from redis
 		redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
 
-		// Split the URL info it's parts; no base URL
-		URL* url = new URL(reply->str);
-		url->Parse(NULL);
+		printf("Trying URL %s...\n", reply->str);
 
+		// Split the URL info it's parts; no base URL
+		unsigned int copy_length = strlen(reply->str) - 2;
+		char* actual = (char*)malloc(copy_length + 1);
+		strncpy(actual, reply->str + 1, copy_length);
+		actual[copy_length] = '\0';
+
+		URL* url = new URL(actual);
+		url->Parse(0);
+
+		free(actual);
 		freeReplyObject(reply);
 
 		// Load the site info from the database
@@ -133,7 +147,7 @@ int main(int argc, char** argv) {
 		delete robots;
 
 		// Otherwise, we're good
-		requests[i] = new HttpRequest(url);
+		HttpRequest* request = new HttpRequest(url);
 
 		unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
         	char* dir = (char*)malloc(dir_length + 1);
@@ -146,14 +160,14 @@ int main(int argc, char** argv) {
 		char* filename = (char*)malloc(length + 1);
 		sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], url->hash);
 
-		requests[i]->Open(filename);
+		request->Open(filename);
 
 		// Clean up
 		delete url;
 		freeReplyObject(reply);
 
 		// Add it to the multi stack
-		curl_multi_add_handle(multi, requests[i]->GetHandle());
+		curl_multi_add_handle(multi, request->GetHandle());
 	}
 
 	while(true) {
@@ -199,7 +213,7 @@ int main(int argc, char** argv) {
         	        sprintf(filename, "%s/%s.html", url->parts[URL_DOMAIN], url->hash);
 
 			// Add it to the parse_queue in redis
-			redisReply* reply = (redisReply*)redisCommand(context, "RPUSH url_queue \"%s\"", filename);
+			redisReply* reply = (redisReply*)redisCommand(context, "RPUSH parse_queue \"%s\"", filename);
 			freeReplyObject(reply);
 			free(filename);
 
@@ -262,15 +276,32 @@ int main(int argc, char** argv) {
 			// Clean up
                         delete request;
 
+			// Set up a maximum number of tries to get a new URL
+			unsigned int counter = 0;
+		        unsigned int max_tries = 100;
+
+		        reply = (redisReply*)redisCommand(context, "LLEN url_queue");
+		        max_tries = max(max_tries, reply->integer);
+		        freeReplyObject(reply);
+
 			// Fetch a new URL from redis
 			while(true) {
+				if(counter >= max_tries) break;
+				counter++;
+
 				// Fetch a URL from redis
         	        	redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
 
 	        	        // Split the URL info it's parts; no base URL
-        	        	url = new URL(reply->str);
+				unsigned int copy_length = strlen(reply->str) - 2;
+	        	        char* actual = (char*)malloc(copy_length + 1);
+        	        	strncpy(actual, reply->str + 1, copy_length);
+				actual[copy_length] = '\0';
+
+        	        	url = new URL(actual);
 	                	url->Parse(NULL);
 
+				free(actual);
 				freeReplyObject(reply);
 
 				// Load the site info from the database
