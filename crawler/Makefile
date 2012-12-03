@@ -13,7 +13,7 @@ urltest: test/urltest.o src/url.o
 fetchtest: test/fetchtest.o src/url.o src/httprequest.o
 	$(CC) $^ -o test/$@ $(LDFLAGS)
 
-robotstest: test/robotstest.o src/url.o src/httprequest.o
+robotstest: test/robotstest.o src/url.o src/httprequest.o src/robotstxt.o src/site.o
 	$(CC) $^ -o test/$@ $(LDFLAGS)
 
 # Individual files

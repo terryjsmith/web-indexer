@@ -68,11 +68,13 @@ int main(int argc, char** argv) {
 
 	// Connect to MySQL
 	conn = mysql_init(NULL);
-	if(mysql_real_connect(conn, "localhost", "crawler", "8ruFrUthuj@Duch", NULL, 0, NULL, 0) == NULL) {
+	if(mysql_real_connect(conn, "localhost", "crawler", "SpasWehabEp4", NULL, 0, NULL, 0) == NULL) {
 		log("Unable to connect to MySQL.\n");
 		return(0);
 	}
 	log("Connected to MySQL.");
+
+	mysql_select_db(conn, "crawler");
 
 	// Do global cURL initialization
 	curl_global_init(CURL_GLOBAL_DEFAULT);

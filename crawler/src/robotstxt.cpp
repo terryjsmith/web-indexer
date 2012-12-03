@@ -45,10 +45,13 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
         if(mysql_num_rows(result)) {
                 MYSQL_ROW row = mysql_fetch_row(result);
                 long int last_access = atol(row[0]);
-                if(abs(time(NULL) - last_access) < (60*60*24*7)) {
+                if((time(NULL) - last_access) > (60*60*24*7)) {
                         robots_valid = false;
                 }
         }
+	else {
+		robots_valid  = false;
+	}
 
         free(query);
         mysql_free_result(result);
@@ -64,18 +67,12 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 
                 // Set the filename to output to
                 char* tmpname = tmpnam(robots_url->hash);
-                unsigned int length = strlen(tmpname);
+                FILE* fp = req->Open(tmpname);
 
-                char* filename = (char*)malloc(length + 5 + 1);
-                sprintf(filename, "/tmp/%s", tmpname);
-                filename[length] = '\0';
-
-                FILE* fp = req->Open(filename);
-
-                if(curl_easy_perform(curl)) {
+                if(curl_easy_perform(curl) == 0) {
                         // Do a complete refresh of the rules we have
                         query = (char*)malloc(1000);
-                        length = sprintf(query, "DELETE FROM robotstxt WHERE domain_id = %ld",url->domain_id);
+                        length = sprintf(query, "DELETE FROM robotstxt WHERE domain_id = %ld", url->domain_id);
                         query[length] = '\0';
                         mysql_query(conn, query);
                         free(query);
@@ -83,11 +80,11 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                         // We successfully got a robots.txt file back, parse it
                         fseek(fp, 0, SEEK_SET);
 
-                        // Read the file in one line at a time
                         bool applicable = false;
                         while(!feof(fp)) {
                                 char* line = (char*)malloc(1000);
-                                fgets(line, 1000, fp);
+                                char* read = fgets(line, 1000, fp);
+				if(read == NULL) break;
 
                                 // Check to see if this is a user agent line, start by making it all lowercase
                                 for(unsigned int i = 0; i < strlen(line); i++) {
@@ -96,27 +93,29 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 
                                 // If it is a user-agent line, make sure it's aimed at us
                                 if(strstr(line, "user-agent") != NULL) {
-                                        if(strstr(line, "user-agent: *"))
+                                        if(strstr(line, "user-agent: *")) {
+						printf("ua\n");
                                                 applicable = true;
+					}
                                         else
                                                 applicable = false;
                                 }
 
                                 if(applicable) {
                                         // Record the rule in the database
-                                        char* part = NULL;
-                                        if((part = strstr(line, "disallow: ")) != NULL) {
-                                                unsigned int copy_length = strlen(line) - 10;
+                                        char* part = strstr(line, "disallow: ");
+                                        if(part) {
+                                                unsigned int copy_length = (strchr(line, '\n') - line) - 10;
 
                                                 // If copy length is 1, it's just a newline, "Disallow: " means you can index everything
                                                 if(copy_length == 1) continue;
 
-                                                char* disallowed = (char*)malloc(copy_length);
+                                                char* disallowed = (char*)malloc(copy_length + 1);
                                                 strncpy(disallowed, line + 10, copy_length);
                                                 disallowed[copy_length] = '\0';
 
                                                 query = (char*)malloc(1000);
-                                                length = sprintf(query, "INSERT INTO robotstxt(%ld, '%s');", url->domain_id, disallowed);
+                                                length = sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->domain_id, disallowed);
                                                 query[length] = '\0';
                                                 mysql_query(conn, query);
 
