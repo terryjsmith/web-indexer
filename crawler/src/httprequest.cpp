@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <regex.h>
+#include <url.h>
 #include <httprequest.h>
 
 HttpRequest::HttpRequest(URL* url) {
