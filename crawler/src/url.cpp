@@ -247,7 +247,7 @@ bool URL::Load(MYSQL* conn) {
 
 	// Now that we have a domain ID, get the URL ID, if it exists
         char* query = (char*)malloc(1000);
-        unsigned int length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND path_hash = '%s'", domain_id, hash);
+        unsigned int length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND url_hash = '%s'", domain_id, hash);
         query[length] = '\0';
 
         mysql_query(conn, query);

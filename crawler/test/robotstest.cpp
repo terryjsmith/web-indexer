@@ -37,6 +37,8 @@ int main(int argc, char** argv) {
 	site->Load(url->parts[URL_DOMAIN], conn);
 	url->domain_id = site->domain_id;
 
+	site->SetLastAccess(time(NULL));
+
 	RobotsTxt* robots = new RobotsTxt();
 	robots->Load(url, conn);
 
