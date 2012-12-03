@@ -12,6 +12,8 @@ using namespace std;
 #include <curl/curl.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
+#include <my_global.h>
+#include <mysql.h>
 
 #include <url.h>
 #include <httprequest.h>
@@ -23,8 +25,9 @@ using namespace std;
 
 /* GLOBALS */
 
-redisContext *context = NULL;
 FILE* log_file = NULL;
+MYSQL* conn = NULL;
+HttpRequest** requests = NULL;
 
 /* FUNCTIONS */
 
@@ -35,9 +38,61 @@ void log(char* line) {
 
 	fwrite(line, strlen(line), 1, log_file);
 	fwrite(newline, 1, 1, log_file);
+
+	fflush(log_file);
+	printf("%s\n", line);
+}
+
+bool check_url(URL* url) {
+	// Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
+        for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
+		if(!requests[i]) continue;
+
+                if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
+	                return(true);
+        }
+
+	// Do a quick check in MySQL and make sure we haven't accessed this domain recently
+        char* query = (char*)malloc(1000);
+        unsigned int length = sprintf(query, "SELECT last_access FROM domain WHERE domain = '%s'", url->parts[URL_DOMAIN]);
+        query[length] = '\0';
+
+        mysql_query(conn, query);
+        MYSQL_RES* result = mysql_store_result(conn);
+
+        bool row_exists = false;
+        if(mysql_num_rows(result)) {
+                row_exists = true;
+                MYSQL_ROW row = mysql_fetch_row(result);
+                long int last_access = atol(row[0]);
+                if(abs(time(NULL) - last_access) < (60*10)) {
+                        return(true);
+                }
+        }
+
+        free(query);
+        mysql_free_result(result);
+
+        // We know this is a valid URL, update the last access time
+        long int last_access = time(NULL);
+        query = (char*)malloc(1000);
+        if(row_exists)
+                length = sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain = '%s'", last_access, url->parts[URL_DOMAIN]);
+        else {
+                unsigned int zero = 0;
+                length = sprintf(query, "INSERT INTO domain VALUES(NULL, '%s', %ld, %d)", url->parts[URL_DOMAIN], last_access, zero);
+        }
+        query[length] = '\0';
+
+        mysql_query(conn, query);
+        free(query);
+
+	return(false);
 }
 
 int main(int argc, char** argv) {
+	redisContext *context = NULL;
+
 	// Open a connection to our log file
 	if(!(log_file = fopen("/var/log/crawler.log", "w+"))) {
 		printf("Unable to open log file.");
@@ -47,10 +102,18 @@ int main(int argc, char** argv) {
 	// Get a connection to redis to grab URLs
 	context = redisConnect("localhost", 6379);
 	if(context->err) {
-		printf("Unable to connect to redis: %s\n", context->errstr);
+		log("Unable to connect to redis.");
 		return(0);
 	}
-	printf("Connected to redis.\n");
+	log("Connected to redis.");
+
+	// Connect to MySQL
+	conn = mysql_init(NULL);
+	if(mysql_real_connect(conn, "localhost", "crawler", "8ruFrUthuj@Duch", NULL, 0, NULL, 0) == NULL) {
+		log("Unable to connect to MySQL.\n");
+		return(0);
+	}
+	log("Connected to MySQL.");
 
 	// Do global cURL initialization
 	curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -58,7 +121,9 @@ int main(int argc, char** argv) {
 	CURLM* multi = curl_multi_init();
 
 	// Set up to start doing transfers
-	HttpRequest** requests = (HttpRequest**)malloc(NUM_CONNECTIONS * sizeof(HttpRequest*));
+	requests = (HttpRequest**)malloc(NUM_CONNECTIONS * sizeof(HttpRequest*));
+	memset(requests, 0, NUM_CONNECTIONS * sizeof(HttpRequest*));
+
 	for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
 		// Fetch a URL from redis
 		redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
@@ -67,15 +132,8 @@ int main(int argc, char** argv) {
 		URL* url = new URL(reply->str);
 		url->Parse(NULL);
 
-		// Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
-		bool exists = false;
-		for(unsigned int j = 0; j < i; j++) {
-			if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
-				exists = true;
-		}
-
 		// If this does exist, clean up a few things and re-iterate
-		if(exists) {
+		if(check_url(url)) {
 			redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
 
 			delete url;
@@ -93,8 +151,8 @@ int main(int argc, char** argv) {
 
                 // Convert it to hex
                 char* path_hash = (char*)malloc((MD5_DIGEST_LENGTH * 2) + 1);
-                for(unsigned int i = 0; i < MD5_DIGEST_LENGTH; i++) {
-                        sprintf(path_hash + (i * 2), "%02x", hash[i]);
+                for(unsigned int k = 0; k < MD5_DIGEST_LENGTH; k++) {
+                        sprintf(path_hash + (k * 2), "%02x", hash[k]);
                 }
 		path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
 
@@ -162,15 +220,8 @@ int main(int argc, char** argv) {
         	        	url = new URL(reply->str);
 	                	url->Parse(NULL);
 
-		                // Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
-        		        bool exists = false;
-                		for(unsigned int i = 0; i < running; i++) {
-                        		if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
-                                		exists = true;
-		                }
-
         		        // If this does exist, clean up a few things and re-iterate
-                		if(exists) {
+                		if(check_url(url)) {
                         		redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
 
 	                        	delete url;
@@ -187,12 +238,15 @@ int main(int argc, char** argv) {
 	        	        curl_multi_add_handle(multi, new_request->GetHandle());
 				break;
 			}
+
+			msg = curl_multi_info_read(multi, &msgs);
 		}
 
 		sleep(1);
 	}
 
 	// Clean up
+	mysql_close(conn);
 	curl_multi_cleanup(multi);
 	redisFree(context);
 

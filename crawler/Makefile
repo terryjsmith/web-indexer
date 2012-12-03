@@ -1,6 +1,6 @@
 
 CC := g++
-CFLAGS=-Wall -g -Iinclude
+CFLAGS=-Wall -g -Iinclude -I/usr/include/mysql
 LDFLAGS=-lcurl -lmysqlclient -lhiredis -lssl
 
 # Link command:

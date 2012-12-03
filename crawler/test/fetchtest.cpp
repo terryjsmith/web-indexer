@@ -107,11 +107,14 @@ int main(int argc, char** argv) {
 			code = curl_multi_perform(multi, &running);
 
 		int msgs = 0;
+		bool done = false;
 		CURLMsg* msg = curl_multi_info_read(multi, &msgs);
 		while(msg != NULL) {
 			// Get the HttpRequest this was associated with
                         HttpRequest* request = 0;
                         curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
+
+			curl_multi_remove_handle(multi, msg->easy_handle);
 
 			// This means that something finished; either with an error or with success
 			if(msg->data.result != CURLE_OK) {
@@ -130,13 +133,15 @@ int main(int argc, char** argv) {
 				free(final);
 			}
 
-			// Remove it from the stack
-                        curl_multi_remove_handle(multi, msg->easy_handle);
+			CURLMsg* msg = curl_multi_info_read(multi, &msgs);
 
 			// Clean up
-                        delete request;
-			break;
+			if(request)
+	                        delete request;
+			done = true;
 		}
+
+		if(done) break;
 
 		sleep(1);
 	}
