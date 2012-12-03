@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -21,7 +23,7 @@ using namespace std;
 /* DEFINITIONS */
 
 #define NUM_CONNECTIONS	10
-#define BASE_PATH	"/var/indexer/"
+#define BASE_PATH	"/mnt/indexer/"
 
 /* GLOBALS */
 
@@ -43,30 +45,32 @@ void log(char* line) {
 	printf("%s\n", line);
 }
 
-bool check_url(URL* url) {
+int check_url(URL* url, char* path_hash) {
 	// Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
         for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
 		if(!requests[i]) continue;
 
                 if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
-	                return(true);
+	                return(1);
         }
 
 	// Do a quick check in MySQL and make sure we haven't accessed this domain recently
         char* query = (char*)malloc(1000);
-        unsigned int length = sprintf(query, "SELECT last_access FROM domain WHERE domain = '%s'", url->parts[URL_DOMAIN]);
+        unsigned int length = sprintf(query, "SELECT domain_id, last_access FROM domain WHERE domain = '%s'", url->parts[URL_DOMAIN]);
         query[length] = '\0';
 
         mysql_query(conn, query);
         MYSQL_RES* result = mysql_store_result(conn);
 
         bool row_exists = false;
+	long int domain_id = 0;
         if(mysql_num_rows(result)) {
                 row_exists = true;
                 MYSQL_ROW row = mysql_fetch_row(result);
-                long int last_access = atol(row[0]);
+		domain_id = atol(row[0]);
+                long int last_access = atol(row[1]);
                 if(abs(time(NULL) - last_access) < (60*10)) {
-                        return(true);
+                        return(1);
                 }
         }
 
@@ -87,7 +91,31 @@ bool check_url(URL* url) {
         mysql_query(conn, query);
         free(query);
 
-	return(false);
+	// Have we already checked this page?
+	if(row_exists) {
+		query = (char*)malloc(1000);
+		length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND path_hash = '%s'", domain_id, path_hash);
+		query[length] = '\0';
+
+		mysql_query(conn, query);
+		free(query);
+
+		MYSQL_RES* result = mysql_store_result(conn);
+		if(mysql_num_rows(result)) {
+			mysql_free_result(result);
+			return(2);
+		}
+
+		mysql_free_result(result);
+	}
+
+	// We're good, insert it
+	query = (char*)malloc(3000);
+	length = sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', 0, 0)", domain_id, url->url, path_hash);
+	mysql_query(conn, query);
+	free(query);
+
+	return(0);
 }
 
 int main(int argc, char** argv) {
@@ -132,18 +160,6 @@ int main(int argc, char** argv) {
 		URL* url = new URL(reply->str);
 		url->Parse(NULL);
 
-		// If this does exist, clean up a few things and re-iterate
-		if(check_url(url)) {
-			redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
-
-			delete url;
-			i--;
-			continue;
-		}
-
-		// Otherwise, we're good
-		requests[i] = new HttpRequest(url);
-
 		// Get the MD5 hash of the path
                 unsigned char hash[MD5_DIGEST_LENGTH];
                 memset(hash, 0, MD5_DIGEST_LENGTH);
@@ -154,7 +170,22 @@ int main(int argc, char** argv) {
                 for(unsigned int k = 0; k < MD5_DIGEST_LENGTH; k++) {
                         sprintf(path_hash + (k * 2), "%02x", hash[k]);
                 }
-		path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
+                path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
+
+		// If this does exist, clean up a few things and re-iterate
+		int result = 0;
+		if((result = check_url(url, path_hash))) {
+			if(result == 1)
+				redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+
+			delete url;
+			freeReplyObject(reply);
+			i--;
+			continue;
+		}
+
+		// Otherwise, we're good
+		requests[i] = new HttpRequest(url);
 
 		unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
         	char* dir = (char*)malloc(dir_length + 1);
@@ -215,7 +246,6 @@ int main(int argc, char** argv) {
 			URL* url = request->GetURL();
 
 			// Clean up
-			delete url;
                         delete request;
 
 			// Fetch a new URL from redis
@@ -227,11 +257,26 @@ int main(int argc, char** argv) {
         	        	url = new URL(reply->str);
 	                	url->Parse(NULL);
 
+				// Get the MD5 hash of the path
+		                unsigned char hash[MD5_DIGEST_LENGTH];
+                		memset(hash, 0, MD5_DIGEST_LENGTH);
+		                MD5((const unsigned char*)url->parts[URL_PATH], strlen(url->parts[URL_PATH]), hash);
+
+		                // Convert it to hex
+                		char* path_hash = (char*)malloc((MD5_DIGEST_LENGTH * 2) + 1);
+		                for(unsigned int k = 0; k < MD5_DIGEST_LENGTH; k++) {
+                		        sprintf(path_hash + (k * 2), "%02x", hash[k]);
+                		}
+		                path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
+
         		        // If this does exist, clean up a few things and re-iterate
-                		if(check_url(url)) {
-                        		redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+				int result = 0;
+                		if((result = check_url(url, path_hash))) {
+					if(result == 1)
+	                        		redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
 
 	                        	delete url;
+					freeReplyObject(reply);
         	        	        continue;
 	        	        }
 
