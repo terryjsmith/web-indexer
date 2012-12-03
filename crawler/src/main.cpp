@@ -156,6 +156,13 @@ int main(int argc, char** argv) {
                 }
 		path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
 
+		unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
+        	char* dir = (char*)malloc(dir_length + 1);
+	        sprintf(dir, "%s%s", BASE_PATH, url->parts[URL_DOMAIN]);
+        	dir[dir_length] = '\0';
+
+	        mkdir(dir, 0644);
+
 		unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2);
 		char* filename = (char*)malloc(length + 1);
 		sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], path_hash);
