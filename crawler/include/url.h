@@ -12,9 +12,6 @@ public:
 	URL(char* url);
 	~URL();
 
-	// Assignment operator
-	URL& operator=(const URL& rhs);
-
 	// Parse the URL, relative to the base URL
 	bool Parse(URL* base);
 

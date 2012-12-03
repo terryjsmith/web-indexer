@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
@@ -8,7 +9,8 @@
 
 HttpRequest::HttpRequest(URL* url) {
 	// Save a copy of the URL
-	*m_url = *url;
+	m_url = new URL(url->url);
+	m_url->Parse(NULL);
 
 	// Set up to start doing transfers
         m_curl = curl_easy_init();

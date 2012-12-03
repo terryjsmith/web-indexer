@@ -33,18 +33,6 @@ URL::~URL() {
 	}
 }
 
-URL& URL::operator=(const URL& rhs) {
-	url = (char*)malloc(strlen(rhs.url) + 1);
-	strcpy(url, rhs.url);
-
-	for(unsigned int i = 0; i < 4; i++) {
-		parts[i] = (char*)malloc(strlen(rhs.parts[i]) + 1);
-		strcpy(parts[i], rhs.parts[i]);
-	}
-
-	return(*this);
-}
-
 regex_t* URL::GetRegex() {
 	// See if our regex is set up; if not, set it up
         if(m_regex == 0) {
