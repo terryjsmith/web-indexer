@@ -21,11 +21,13 @@ using namespace std;
 #include <url.h>
 #include <httprequest.h>
 #include <robotstxt.h>
+#include <site.h>
 
 /* DEFINITIONS */
 
 #define NUM_CONNECTIONS	10
 #define BASE_PATH	"/mnt/indexer/"
+#define MIN_ACCESS_TIME 600
 
 /* GLOBALS */
 
@@ -45,115 +47,6 @@ void log(char* line) {
 
 	fflush(log_file);
 	printf("%s\n", line);
-}
-
-bool fill_domain_url_id(URL* url) {
-	// Our return value; false = URL existed, true = new URL
-	bool retval = false;
-
-	// See if we have an existing domain
-        char* query = (char*)malloc(1000);
-        unsigned int length = sprintf(query, "SELECT domain_id FROM domain WHERE domain = '%s'", url->parts[URL_DOMAIN]);
-        query[length] = '\0';
-
-        mysql_query(conn, query);
-        MYSQL_RES* result = mysql_store_result(conn);
-
-        if(mysql_num_rows(result)) {
-                MYSQL_ROW row = mysql_fetch_row(result);
-                url->domain_id = atol(row[0]);
-        }
-
-        free(query);
-        mysql_free_result(result);
-
-	// If we don't have a domain, create one
-	time_t last_access = time(NULL);
-	if(!url->domain_id) {
-        	query = (char*)malloc(1000);
-                unsigned int zero = 0;
-                length = sprintf(query, "INSERT INTO domain VALUES(NULL, '%s', %ld, %d)", url->parts[URL_DOMAIN], last_access, zero);
-        	query[length] = '\0';
-
-	        mysql_query(conn, query);
-        	free(query);
-
-		url->domain_id = (unsigned long int)mysql_insert_id(conn);
-	}
-
-	// Now that we have a domain ID, get the URL ID, if it exists
-	query = (char*)malloc(1000);
-        length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND path_hash = '%s'", url->domain_id, url->hash);
-        query[length] = '\0';
-
-        mysql_query(conn, query);
-        free(query);
-
-        result = mysql_store_result(conn);
-        if(mysql_num_rows(result)) {
-		MYSQL_ROW row = mysql_fetch_row(result);
-		url->url_id = atol(row[0]);
-        }
-
-	mysql_free_result(result);
-
-	// If we didn't have a URL, create one
-	if(!url->url_id) {
-        	query = (char*)malloc(5000);
-	        length = sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', 0, 0)", url->domain_id, url->url, url->hash);
-        	mysql_query(conn, query);
-	        free(query);
-
-        	url->url_id = (unsigned long int)mysql_insert_id(conn);
-		retval = true;
-	}
-
-	return(retval);
-}
-
-void update_last_access(URL* url) {
-	time_t timestamp = time(NULL);
-
-	char* query = (char*)malloc(1000);
-        unsigned int length = sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", timestamp, url->domain_id);
-        query[length] = '\0';
-
-        mysql_query(conn, query);
-        free(query);
-}
-
-bool check_last_access(URL* url) {
-	// Our return value; false = invalid, true = valid
-	bool retval = true;
-
-	// Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
-        for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
-		if(!requests[i]) continue;
-
-                if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
-	                return(1);
-        }
-
-	// Do a quick check in MySQL and make sure we haven't accessed this domain recently
-        char* query = (char*)malloc(1000);
-        unsigned int length = sprintf(query, "SELECT last_access FROM domain WHERE domain = '%s'", url->parts[URL_DOMAIN]);
-        query[length] = '\0';
-
-        mysql_query(conn, query);
-        MYSQL_RES* result = mysql_store_result(conn);
-
-        if(mysql_num_rows(result)) {
-                MYSQL_ROW row = mysql_fetch_row(result);
-                long int last_access = atol(row[0]);
-                if(abs(time(NULL) - last_access) < (60*10)) {
-                        retval = false;
-                }
-        }
-
-        free(query);
-        mysql_free_result(result);
-
-	return(retval);
 }
 
 int main(int argc, char** argv) {
@@ -200,8 +93,14 @@ int main(int argc, char** argv) {
 
 		freeReplyObject(reply);
 
+		// Load the site info from the database
+		Site* site = new Site();
+		site->Load(url->parts[URL_DOMAIN], conn);
+		url->domain_id = site->domain_id;
+
 		// Check whether this domain is on a timeout
-		if(check_last_access(url) == false) {
+		time_t now = time(NULL);
+		if((now - site->GetLastAccess()) < MIN_ACCESS_TIME) {
                         redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
 
                         delete url;
@@ -210,7 +109,7 @@ int main(int argc, char** argv) {
 		}
 
 		// Next check if we've already parsed this URL
-		if(fill_domain_url_id(url) == false) {
+		if(url->Load(conn)) {
 			delete url;
 			i--;
 			continue;
@@ -225,13 +124,14 @@ int main(int argc, char** argv) {
                         continue;
 		}
 
+		// Set the last access time to now
+		site->SetLastAccess(now);
+
+		delete site;
 		delete robots;
 
 		// Otherwise, we're good
 		requests[i] = new HttpRequest(url);
-
-		// Update the last access time
-		update_last_access(url);
 
 		unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
         	char* dir = (char*)malloc(dir_length + 1);
@@ -316,11 +216,17 @@ int main(int argc, char** argv) {
 					URL* new_url = new URL(redirect);
 					new_url->Parse(NULL);
 
+					// Load the site info from the database
+		                        Site* site = new Site();
+                		        site->Load(new_url->parts[URL_DOMAIN], conn);
+                                	new_url->domain_id = site->domain_id;
+
 					// Find the new domain and path info
-					fill_domain_url_id(new_url);
+					new_url->Load(conn);
 
 					// Make sure we mark that we actually checked this domain as well
-					update_last_access(url);
+					site->SetLastAccess(time(NULL));
+					delete site;
 
 					// Insert a record into the URL table
 					char* query = (char*)malloc(1000);
@@ -365,34 +271,41 @@ int main(int argc, char** argv) {
 
 				freeReplyObject(reply);
 
-				// Check whether this domain is on a timeout
-		                if(check_last_access(url) == false) {
-                		        redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+				// Load the site info from the database
+		                Site* site = new Site();
+                		site->Load(url->parts[URL_DOMAIN], conn);
+		                url->domain_id = site->domain_id;
 
-		                        delete url;
-                		        continue;
-		                }
+                		// Check whether this domain is on a timeout
+		                time_t now = time(NULL);
+                		if((now - site->GetLastAccess()) < MIN_ACCESS_TIME) {
+		                        redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
 
-                		// Next check if we've already parsed this URL
-		                if(fill_domain_url_id(url) == false) {
                 		        delete url;
 		                        continue;
                 		}
 
-				// Finally, make sure the URL isn't disallowed by robots.txt
-		                RobotsTxt* robots = new RobotsTxt();
-                		robots->Load(url, conn);
-		                if(robots->Check(url) == true) {
-                		        delete url;
-                		        continue;
+		                // Next check if we've already parsed this URL
+                		if(url->Load(conn)) {
+		                        delete url;
+		                        continue;
                 		}
 
+		              	// Finally, make sure the URL isn't disallowed by robots.txt
+                		RobotsTxt* robots = new RobotsTxt();
+		                robots->Load(url, conn);
+                		if(robots->Check(url) == true) {
+		                        delete url;
+                        		continue;
+		                }
+
+                		// Set the last access time to now
+		                site->SetLastAccess(now);
+
+                		delete site;
 		                delete robots;
 
 	                	HttpRequest* new_request = new HttpRequest(url);
-
-				// Mark that we're accessing this
-				update_last_access(url);
 
 				// Clean up
 				delete url;

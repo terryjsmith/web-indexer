@@ -18,6 +18,9 @@ public:
 	// Clone this URL into a new one
 	URL* Clone();
 
+	// Check whether this URL already exists in the database
+	bool Load(MYSQL* conn);
+
 public:
 	// Get the regular expression we use to parse URLs
 	regex_t* GetRegex();

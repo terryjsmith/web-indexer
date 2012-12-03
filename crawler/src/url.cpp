@@ -7,6 +7,8 @@ using namespace std;
 #include <string.h>
 #include <regex.h>
 #include <openssl/md5.h>
+#include <my_global.h>
+#include <mysql.h>
 #include <url.h>
 
 regex_t* URL::m_regex = 0;
@@ -238,4 +240,37 @@ bool URL::_split() {
         hash[MD5_DIGEST_LENGTH * 2] = '\0';
 
         return(true);
+}
+
+bool URL::Load(MYSQL* conn) {
+	bool exists = false;
+
+	// Now that we have a domain ID, get the URL ID, if it exists
+        char* query = (char*)malloc(1000);
+        unsigned int length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND path_hash = '%s'", domain_id, hash);
+        query[length] = '\0';
+
+        mysql_query(conn, query);
+        free(query);
+
+        MYSQL_RES* result = mysql_store_result(conn);
+        if(mysql_num_rows(result)) {
+                MYSQL_ROW row = mysql_fetch_row(result);
+                url_id = atol(row[0]);
+		exists = true;
+        }
+
+        mysql_free_result(result);
+
+        // If we didn't have a URL, create one
+        if(!url_id) {
+		query = (char*)malloc(5000);
+                length = sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', 0, 0)", domain_id, url, hash);
+                mysql_query(conn, query);
+                free(query);
+
+                url_id = (unsigned long int)mysql_insert_id(conn);
+        }
+
+	return(exists);
 }
