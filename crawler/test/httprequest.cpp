@@ -1,16 +1,12 @@
 
 /* INCLUDES */
 
-#include <vector>
-using namespace std;
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <regex.h>
 #include <curl/curl.h>
-#include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 
 #include <url.h>
@@ -18,8 +14,7 @@ using namespace std;
 
 /* DEFINITIONS */
 
-#define NUM_CONNECTIONS	10
-#define BASE_PATH	"/var/indexer/"
+#define NUM_CONNECTIONS	1
 
 /* GLOBALS */
 
@@ -44,6 +39,8 @@ int main(int argc, char** argv) {
 		return(0);
 	}
 
+	// Define our 
+
 	// Get a connection to redis to grab URLs
 	context = redisConnect("localhost", 6379);
 	if(context->err) {
@@ -62,45 +59,7 @@ int main(int argc, char** argv) {
 	for(unsigned int i = 0; i < NUM_CONNECTIONS; i++) {
 		// Fetch a URL from redis
 		redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
-
-		// Split the URL info it's parts; no base URL
-		URL* url = new URL(reply->str);
-		url->Parse(NULL);
-
-		// Check if we already have a URL on this domain (note: the domain has already been converted to lowercase as part of the split)
-		bool exists = false;
-		for(unsigned int j = 0; j < i; j++) {
-			if(strcmp(requests[i]->GetURL()->parts[URL_DOMAIN], url->parts[URL_DOMAIN]))
-				exists = true;
-		}
-
-		// If this does exist, clean up a few things and re-iterate
-		if(exists) {
-			delete url;
-			i--;
-			continue;
-		}
-
-		// Otherwise, we're good
-		requests[i] = new HttpRequest(url);
-
-		// Get the MD5 hash of the path
-                unsigned char hash[MD5_DIGEST_LENGTH];
-                memset(hash, 0, MD5_DIGEST_LENGTH);
-                MD5((const unsigned char*)url->parts[URL_PATH], strlen(url->parts[URL_PATH]), hash);
-
-                // Convert it to hex
-                char path_hash = (char*)malloc((MD5_DIGEST_LENGTH * 2) + 1);
-                for(unsigned int i = 0; i < MD5_DIGEST_LENGTH; i++) {
-                        sprintf(path_hash + (i * 2), "%02x", hash[i]);
-                }
-		path_hash[MD5_DIGEST_LENGTH * 2] = '\0';
-
-		unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2);
-		char* filename = (char*)malloc(length + 1);
-
-		// Clean up
-		delete url;
+		requests[i] = new HttpRequest(reply->str);
 		freeReplyObject(reply);
 
 		// Add it to the multi stack
@@ -125,7 +84,7 @@ int main(int argc, char** argv) {
 			if(msg->data.result != CURLE_OK) {
 				// Get the error and URL to be logged
 				char* curl_error = (char*)curl_easy_strerror(msg->data.result);
-				char* url =  request->GetURL()->url;
+				char* url =  request->GetUrl();
 
 				unsigned int length = strlen(url) + 2 + strlen(curl_error);
 				char* final = (char*)malloc(length + 1);
@@ -142,7 +101,19 @@ int main(int argc, char** argv) {
                         curl_multi_remove_handle(multi, msg->easy_handle);
 
 			// Get the URL and parse it; no base path since this should be absolute
-			URL* url = request->GetURL();
+			URL* url = new URL(request->GetUrl());
+			url->Parse(NULL);
+
+			// Get the MD5 hash of the path
+			unsigned char hash[MD5_DIGEST_LENGTH];
+			memset(hash, 0, MD5_DIGEST_LENGTH);
+			MD5((const unsigned char*)url->parts[URL_PATH], strlen(url->parts[URL_PATH]), hash);
+
+			// Convert it to hex
+			char path_hash[MD5_DIGEST_LENGTH * 2];
+			for(unsigned int i = 0; i < MD5_DIGEST_LENGTH; i++) {
+				sprintf(path_hash + (i * 2), "%02x", hash[i]);
+			}
 
 			// Clean up
 			delete url;

@@ -33,6 +33,18 @@ URL::~URL() {
 	}
 }
 
+URL& URL::operator=(const URL& rhs) {
+	url = (char*)malloc(strlen(rhs.url) + 1);
+	strcpy(url, rhs.url);
+
+	for(unsigned int i = 0; i < 4; i++) {
+		parts[i] = (char*)malloc(strlen(rhs.parts[i]) + 1);
+		strcpy(parts[i], rhs.parts[i]);
+	}
+
+	return(*this);
+}
+
 regex_t* URL::GetRegex() {
 	// See if our regex is set up; if not, set it up
         if(m_regex == 0) {
@@ -194,6 +206,13 @@ bool URL::_split() {
 		memcpy(parts[index], url + re_matches[i].rm_so, re_matches[i].rm_eo - re_matches[i].rm_so);
 		parts[index][re_matches[i].rm_eo - re_matches[i].rm_so] = '\0';
 	}
+
+	// Convert the scheme and domain to lowercase
+	for(unsigned int i = 0; i < strlen(parts[URL_SCHEME]); i++)
+		parts[URL_SCHEME][i] = tolower(parts[URL_SCHEME][i]);
+
+	for(unsigned int i = 0; i < strlen(parts[URL_DOMAIN]); i++)
+		parts[URL_DOMAIN][i] = tolower(parts[URL_DOMAIN][i]);
 
         return(true);
 }
