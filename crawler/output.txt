@@ -1,0 +1,2077 @@
+Connected to redis.
+Connected to MySQL.
+Trying URL http://www.nnanime.com/...
+Trying URL http://www.unc.edu/coup/...
+ua
+Trying URL http://web.mit.edu/anime/www/...
+ua
+Trying URL http://uranime.nekomusume.net/...
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+	<head>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+		<title>MIT Anime Club</title>
+
+		<link rel="Stylesheet" type="text/css" href="default.css" />
+
+
+
+		<meta name="copyright" content="Copyright © 2012 MIT Anime Club" />
+
+		<meta name="description" content="A non-profit MIT student organization dedicated to increasing the awareness of anime, or Japanese animation, in the MIT community and the general public." />
+
+<script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-10583169-1']);
+_gaq.push(['_trackPageview']);
+
+(funtion() {
+   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + google-analytics.com/ga.js';
+   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+	</head>
+
+	<body>
+
+		<div id="header">
+
+			<div id="banner">
+
+				<div><img src="images/logo.png" alt="MIT Anime" width="234" height="71" /></div>
+
+			</div>
+
+			<div id="links">
+
+				<ul>
+
+					<li><a href="/">Home</a></li>
+
+					<li><a href="/showings/">Showings</a></li>
+
+					<li><a href="/info/">Club Information</a></li>
+
+					<li><a href="/library/">Library</a></li>
+
+					<li><a href="/resources/">Resources</a></li>
+
+					<li><a href="http://www.google.com/calendar/embed?title=MIT%20Anime%20Club%20Calendar&amp;height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=ed9b6ocj7rk8g1629i4dfo7mac%40group.calendar.google.com&amp;color=%232952A3&amp;src=gfj6lqe4rbkejoq30fbiu6vnpg%40group.calendar.google.com&amp;color=%23A32929&amp;src=80ojt5isrqvh2fpsg8ive2cg30%40group.calendar.google.com&amp;color=%23A32929&amp;src=0qvonmead4m5g6d9bvnnioeuu8%40group.calendar.google.com&amp;color=%23AB8B00&amp;ctz=America%2FNew_York">Calendar</a></li>
+
+				</ul>
+
+			</div>
+
+		</div>
+
+		<div id="body">
+
+			<div id="content">
+
+
+			<div id="smaller">
+				<div style="overflow:auto;width:100%">
+					<div id="showing">
+						<a href="showings/">Showing Schedule</a>
+
+
+
+<!-- Below is the automatic updater for upcoming events and showings.
+For each new event, create a new object in the "updates" array with the following information:
+text: the full HTML entry including the title, date, time, location, and a description.
+cat: the category of the type of posting. 0 is showings, 1 is events, 2 is other announcements
+startDate: the earliest date that the posting should appear
+endDate: the last date that the posting should appear. Generally this is the day after the event
+
+-->
+
+<script type="text/javascript">
+var updates = new Array();
+
+updates[0]={
+text:"<b>Baccano!<br/></b>Friday, November 23<br/>6+n:10 Baccano! episodes 2n-1 to 2n<br/>7+n:00 Intermission<br/>n = {1,2,3,4}<br/>Room 3-133<br/><br/>",
+cat:0,
+startDate:new Date("November 17, 2012"),
+endDate:new Date("November 24, 2012")};
+
+updates[1]={
+text:"<b>Mouretsu Pirates<br/></b>Friday, December 7<br/>7:10 Mouretsu Pirates episodes 10-11<br/>8:00 Intermission<br/>8:10 Mouretsu Pirates episodes 12 to 13<br/>Room 3-133<br/><br/>",
+cat:0,
+startDate:new Date("December 1, 2012"),
+endDate:new Date("December 8, 2012")};
+
+updates[2]={
+text:"<b>Sampler Night<br/></b>Friday, October 12</br>7:10-7:35 Hyouka 1<br/>7:35-8:00 Mouretsu Pirates 1<br/>8:00-8:10 Intermission<br/>8:10-8:35 Starship Operators 1<br/>8:35-9:00 Princess Jellyfish 1<br/>9:00 Voting<br/>3-133<br/><br/>",
+cat:0,
+startDate:new Date("October 1, 2012"),
+endDate:new Date("October 13, 2012")};
+
+updates[3]={
+text:"<b>Snooty Anime Discussion Hours<br/></b>Saturday, November 10</br>2:00PM-4:00PM<br/>Discuss the anime industry while sipping tea and wearing silly hats.<br/>W20-308A Student Center Private Dining Room #4<br/><br/>",
+cat:1,
+startDate:new Date("November 3, 2012"),
+endDate:new Date("November 11, 2012")};
+
+updates[4]={
+text:"<b>Snooty Anime Discussion Hours<br/></b>Saturday, November 10</br>2:00 PM-4:00 PM<br/>Wear silly hats while discussing current issues in anime and pretentiously sipping tea.<br/>W20-308A Student Center Private Dining Room 4<br/><br/>",
+cat:1,
+startDate:new Date("October 28, 2012"),
+endDate:new Date("November 4, 2012")};
+
+updates[5]={
+text:"<b>Brain Reset<br/></b>Friday, December 14</br>7:00 PM-11:00 PM<br/>Watch weird anime. Reset your brain.<br/>3-133<br/><br/>",
+cat:1,
+startDate:new Date("December 1, 2012"),
+endDate:new Date("December 15, 2012")};
+
+updates[6]={
+text:"<b>Business Meeting<br/></b>Tuesday, December 11</br>6:30 PM<br/>Business meetings are a great way to get involved.<br/>W20-445<br/><br/>",
+cat:2,
+startDate:new Date("December 1, 2012"),
+endDate:new Date("December 12, 2012")};
+
+var headings = new Array();
+headings[0] = "<h2>Upcoming Showings</h2>";
+headings[1] = "<h2>Upcoming Events</h2>";
+headings[2] = "<h2>Announcements</h2>";
+
+var today = new Date();
+
+
+function updateSchedule(){
+var i=0;
+var cats = new String("hello");
+for (i=0; i<updates.length; i++){
+if (updates[i].endDate>today && updates[i].startDate<today){
+    if (cats.indexOf(updates[i].cat) == -1){
+	cats = cats.concat(updates[i].cat);
+        document.write(headings[updates[i].cat]); 
+    }
+
+	document.write(updates[i].text);
+    }
+}
+}
+updateSchedule();
+</script>
+
+
+
+					</div>
+
+					<div id="info">
+
+						<!-- <span style="top: 620px;"><b></b></span> -->
+<!--Below is the automatic updater for the splash image. List all images in chronological order, with the first being the earliest.
+This updater only lists the current image. Each image has a date; once that date passes, the next image will be displayed. If there are no images left, a general splash image will be displayed.
+For each new image, create a new object in the "images" array with the following information:
+src: the URL of the image, in the images folder of the website
+imageDate: the last date the image should appear. Generally this is the day after the event the image is associated with.
+-->
+
+
+<script type="text/javascript">
+var images = new Array();
+splashImage = "splash.jpg"
+images[1]={src:"jellyfish.jpg",imageDate:new Date("November 26, 2012"), text: "Princess Jellyfish"};
+images[2]={src:"mouretsu.jpg",imageDate:new Date("November 28, 2012"), text: "Mouretsu Pirates"};
+var today = new Date();
+images[3]={src:"jellyfish2.jpg",imageDate:new Date("November 30, 2012"), text: "Princess Jellyfish"};
+images[0]={src:"baccano.jpg",imageDate:new Date("November 24, 2012"), text: ""};
+images[4]={src:"mouretsu.jpg",imageDate:new Date("December 8, 2012"), text: "Mouretsu Pirates"};
+var imageText = "";
+
+function updateImage() {
+var i=0;
+for (i=0; i<images.length; i++){
+if (images[i].imageDate>today){
+    imageText = images[i].text;
+    return images[i].src;
+   
+    break;
+    }
+}
+
+return splashImage;
+}
+ document.write("<img src='images/" + updateImage()+ "' width='350'/>");
+document.write("<br/><div align='center'><b>" + imageText + "</b></div>");
+</script>
+
+
+						<p><strong>Welcome</strong> to the website of the MIT Anime Club. We are a non-profit MIT student organization dedicated to increasing the awareness of anime, or Japanese animation, in the MIT community.</p>
+
+					
+					</div>
+				
+				</div>
+			</div>
+
+			</div>
+		</div>
+		<div id="footer">
+			<p><a href="/admin/">Admin</a> | Copyright &copy;2012 MIT Anime Club | Follow us on <a href="http://www.twitter.com/mitanime">Twitter!</a> <a href="http://www.twitter.com/mitanime"><img src="http://twitter-badges.s3.amazonaws.com/t_small-c.png" alt="Follow MIT Anime on Twitter"/></a></p>
+		</div>
+	</body>
+</html>
+
+<HTML>
+<HEAD>
+<META name="verify-v1" content="fL7E9kOK3TV9ZY+7nwq8WazgInYVU97qY0FeSRPX4C8=" />
+
+<META name="description" content="The UR Anime Club home
+page contains photo galleries from past anime conventions.">
+<META name="keywords" content="anime,manga,reviews,club">
+
+
+<SCRIPT>
+<!--
+        if (top.location != self.location) {
+           top.location = self.location
+        }
+//-->
+</SCRIPT>
+
+
+
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-71537-1";
+urchinTracker();
+</script>
+
+
+
+<TITLE>UR Anime Club</TITLE>
+
+</HEAD>
+<BODY BGCOLOR="#000066" TEXT="#000000" LINK="#666699" VLINK="#000066" ALINK="#0066FF" MARGINHEIGHT="5" MARGINWIDTH="0" TOPMARGIN="5" LEFTMARGIN="0">
+
+
+
+
+
+
+<TABLE BORDER="0" CELLPADDING="3" CELLSPACING="0" WIDTH="98%" ALIGN="center">
+<TR VALIGN="top">
+<TD>
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0">
+<TR><TD>
+
+&nbsp;
+
+</TD></TR>
+</TABLE>	
+    
+
+</TD>
+
+<TD ALIGN="right">
+
+
+<A HREF="./"><IMG SRC="./images/title.gif" ALT="University of Richmond Japanese Anime Club" BORDER="0" HEIGHT="69" WIDTH="499"></A>
+
+</TD>
+</TR>
+</TABLE>
+
+
+
+
+<DIV STYLE="border-style: solid; border-color: #000066; float: left;">
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-9850286378440524";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="7271566470";
+google_color_border = "9999CC";
+google_color_bg = "FFFFFF";
+google_color_link = "0000CC";
+google_color_url = "000000";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+	    
+
+
+
+
+</DIV>
+
+
+
+
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="0" WIDTH="86%">
+<TR VALIGN="top">
+<TD WIDTH="100%" BGCOLOR="#FFFFFF" BACKGROUND="./images/tablebg.gif">
+
+<TABLE WIDTH="90%" CELLSPACING="0" CELLPADDING="0" BORDER="0" ALIGN="center">
+
+
+
+<TR VALIGN="top"><TD ALIGN="center" BGCOLOR="#F0F0FF" BACKGROUND="./images/tablebg2.gif"><IMG SRC="./images/spacer.gif" HEIGHT="10" WIDTH="1"></TD></TR>
+
+<TR VALIGN="top">
+<TD>
+<FONT FACE="arial,helvetica,sans-serif" SIZE="1">
+
+
+
+
+<CENTER><B><U>Anime Convention Photo Galleries</U></B><BR>[ <A HREF="./anime-conventions/ax2002/">Anime Expo 2002</A> | <A HREF="./anime-conventions/ax2001/">Anime Expo 2001</A> | <A HREF="./anime-conventions/ax2000/">Anime Expo 2000</A> | <A HREF="./anime-conventions/katsucon8/">Katsucon 8</A> | <A HREF="./anime-conventions/katsucon7/">Katsucon 7</A> | <A HREF="./anime-conventions/otakon2001/">Otakon 2001</A> | <A HREF="./anime-conventions/animemidatlantic2/">Anime Mid-Atlantic 2</A> | <A HREF="./anime-conventions/animemidatlantic1/">Anime Mid-Atlantic 1</A> ]</CENTER>
+<BR>
+
+
+<TABLE BORDER="0" CELLPADDING="5" CELLSPACING="0" ALIGN="center" BGCOLOR="#9999CC" BACKGROUND="./images/tablebg3.gif"><TR><TD>
+
+<TABLE BORDER="0" CELLPADDING="2" CELLSPACING="0" ALIGN="center" BGCOLOR="#FFFFFF"><TR><TD>
+<FONT FACE="arial,helvetica,sans-serif" SIZE="1">
+
+<CENTER><B><U>Sponsored Links</U></B><BR>
+<script type="text/javascript"><!--
+google_ad_client = "pub-9850286378440524";
+google_ad_width = 728;
+google_ad_height = 15;
+google_ad_format = "728x15_0ads_al_s";
+google_ad_channel ="1507158830";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "0000CC";
+google_color_url = "000099";
+google_color_text = "000099";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+
+
+</CENTER>
+</FONT>
+</TD></TR></TABLE>
+</TD></TR></TABLE>
+
+
+<BR>
+
+<HR NOSHADE>
+
+
+
+
+
+<!-- content -->
+
+
+
+<TABLE BORDER="0" CELLPADDING="20" CELLSPACING="0" BORDER="0" ALIGN="center">
+<TR VALIGN="top"><TD>
+<FONT FACE="arial,helvetica,sans-serif">
+<H4>Conventions and event photo galleries</H4>
+<FONT SIZE="1">
+   <UL>
+   <LI><A HREF="anime-conventions/ax2002/">Anime Expo 2002 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/animemidatlantic2/">Anime Mid-Atlantic 2 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/katsucon8/">Katsucon 8 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/otakon2001/">Otakon 2001 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/ax2001/">Anime Expo 2001 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/animemidatlantic1/">Anime Mid-Atlantic 1 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/katsucon7/">Katsucon 7 photo galleries</A></LI>
+   <LI><A HREF="anime-conventions/ax2000/">Anime Expo 2000 reports</A></LI>
+   </UL>
+</FONT>
+</FONT>
+</TD><TD>
+
+<FONT FACE="arial,helvetica,sans-serif">
+<H4>Items of interest</H4>
+<FONT SIZE="1">
+   <UL>
+   <LI><A HREF="misc/ikuhara_interview.iphtml">Kunihiko Ikuhara interview transcript</A></LI>
+   </UL>
+
+</FONT>
+<H4>UR Anime Club information</H4>
+<FONT SIZE="1">
+<P>The University of Richmond Japanese Anime Club (UR Anime)<BR>ceased to be an active organization in 2002.</P>
+</FONT>
+</FONT>
+</TD></TR>
+</TABLE>
+
+<!-- end content -->
+
+
+
+
+
+<BR>
+<BR>
+<DIV ALIGN="center">[&nbsp;<A HREF="./index.iphtml">Main Site Index</A>&nbsp;]</DIV>
+<BR>
+
+</FONT>
+
+
+<BR><BR>
+
+
+</TD>
+</TR>
+</TABLE>
+
+</TD>
+</TR>
+
+</TABLE>
+
+
+
+
+  </BODY>
+</HTML>
+Trying URL http://www.ic.sunysb.edu/Clubs/anime/...
+ua
+Trying URL http://carleton.ottawa-anime.org/...
+Trying URL http://soap.ottawa-anime.org/...
+
+<!DOCTYPE html	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Anime@Carleton</title>
+	<LINK href="anime.css" rel="stylesheet" type="text/css">
+	<META NAME="author" CONTENT="Craig MacEachern">
+	<META NAME="Description" CONTENT="The Anime@Carleton club is devoted to the exposure of Japanese animation ('Anime') at Carleton University in Ottawa, Ontario, Canada.">
+	<META NAME="Keywords" CONTENT="Anime@Carleton, A@C, Carleton University, Anime@Carleton Club, Anime Club, club, anime, manga, Japan, popular culture, otaku, Japanese animation, Ottawa, Ontario, ON, Canada">
+	<META NAME="Geography" CONTENT="1125 Colonel By Drive, Ottawa, ON, Canada K1S 5B6">
+	<META NAME="Copyright" CONTENT="Anime@Carleton, Craig MacEachern">
+	<META NAME="Designer" CONTENT="Craig MacEachern">
+	<META NAME="Publisher" CONTENT="Craig MacEachern">
+	<meta name="verify-v1" content="KGNuA3PeUQ0OsqJWNuiayjge28VIv1ledSJyoQLFSWg=" />
+</head>
+
+
+<body>
+
+	<div id="container">
+	<div id="header"></div>
+	<div id="content">
+
+		<p><h2>Welcome!</h2></p>
+		<p>
+<img src="konnichiwa.png"> and Welcome to the Anime@Carleton Club, devoted to the exposure of Japanese animation "Anime" at Carleton University in Ottawa, Ontario, Canada.  The club is meant to be a medium through which students and the Anime community in Ottawa can share their love of Anime.  We hold weekly Anime showings, which encourage you to meet fellow Anime fans and Japanophiles.  Anyone can come out to our events from the simply curious, to the serious Anime fans.  You can get involved in the club, or just show up to enjoy the shows and the social atmosphere.
+		</p>
+
+		<p><h2>Notice</h2></p>
+<p>For the December showings we'll be in <b>Residence Commons (CO) 214</b>.</p>
+
+		<p><h2>News</h2></p>
+
+	<p><h6>December 2nd, 2012</h6></p>
+	<p>
+For yesterday’s free showing period we showed,
+<br>
+<br>A Letter to Momo
+<br>Hakugei: Legend of the Moby Dick ep. 8
+<br>Minami-ke ep. 12
+<br>Psycho-Pass ep. 8
+<br>
+<br>Only two more showing to go for the calendar year.  The next showing is this <b>Saturday, December 8th</b> in <b>Residence Commons (CO) 214</b>.  The schedule for this week is Schedule A,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=4631" target="_blank">Mahoraba ~Heartful Days~</a> ep. 13 and 14
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=3588" target="_blank">Sakigake!! Otoko Juku</a> ep. 13 and 14
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13251" target="_blank">Muv-Luv Alternative: Total Eclipse</a> ep. 13 and 14
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13858" target="_blank">Sword Art Online</a> ep. 13 and 14
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 13
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>The club sushi dinner will be held this Wednesday (Dec. 5th).  If you’d like to attend please <a href="http://www.google.com/recaptcha/mailhide/d?k=01ui2NSAjF7GLl1KiRjel21g==&amp;c=F4vAUwLqlnn2aHeSopUEeQJso5OyxdmoZwlQr9MMED3VF4oQ7kmdE28Zx3h_rB5M" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501ui2NSAjF7GLl1KiRjel21g\75\75\46c\75F4vAUwLqlnn2aHeSopUEeQJso5OyxdmoZwlQr9MMED3VF4oQ7kmdE28Zx3h_rB5M', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" title="Reveal this e-mail address">send an RSVP</a> to me <b>ASAP</b>, along with the RSVP please say whether you mind your email being visible to others as any discussion relating to the dinner will be taking place via email.
+<br>
+<br>See you on Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>November 28th, 2012</h6></p>
+	<p>
+This weekend there is the <a href="http://ottawateafestival.com/" target="_blank">Ottawa Tea Festival</a> which will be held at the Ottawa Convention Centre on Saturday and in various locations in the downtown area on Sunday.
+</p><p><center><img src="tea_festival_2012.png"></center></p><p>
+Japanese Tea Ceremony
+<br>By: Kyoko Kosaki and Kyoto Tsunetomi
+<br>
+<br>Tea lovers, listen up! KIMICHA Tea is presenting the second Annual Ottawa Tea Festival on December 1, 2012 at the Ottawa Convention Centre. Meet other tea lovers and share a day of fun! Enjoy exquisite teas, specialty honey, chocolates and much more whilst watching a colourful Bollywood performance or listening to music. Learn from expert presentations or join us for some specialised workshops on December 2nd:
+<br>-cooking with tea by Emi Buzza
+<br>-focused tastings by Kimiko Uriu
+<br>-tea and fish dinner at Lapointe Restaurant
+<br>
+<br>More information at: <a href="http://ottawateafestival.com/" target="_blank">http://ottawateafestival.com/</a>
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>November 25th, 2012</h6></p>
+	<p>
+For yesterday’s free showing period we showed,
+<br>
+<br>Baka and Test: Summon the Beasts ep. 7
+<br>Black Jack OVAs
+<br>Dojin Work ep. 3 and 4
+<br>Hakugei: Legend of the Moby Dick ep. 7
+<br>Kishin Corps ep. 7 (End)
+<br>Minami-ke ep. 11
+<br>Psycho-Pass ep. 7
+<br>
+<br>The next showing is this <b>Saturday, December 1st</b> in <b>Residence Commons (CO) 214</b>.  The schedule for this week is Schedule B,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=4631" target="_blank">Mahoraba ~Heartful Days~</a> ep. 11 and 12
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=2000" target="_blank">Ginga Hyouryuu Vifam</a> ep. 11 and 12
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=9178" target="_blank">Kaiba</a> ep. 11 and 12 (End)
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13258" target="_blank">Another</a> ep. 11 and 12 (End)
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 12
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>The club is planning another sushi dinner to be held between December 3rd to 5th.  If you’d like to attend please <a href="http://www.google.com/recaptcha/mailhide/d?k=01ui2NSAjF7GLl1KiRjel21g==&amp;c=F4vAUwLqlnn2aHeSopUEeQJso5OyxdmoZwlQr9MMED3VF4oQ7kmdE28Zx3h_rB5M" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501ui2NSAjF7GLl1KiRjel21g\75\75\46c\75F4vAUwLqlnn2aHeSopUEeQJso5OyxdmoZwlQr9MMED3VF4oQ7kmdE28Zx3h_rB5M', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" title="Reveal this e-mail address">send an RSVP</a> to me as soon as possible, along with the RSVP please say whether you mind your email being visible to others as any discussion relating to the dinner will be taking place via email.  Those who are already on the list, you will receive an email Sunday evening to confirm interest.
+<br>
+<br>See you on Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>November 18th, 2012</h6></p>
+	<p>
+For yesterday’s free showing period we showed,
+<br>
+<br>Black Jack: The Two Doctors Of Darkness
+<br>Evangelion 3.0 - You Can (Not) Redo Preview
+<br>Kishin Corps ep. 6
+<br>Minami-ke ep. 10
+<br>Psycho-Pass ep. 6
+<br>
+<br>The next showing is this <b>Saturday, November 24th</b> in <b>St. Patrick’s (SP) 435</b>.  The schedule for this week is Schedule A,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13787" target="_blank">Jinrui wa Suitai Shimashita</a> ep. 11 and 12 (End)
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=3588" target="_blank">Sakigake!! Otoko Juku</a> ep. 11 and 12
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13251" target="_blank">Muv-Luv Alternative: Total Eclipse</a> ep. 11 and 12
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13858" target="_blank">Sword Art Online</a> ep. 11 and 12
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 11
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>See you on Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>November 11th, 2012</h6></p>
+	<p>
+For yesterday’s free showing period we showed,
+<br>
+<br>Baka and Test: Summon the Beasts ep. 6
+<br>From Up On Poppy Hill
+<br>Minami-ke ep. 8 and 9
+<br>Psycho-Pass ep. 5
+<br>
+<br>The next showing is this <b>Saturday, November 17th</b> in <b>St. Patrick’s (SP) 435</b>.  The schedule for this week is Schedule B,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=4631" target="_blank">Mahoraba ~Heartful Days~</a> ep. 9 and 10
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=2000" target="_blank">Ginga Hyouryuu Vifam</a> ep. 9 and 10
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=9178" target="_blank">Kaiba</a> ep. 9 and 10
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13258" target="_blank">Another</a> ep. 9 and 10
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 10
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>See you on Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>November 4th, 2012</h6></p>
+	<p>
+For yesterday’s free showing period we showed,
+<br>
+<br>Hakugei: Legend of the Moby Dick ep. 6
+<br>Kishin Corps ep. 5
+<br>Minami-ke ep. 7
+<br>Psycho-Pass ep. 4
+<br>Wicked City
+<br>
+<br>The next showing is this <b>Saturday, November 10th</b> in <b>St. Patrick’s (SP) 435</b>.  The schedule for this week is Schedule A,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13787" target="_blank">Jinrui wa Suitai Shimashita</a> ep. 9 and 10
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=3588" target="_blank">Sakigake!! Otoko Juku</a> ep. 9 and 10
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13251" target="_blank">Muv-Luv Alternative: Total Eclipse</a> ep. 9 and 10
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13858" target="_blank">Sword Art Online</a> ep. 9 and 10
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 9
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>See you on Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>October 31st, 2012</h6></p>
+<p><center><img src="Goddess_Halloween.jpg"></center></p>
+<p>For those interested about Halloween in Japan <a href="http://www.tofugu.com/2012/10/24/tofugus-halloween-week-halloween-in-japan/" target="_blank">here is an article about it</a>.
+<br>
+<br>As a reminder, this <b>Friday, November 2nd</b> the <b>Japan Animation Film Festival</b> will be held at Carleton at <b>6:30pm in Minto Centre (MC) 2000 [Bell Theater]</b>.  More details can be found below.
+<br>
+<br>See you on Friday at the Film Festival or Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+	<p><h6>October 27th, 2012</h6></p>
+	<p>
+For yesterday’s eighth free showing period of the 2012-2013 club year we showed,
+<br>
+<br>Demon City Shinjuku
+<br>F ep. 1
+<br>Hakugei: Legend of the Moby Dick ep. 5
+<br>Minami-ke ep. 6
+<br>Psycho-Pass ep. 3
+<br>
+<br>This coming <b>Friday, November 2nd</b> the <b>Japan Animation Film Festival</b> will be presented at Carleton University.  This evening of Japanese animation will be starting at <b>6:30pm in Minto Centre (MC) 2000 [Bell Theater]</b>.  The films that will be shown are, 5 Centimeters Per Second (2006) and The Place Promised in Our Early Days (2004).  Admission is free and no reservation is required.  More information can be found on the poster below or <a href="Carleton_Anime_Films_Nov_2012.pdf" target="_blank">here</a>.
+</p><p><center><img src="Carleton_Anime_Films_Nov_2012.png"></center></p><p>
+The next showing is this <b>Saturday, November 3rd</b> in <b>St. Patrick’s (SP) 435</b>.  The schedule for this week is Schedule B,
+<br>
+<br>1:30pm to 2:10pm: Setup
+<br>2:10pm to 3:00pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=4631" target="_blank">Mahoraba ~Heartful Days~</a> ep. 7 and 8
+<br>3:00pm to 3:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=2000" target="_blank">Ginga Hyouryuu Vifam</a> ep. 7 and 8
+<br>3:50pm to 4:00pm: Mini-Break
+<br>4:00pm to 4:50pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=9178" target="_blank">Kaiba</a> ep. 7 and 8
+<br>4:50pm to 5:40pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13258" target="_blank">Another</a> ep. 7 and 8
+<br>5:40pm to 5:50pm: Mini-Break
+<br>5:50pm to 6:15pm: <a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=1800" target="_blank">LotGH: A Hundred Billion Stars, A Hundred Billion Lights</a> ep. 8
+<br>6:15pm to 7:30pm: Break
+<br>7:30pm to 11:00pm: Movie(s) and Free Showing
+<br>
+<br>See you on Friday at the Film Festival or Saturday.
+<br>
+<br>Craig
+<br>Kaicho of A@C
+	</p>
+
+	</div>	
+	<div id="navigation">
+		<center><img src="NavMenu-Club.png" alt="The Club"></center>
+			<p>
+				<a href="http://carleton.ottawa-anime.org/index.html" alt="home">Home</a><br>
+				<a href="http://carleton.ottawa-anime.org/events.html">Events</a><br>
+				<a href="http://carleton.ottawa-anime.org/forums/">Forums</a><br>
+				<a href="http://carleton.ottawa-anime.org/aboutus.html">About Us</a><br>
+				<a href="http://carleton.ottawa-anime.org/contact.html">Contact</a><br>
+				<a href="http://carleton.ottawa-anime.org/archivedirectory.html">Archives</a>
+			</p>
+		<center><img src="NavMenu-Office.png" alt="Office"></center>				
+			<p>
+				<a href="http://carleton.ottawa-anime.org/executive.html">Executive</a><br>
+			        <a href="http://carleton.ottawa-anime.org/directory.html">Directory</a><br>
+				<a href="http://carleton.ottawa-anime.org/advertisements/advertisements.html">Advertisements</a><br>
+				<a href="http://carleton.ottawa-anime.org/statistics/statistics.html">Statistics</a>
+			</p>
+		<center><img src="NavMenu-Anime.png" alt="Anime"></center>
+			<p>
+				<a href="http://carleton.ottawa-anime.org/anime_faq.html">Anime FAQ</a><br>
+				<a href="http://carleton.ottawa-anime.org/get_anime.html">Get Anime</a><br>	
+				<a href="http://carleton.ottawa-anime.org/links.html">Links</a>
+			</p>
+			<p>
+		A member of:<br> <center><a href="http://www.rightstuf.com/rssite/" target="_blank"><img src="rightstufBanner02-90.gif"></a> <br><b>Stuf for Clubs</b> <br>Anime Club Support Program</center>
+			</p>
+	</div>
+	<div id="footer">
+		<p><h2></h2></p>
+		<br>
+		<p>
+			<font color="#ffffff"><center>
+This site is best viewed with <a href="http://www.mozilla.com/en-US/" target="_blank">Mozilla Firefox</a>.
+<br>The opinions of <a href="http://www.carleton.ca/" target="_bl<html>
+<head>
+	<title>SOAP - Society for Ottawa Anime Promotion</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<link href="main.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+<!--
+function newImage(arg) {
+	if (document.images) {
+		rslt = new Image();
+		rslt.src = arg;
+		return rslt;
+	}
+}
+
+function changeImages() {
+	if (document.images && (preloadFlag == true)) {
+		for (var i=0; i<changeImages.arguments.length; i+=2) {
+			document[changeImages.arguments[i]].src = changeImages.arguments[i+1];
+		}
+	}
+}
+
+var preloadFlag = false;
+function preloadImages() {
+	if (document.images) {
+		news_over = newImage("images/news_over.gif");
+		events_over = newImage("images/events_over.gif");
+		forums_over = newImage("images/forums_over.gif");
+		about_over = newImage("images/about_over.gif");
+		links_over = newImage("images/links_over.gif");
+		preloadFlag = true;
+	}
+}
+
+// -->
+</script>
+</head>
+<body onload="preloadImages();">
+<table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
+	<tr>
+		<td><a href="index.html"><img src="images/top_left.gif" alt="" width="113" height="60" border="0"></a></td>
+		<td><img src="images/top_right.gif" alt="SOAP -- Society for Ottawa Anime Promotion" width="627" height="60" border="0"></td>
+	</tr><tr valign="top">
+		<td><img src="images/side_mission.gif" alt="" width="113" height="37" border="0"></td>
+		<td valign="middle" background="images/mission.gif" id="mission-statement">
+			"An organization to enhance the communication and promotion of anime (Japanese animation) <br>and anime-clubs in the Ottawa-Carleton region." -- SOAP Mission Statement, May 1999
+		</td>
+	</tr><tr>
+		<td valign="top" background="images/background.gif">
+			<div><img src="images/side_top.gif" alt="" width="113" height="33" border="0"></div>
+			<div><a href="index.html"
+				onmouseover="changeImages('news', 'images/news_over.gif'); return true;"
+				onmouseout="changeImages('news', 'images/news.gif'); return true;">
+				<img name="news" src="images/news.gif" width=113 height=24 border=0 alt="Home"></a></div>
+			<div><a href="events/index.php"
+				onmouseover="changeImages('events', 'images/events_over.gif'); return true;"
+				onmouseout="changeImages('events', 'images/events.gif'); return true;">
+				<img name="events" src="images/events.gif" width=113 height=24 border=0 alt="Events"></a></div>
+			<div><a href="forums/index.php"
+				onmouseover="changeImages('forums', 'images/forums_over.gif'); return true;"
+				onmouseout="changeImages('forums', 'images/forums.gif'); return true;">
+				<img name="forums" src="images/forums.gif" width=113 height=24 border=0 alt="Forums"></a></div>
+			<div><a href="about.html"
+				onmouseover="changeImages('about', 'images/about_over.gif'); return true;"
+				onmouseout="changeImages('about', 'images/about.gif'); return true;">
+				<img name="about" src="images/about.gif" width=113 height=24 border=0 alt="About Us"></a></div>
+			<div><a href="links.html"
+				onmouseover="changeImages('links', 'images/links_over.gif'); return true;"
+				onmouseout="changeImages('links', 'images/links.gif'); return true;">
+				<img name="links" src="images/links.gif" width=113 height=24 border=0 alt="Links"></a></div>
+			<div><img src="images/side_bottom.gif" width=113 height=146 alt=""></div></td>
+		<td id="content">
+
+<!-- News Items go here -->
+<table align="center" id="soap-box"><tr><td>
+	<p style="text-align: center; font-weight: bold; font-size: larger;"><span style="color: #19087C;">&mdash; SOAP</span> <span style="color: #B20909;">BOX &mdash;</span></p>
+<!--	<p><b>Next SOAP meeting:</b> 11:30am, November 21, 2009. Room 400 St. Patrick's, Carleton University.</p> -->
+
+	<!--<br> <b><span style="color: #B20909;">1:00 PM</span>, June 12, 2008. Room B182, Algonquin College</b></p> -->
+
+<!--	<p><b>Next Event</b>: <a href="events/index.php">SOAP Party!</a> - November 21, 2009<br> 4th Floor, St. Patrick's, Carleton University</p> -->
+	<p><b>No Upcoming Events</b></p>
+</td></tr></table>
+
+<!-- Start of the Content section -->
+<div style="text-align: left;">
+
+<p><span class="news-date">2010/09/13</span> <span class="news-title">End of an Era</span> - It is with great regret that I announce the closure of SOAP. There are many reasons for this, which I will not go into. I do want to make it known that I do not regret one day of running this club. It has been an honour and a pleasure to serve the many fans and businesses in the Ottawa region. I hope and believe that the fandom will continue for many more years.</p>
+<p>This closure affects only our events. Our web sites (Ottawa-Anime.Org, SOAP.Ottawa-Anime.Org and all its affiliates) will continue to be hosted here. The forums will continue to remain open for the Ottawa fandom to use and enjoy as an online community.</p>
+<p>Thank you once again everybody for eleven years of wonderful memories.</p>
+<p><b>Curtis Ireland</b> (Co-Chair or SOAP)</p>
+
+</div>
+
+<p style="text-align: right; font-size: smaller; margin-right: 10px;"><a href="oldnews.html">Old News</a></p>
+<p class="copyright">Last updated on September 13th, 2010.
+<br>&copy; 1999-2010 Society for Ottawa Anime Promotion</p>
+<!-- End of the Content section --></td>
+	<tr>
+		<td><img src="images/spacer.gif" width=113 height=1 alt=""></td>
+		<td><img src="images/spacer.gif" width=627 height=1 alt=""></td>
+	</tr>
+</table>
+</body>
+</html>
+ank">Carleton University</a> and <a href="http://www.cusaonline.com/" target="_blank">CUSA</a> are in no way reflected by those of the Anime@Carleton Club <br>or by any part of this website including it&#39;s Forums and Groups.
+<br>Site design and content, unless otherwise stated, &#169; 2010 Anime@Carleton Club.
+<br>Characters &#169; to their respective owners and distributors. All Rights Reserved.
+			</center></font>
+		</p>
+	</div>
+	</div>Trying URL http://www.jaco.org/...
+Trying URL http://www.orgs.ttu.edu/muepsilonkappa/...
+<html>
+<head>
+<title>JACO: The Japanese Animation Club of Orlando</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" background="images/raster.jpg" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" link="#D7BAB5" vlink="#CCCCCC" alink="#D7BAB5">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width=20% bgcolor="#663333">&nbsp;</td>
+    <td width=50%>
+      <table width="766" border="0" cellspacing="0" cellpadding="0" align="center" height="100%">
+        <tr> 
+          <td colspan="2" width=766 height=85> 
+            <div align="right"><img src="images/title.jpg" width="766" height="85"></div>
+          </td>
+  </tr>
+  <tr valign=top> 
+          <td width="218" height=158><img src="images/jaco2.jpg" width="218" height="158" usemap="#jaco" border="0"><br>
+            <img src="images/jaco4.gif" width="218" height="64"><br>
+            <br>
+            <a href="http://www.jacon.org" target="_blank"><img src="images/jacon.jpg" width="150" height="61" border="0" hspace="15"></a> 
+            <br>
+            <br>
+            <a href="http://www.jacoart.org" target="_blank"><img src="images/jacorart.jpg" width="150" height="50" border="0" hspace="15"></a> 
+            <br>
+            <br>
+          </td>
+          <td rowspan=2 width="547"> <img src="images/menu3.jpg" width="548" height="39" usemap="#Map" border="0"> 
+            <table width="100%" border="0" cellspacing="0" cellpadding="7" height="100%" align="center">
+              <tr valign=top> 
+                <td width="18" height="100%">&nbsp;</td>
+                <td bgcolor="#000000" width="467" height="784"> <p><font color="#CC9999" size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>Last 
+                    Update:</strong><font color="#CCCCCC"> May 8, 2007</font></font> 
+                  </p>
+                  <p><strong><font color="#00FFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif">Important 
+                    Message:</font></strong><font color="#CCCCCC" size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+                    <br>
+                    Please be advised, that JACO meetings are no longer occuring on campus. We are currently discussing other options to maintain JACO activities. Please email <a href="mailto:shinkutaka@hotmail.com?subject=JACO%20meetings">shinkutaka@hotmail.com</a> with any suggestions you might have to assist and expedite the process. </font></p>
+                  <p><font color="#CCCCCC" size="2" face="Verdana, Arial, Helvetica, sans-serif">Sincerely,<br>
+                    Jason Sadeghi<br>
+                    JACO President</font></p>
+                  <p><strong><font color="#CC9999" size="2" face="Verdana, Arial, Helvetica, sans-serif">Old
+                         News: </font></strong><font color="#CCCCCC" size="2" face="Verdana, Arial, Helvetica, sans-serif">See
+                         our FX 2005 <a href="pics.html">pictures</a>. 
+                         Learn
+                         more about the <a href="changes.html">c</a></font><a href="changes.html"><font color="#CC9999" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#CCCCCC">hanges</font></font></a><font color="#CC9999" size="2" face="Verdana, Arial, Helvetica, sans-serif"><font color="#CCCCCC">                         to
+                  JACO, new events, new times, and more!</font></font></p>
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0" height="1">
+                    <tr> 
+                      <td bgcolor="#CCCCCC"></td>
+                    </tr>
+                  </table>
+                  <p><font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC">The 
+                    Japanese Animation Club of Orlando welcomes all net surfers 
+                    and runners from around the world. JACO is based on the Campus 
+                    of the <a href="http://www.ucf.edu">University of Central 
+                    Florida</a> located just outside Orlando. It's mission is 
+                    to make animation genre known as 'ANIME' more accessible to 
+                    the public. <br>
+                    <!-- <br>
+                    <br>
+                   JACO meets every 2nd and 4th Saturday of the month in room 
+                    101 of the Communications building on the Campus of the University 
+                    of Central Florida, from 7:00 pm - 12:00 am. We normally show 
+                    a feature and a number of series episodes. Check out our showing 
+                    schedule link, on the top of your screen. --></font> 
+                    <center>
+                      <font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC"><br>
+                      <br>
+                      <a href="map.jpg"> </a></font><font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC"> 
+                      <br>
+                      <strong>For more information on the club, <br>
+                      please contact JACO's President, <a href="president-jaco@jaco.org?subject=JACO">Jason 
+                      Sadeghi</a>.</strong></font> 
+                    </center>
+<p>
+  <!--  <font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC"><br>
+                    <br>
+                    Visitors to our corner of Anime Fandom.... <br>
+                    <br>
+                    </font> 
+                    <center>
+                      <font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC"> 
+                      <!-- BEGIN LE FASTCOUNTER CODE -->
+                      
+					  <!-- <a href="http://member.linkexchange.com/cgi-bin/fc/fastcounter-login?108528" target="_top"><img src="http://fastcounter.linkexchange.com/fastcounter?108528+217063" border=0 ></a> 
+                      <!-- END LEFASTCOUNTER CODE -->
+                      <!-- BEGIN LE FASTCOUNTER LINK -->
+                  <!--    <a href="http://www.fastcounter.com/fc-join" target="_top">LE FastCounter</a> 
+					  -->
+                      <!-- END LE FASTCOUNTER LINK -->
+                    <!-- <center>
+                      <font size="2" face="Arial, Helvetica, sans-serif" color="#CCCCCC">The 
+                      Japanese Animation Club of Orlando <br>
+                      P.O. Box 780555 <br>
+                      Orlando, FL 32878-0555 </font> 
+                    </center> -->
+					<br><p><font color="#CCCCCC" size="2" face="Arial, Helvetica, sans-serif"> 
+                    This page was designed by <a href="mailto:arotella@cfl.rr.com">Amanda 
+                    Rotella</a> </font> 
+                </td>
+                <td width="52" height="100%"></td>
+              </tr>
+            </table>
+	  <br><br>
+    </td>
+  </tr>
+  <tr valign=top>
+          <td width="219" height=100%>&nbsp;</td>
+        
+  </tr>
+</table>
+  </td>
+    <td width=25% bgcolor="#330000">&nbsp;</td>
+  </tr>
+</table>
+
+<map name="jaco"> 
+  <area shape="rect" coords="130,4,215,35" href="schedule.html" alt="Find out what we're showing at the meetings" title="Find out what we're showing at the meetings">
+  <area shape="poly" coords="19,63" href="#">
+  <area shape="poly" coords="18,62,12,11,93,14,141,50,130,106,100,135,50,123,34,104" href="home.html">
+</map>
+<map name="Map"> 
+  <area shape="rect" coords="5,4,79,36" href="chronicle.html" alt="Writings on the happenigns of JACO " title="Writings on the happenigns of JACO ">
+  <area shape="rect" coords="86,6,174,35" href="who.html" alt="Find out who runs the club" title="Find out who runs the club">
+  
+  <area shape="rect" coords="186,2,271,35" href="pics.html" alt="Photos from club outings and conventions" title="Photos from club outings and conventions">
+  <area shape="rect" coords="294,5,358,34" href="pjaco.html" alt="JACO's own fanzine" title="JACO's own fanzine">
+  <area shape="rect" coords="367,4,414,36" href="links.html" alt="Links to Club Members, Afiliates and Information on series we show" title="Links to Club Members, Afiliates and Information on series we show">
+  <area shape="rect" coords="424,7,500,34" href="http://www.jacoart.org" target="_blank">
+  <area shape="rect" coords="501,6,550,34" href="http://www.jacon.org" target="_blank" alt="JACO's own anime convention!" title="JACO's own anime convention!">
+</map>
+</body>
+</html><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Mu Epsilon Kappa Anime Club</title>
+<link rel="stylesheet" href="styles.css" type="text/css" />
+</head>
+<body>
+<div id="nav">
+	<ul>
+		<li class="selected" ><a href="http://www.orgs.ttu.edu/muepsilonkappa/" title="Home Page">Home</a></li>
+		<li><a href="http://www.orgs.ttu.edu/muepsilonkappa/rentals.html" title="Borrow from other members!">Rentals</a></li>
+		<li><a href="http://www.orgs.ttu.edu/muepsilonkappa/officer.html" title="Beware the Commander.">High Council</a></li>
+		<li><a href="http://www.orgs.ttu.edu/muepsilonkappa/mekconst.html" title="What we're all about.">Constitution</a></li>
+		<li><a href="http://www.orgs.ttu.edu/muepsilonkappa/resources.htm" title="For the inner Otaku.">Resources</a></li>
+		<li><a href="http://www.orgs.ttu.edu/muepsilonkappa/lexicon.html" title="Learn the jargon.">Lexicon</a></li>
+	</ul>
+</div>	
+<div id="header">
+	<h1>Mu Epsilon Kappa Anime</h1>
+	<p>Official Anime Club of Texas Tech University</p>
+</div>
+<div id="content">
+	<div id="page">
+		<h2><strong>Welcome to Mu Epsilon Kappa!</strong></h2>
+		<p></p>
+		<h3>What do we do?</h3>
+		<p>Watch anime! That's all we do, really. Wednesdays 7-10 and Saturdays 6-10, we watch anime. I'm also taking suggestions for other activities like a video game Saturday or DnD group. Just send me an e-mail and we'll talk!</p>
+		<h3>Where do you watch anime?</h3>
+		<p>The Student Union Building, usually. Unfortunately, due to university rules, we can't book more than three meetings at a time, so keep your eyes on the emails or the website.</p>
+		<h3>How do you decide what to watch?</h3>
+		<p>The first two meetings of the semester are dedicated to showcasing the new anime for the semester. We encourage everyone to bring in shows that fit the guidelines! We watch the first episode of each series and then vote on what to watch for the rest of the semester! We do our best to finish off every series, within reason, so you won't be left hanging.</p>
+		<h3>What are the guidelines for the shows to bring in?</h3>
+		<p>If a show is running in Japan and it is being fansubbed, bring the fansubs in. If a show has been licensed in America, but has not been released on DVD and you have fansubs, bring in the fansubs. If the show has been licensed in America and is out on DVD, bring the DVD. Apart from that, make sure there's no blatant sex. Violence and cursing are okay, but sex scenes aren't. If it can't be shown on FX, it can't be shown in anime club. Also, if a show is on American TV and everyone has seen it (Naruto, Bleach, Cowboy Bebop), refrain from bringing it in. We want to showcase stuff not everyone has seen.</p>
+		<h3>What if I have a short series or a movie?</h3>
+		<p>Great! On Saturdays, for the last hour, we usually have happy hour. This means you can bring in your short series or movie and we'll watch it. The happy hour schedule will be determined once all the anime has been voted in and a schedule can be made up.</p>
+		<p><i><b>What language do we watch anime in?</b></i></p>
+		<p>Traditionally, we've only watched shows in Japanese with English subtitles, however we're trying out two shows in English this semester--Nerima Daikon Brothers and xxxHolic.</p>
+		<h3>What do I have to do to join?</h3>
+		<p>Nothing. Not a thing. All you have to do is show up. We don't take attendance, this isn't a class. No dues, no fees, no nothin'. Just a bunch of people who have a mutual interest hanging out and enjoying themselves.</p>
+		<p><h2>Remember:</h2> All series brought to MEK that are licensed in America must be on their original DVDs.</p>
+		<p>&nbsp;</p>
+	</div>
+	<div id="sidebar">
+		<h4>About us</h4>
+		<p>Mu Epsilon Kappa Anime (aka "MEK") is a Japanese animation fan club at Texas Tech University.  Our purpose is to provide a safe, comfortable environment where anime fans from all over can come together and watch anime.  In addition to this, MEK also wishes to promote world peace through the sharing of popular culture.</p>
+		<h4>Meeting Locations</h4>
+		<ul>
+			<li>Wednesday September 8, 7pm - 10pm Electrical Engineering 217</li>
+			<li>Saturday September 11, 6pm - 10pm Escondido Theater</li>
+			<li>Wednesday September 15, 7pm - 10pm Escondido Theater</li>
+		</ul>
+		<h4>What's Playing:</h4>
+		<p><b>Wednesday</b></p>
+		<ul>
+			<li>7:00 - 7:30  xxxHolic</li>
+			<li>7:30 - 8:00	 xxxHolic</li>
+			<li>8:00 - 8:30	 Vandread</li>
+			<li>8:30 - 9:00	 Vandread</li>
+			<li>9:00 - 9:30	 Sake</li>
+			<li>9:30 - 10:00 Sake</li>
+		</ul>
+		<p><b>Saturday</b></p>
+		<ul>
+			<li>6:00 - 6:30	 Gankutsuou (Count of Monte Cristo)</li>
+			<li>6:30 - 7:00	 Gankutsuou (Count of Monte Cristo)</li>
+			<li>7:00 - 7:30	 Spice and Wolf</li>
+			<li>7:30 - 8:00	 Beck</li>
+			<li>8:00 - 8:30	 Beck</li>
+			<li>8:30 - 9:00	 Nerima Daikon Brothers</li>
+			<li>9:00 - 10:00 Happy Hour</li>
+		<p></p>
+		</ul>
+		<h4>Links</h4>
+		<ul>
+			<li><a href="http://www.ttu.edu" title="ttu.edu">Texas Tech University</a></li>
+			<li><a href="http://www.ttu.edu/campus/stuorgs.php" title="Other Groups">Student Organizations</a></li>
+			<li><a href="http://www.animenewsnetwork.com" title="Anime News Network">Anime News</a></li>
+			<li><a href="http://manga.com" title="manga.com">Manga</a></li>
+			<li><a href="http://www.spyka.co.uk" title="spyka web group">spyka Web Group</a></li>
+		</ul>
+	</div>
+	<div class="clear"></div>
+</div>
+<div id="footer">
+<p>&copy; 2008 mySite. Design: <a href="http://www.spyka.net" title="spyka Webmaster">spyka webmaster</a> available from <a href="http://www.justfreetemplates.com" title="free css templates">Just Free Templates</a>. Valid <a href="http://validator.w3.org/check/referer" title="valid XHTML strict">XHTML</a> and <a href="http://jigsaw.w3.org/css-validator/check/referer" title="CSS">CSS</a></p>
+<p>Page last updated September 12, 2010</p>
+</div>
+
+
+</body>
+</html>
+Trying URL http://www.yorku.ca/anime/...
+ua
+ua
+ua
+ua
+Trying URL http://www.emeraldtokyo.com/...
+<html>
+<head> <title>YAMA Anime and Manga Association</title>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta name="keywords" content="anime, anime club, york, york university, manga, university anime club, anime showing, anime showings, anime toronto, toronto, cnanime, animenorth, anime convention, anime convention ontario, anime canada, anime showings,  anime club toronto">
+<meta name="description" content="YAMA is the anime, manga, and semi-gaming club at York University in Toronto, Ontario, Canada.">
+<link href="style_1.css" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.ico">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33881960-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+
+<body>
+
+<table bgcolor="#252525" align="center" width="860" height="1500" cellpadding="0" cellspacing="5" border="0">
+	<tr>
+		<td background="images/banner1.jpg" background-repeat="no-repeat" colspan="5" height="120" width="820">
+		<p><a href="http://www.facebook.com/YamaAnimeAndMangaAssociation" target="_blank"><img src="images/icon_fb.png" alt="Find us on Facebook" border="0"></a><a href="http://z7.invisionfree.com/YAMA_HQ/" target="_blank"><img src="images/icon_forums.png" alt="YAMA Forums" border="0"></a><a href="http://www.youtube.com/" target="_blank"><img src="images/icon_youtube.png" alt="YAMA's YouTube Channel" boder="0"></a></br></br>
+		<a href="http://www.operationanime.com" target="_new"><img src="images/icon_oa.png" alt="Operation Anime" border="0"></a><a href="http://snest.blogspot.com" target="_blank"><img src="images/icon_snest.png" alt="The Squirrel's Nest" border="0"></a><a href="http://myanimelist.net/animelist/YorkU_YAMA" target="_blank"><img src="images/icon_mal.png" alt="YAMA's my anime list" border="0"></a></p>
+		</td>
+	</tr>
+<!--"TOP NAVIGATION"-->
+	<tr>
+		<td colspan="5">
+		<br>
+		<center><a href="main.html" target="frame"><img src="images/nav/nav_1.png" alt="Home" border="0"></a><a href="about.html" target="frame"><img src="images/nav/nav_2.png" alt="About Us" border="0"></a><a href="membership.html" target="frame"><img src="images/nav/nav_5.png" alt="Membership Information" border="0"></a><a href="showings.html" target="frame"><img src="images/nav/nav_6.png" alt="Showing Schedules" border="0"><a href="library.html" target="frame"><img src="images/nav/nav_7.png" alt="Library" border="0"></a><a href="events.html" target="frame"><img src="images/nav/nav_8.png" alt="Events" border="0"></a><a href="pictures.html" target="frame"><img src="images/nav/nav_9.png" alt="Pictures" border="0"></a><a href="contact.html" target="frame"><img src="images/nav/nav_3.png" alt="Contact Us" border="0"></a><a href="links.html" target="frame"><img src="images/nav/nav_4.png" alt="Links" border="0"></a></center>
+		<br>
+		</td>
+	</tr>
+	<tr>
+		<td rowspan="4" width="20"></td>
+		<td bgcolor="444444" width="225">
+
+
+			<center>
+	<IFRAME name="events" src="events.html" width=215 height=400 marginwidth=0 marginheight=0 frameborder=0 scrolling=no></IFRAME>
+			</center>
+	<p><font color="#fff200">>>> </font>
+		<a href="events.html" target="frame">more events</a></p>
+
+
+		</td>
+		<td rowspan="4" width="20"></td>
+		<td rowspan="4" width="575">
+
+
+	<IFRAME name="frame" src="main.html" width=575 height=100% marginwidth=0 marginheight=0 frameborder=0 scrolling=auto></IFRAME>
+
+
+		</td>
+		<td rowspan="4" width="20"></td>
+	</tr>
+	<tr>
+		<td width="225">
+
+
+		<br>
+	<p><img src="images/nav/title_anime2.png" alt="Fall Anime Line-Up" border="0"></p>
+	<p>
+Slot 1:<a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=3633" target="_new"> Oban Star Racers </a><br><br>	
+Slot 2:<a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13993" target="_new"> Tsuritama</a><br><br>
+	Slot 3:<a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=12198" target="_new">Tiger and Bunny  </a><br><br>
+Slot 4:<a href="http://www.animenewsnetwork.com/encyclopedia/anime.php?id=13258" target="_new">Another</a>
+  	<p><font color="#fff200">>>> </font>
+		<a href="showings.html" target="frame">showing schedules</a></p>
+
+
+		</td>
+	</tr>
+	<tr>
+		<td width="225" height="200">
+		</td>
+	</tr>
+	<tr>
+		<td width="225">
+
+
+	<br>
+	<p><img src="images/nav/title_archives.png" alt="Archives" border="0"></p>
+	News:<br><a href="recycle/updates/2012.html" target="frame">2012</a> |
+		<a href="recycle/updates/2011.html" target="frame">2011</a> | <a href="recycle/updates/2010.html" target="frame">2010</a> <br> <a href="recycle/updates/2009.html" target="frame">2009</a>
+		<a href="recycle/updates/2008.html" target="frame">2008</a> | <a href="recycle/updates/2007.html" target="frame">2007</a> | <a href="recycle/updates/2006.html" target="frame">2006</a><br><br>
+	Events:<br>
+		<a href="recycle/events/2012.html" target="frame">2012</a> | <a href="recycle/events/2011.html" target="frame">2011</a> | <a href="recycle/events/2010.html" target="frame">2010</a> | <a href="recycle/events/2009.html" target="frame">2009</a><br><br>
+		<a href="recycle/executives.html" target="frame">Executives</a><br><br>
+	Schedules:<br>
+		<a href="recycle/schedules/2011.html" target="frame">2011</a> | <a href="recycle/schedules/2009-2010.html" target="frame">2010 & 2009</a><br><br>
+		<a href="sitemap.html" target="frame">Sitemap</a><br><br>
+
+
+		</td>
+	</tr>
+	<tr>
+		<td colspan="5" width="860" height="30">
+			<center><sub>&copy 2011 YAMA Anime and Manga Association. All rights reserved.<br>
+			YAMA is a student organization at <a href="http://www.yorku.com" target="_new">York University</a> and is open to all members of the public.<br>
+			Thank you <a href="http://www.yorku.ca/bethune/" target="_new">Norman Bethune College</a> for being our host college.<br>
+			Website banner image by <a href="http://limited-access.deviantart.com" target="_blanK">Nathan Chin</a>. Website designed by Jocelyn Cheung.</sub></center>
+		</td>
+	</tr>
+</table>
+
+
+</body>
+</html><!DOCTYPE html>
+<html dir="ltr" lang="en" prefix="og: http://ogp.me/ns#" >
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title> - Online Comics, Cartoons, Artwork, and Games!</title>
+	<link rel="stylesheet" href="http://www.emeraldtokyo.com/wp-content/themes/comicpress/style.css" type="text/css" media="screen" />
+	<link rel="pingback" href="http://www.emeraldtokyo.com/xmlrpc.php" />
+	<meta name="ComicPress" content="2.9.4" />
+<link rel="alternate" type="application/rss+xml" title=" &raquo; Feed" href="http://www.emeraldtokyo.com/?feed=rss2" />
+<link rel="alternate" type="application/rss+xml" title=" &raquo; Comments Feed" href="http://www.emeraldtokyo.com/?feed=comments-rss2" />
+<link rel='stylesheet' id='ext-profile-css'  href='http://www.emeraldtokyo.com/wp-content/plugins/extended-profile/profile.css?ver=3.4' type='text/css' media='all' />
+<link rel='stylesheet' id='navstyle-css'  href='http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/nav/box/navstyle.css?ver=3.4' type='text/css' media='all' />
+<link rel='stylesheet' id='NextGEN-css'  href='http://www.emeraldtokyo.com/wp-content/plugins/nextgen-gallery/css/nggallery.css?ver=1.0.0' type='text/css' media='screen' />
+<link rel='stylesheet' id='shutter-css'  href='http://www.emeraldtokyo.com/wp-content/plugins/nextgen-gallery/shutter/shutter-reloaded.css?ver=1.3.4' type='text/css' media='screen' />
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-includes/js/jquery/jquery.js?ver=1.7.2'></script>
+<script type='text/javascript' src='http://connect.facebook.net/en_US/all.js?ver=3.4#xfbml=1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var shutterSettings = {"msgLoading":"L O A D I N G","msgClose":"Click to Close","imageCount":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/plugins/nextgen-gallery/shutter/shutter-reloaded.js?ver=1.3.3'></script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/plugins/nextgen-gallery/js/jquery.cycle.all.min.js?ver=2.9995'></script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/plugins/nextgen-gallery/js/ngg.slideshow.min.js?ver=1.06'></script>
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js?ver=2.2'></script>
+
+<script type="text/javascript" charset="utf-8">
+
+	/**
+	 * Courtesy of Kimili Flash Embed - Version 2.3
+	 * by Michael Bester - http://kimili.com
+	 */
+
+	(function(){
+		try {
+			// Disabling SWFObject's Autohide feature
+			if (typeof swfobject.switchOffAutoHideShow === "function") {
+				swfobject.switchOffAutoHideShow();
+			}
+		} catch(e) {}
+	})();
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.emeraldtokyo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.emeraldtokyo.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 3.4" />
+<meta name="framework" content="Alkivia Framework 0.8" />
+<!-- <meta name="NextGEN" version="1.9.3" /> -->
+<!-- Wordbooker generated tags --><meta property="og:locale" content="en_US" /> <meta property="og:site_name" content=" - Online Comics, Cartoons, Artwork, and Games!" /> <meta property="og:type" content="blog" /> <meta name="description" content="Online Comics, Cartoons, Artwork, and Games!" /> <meta property="og:description" content="Online Comics, Cartoons, Artwork, and Games!" /> <!-- End Wordbooker og tags -->
+<link rel="stylesheet" href="http://www.emeraldtokyo.com/wp-content/plugins/youtube-simplegallery/youtube_simplegallery.css" type="text/css" media="screen" /><style type="text/css">
+	<!-- 
+		.youtube_gallery div { width: 200px !important; } 
+		.youtube_gallery_caption { text-align: center;
+font-size: 1.2em;
+font-style: italic; } 
+		.youtube_gallery_item .ytsg_play { width: 80px; height: 80px; left: 60px; top: 35px; };
+	-->
+	</style>
+<script type="text/javascript"> 
+jQuery(document).ready(function($) {
+	totalwidth = ($(".youtube_gallery").width());
+	numberdivs = totalwidth/200;
+	numberdivs = (numberdivs < 0 ? -1 : 1) * Math.floor(Math.abs(numberdivs))
+	spacing = totalwidth - (200*numberdivs);
+	$(".youtube_gallery").css({ 'margin-left' : (spacing/2), 'margin-right' : (spacing/2) });
+});
+</script>
+			<style type="text/css">
+			#header {
+			width: 980px; 
+			/* height: 120px; */
+			background: url(http://www.emeraldtokyo.com/wp-content/uploads/2011/06/cropped-WPTop.jpg) top center no-repeat;
+			overflow: hidden;
+			}
+			#header h1 { padding: 0; }
+			#header h1 a { 
+			display: block;
+			width: 980px;
+			height: 119px;
+			text-indent: -9999px;
+			}
+			#header .description { display: none; }
+			</style>
+		</head>
+<body class="home blog user-guest unknown pm night evening mon layout-3c">
+<div id="page-wide-wrap"><!-- Wraps outside the site width -->
+	<div id="page-wide"><!-- Defines entire site width - Ends in Footer -->
+<div id="header">
+		<h1><a href="http://www.emeraldtokyo.com"></a></h1>
+	<div class="description">Online Comics, Cartoons, Artwork, and Games!</div>
+		<div class="clear"></div>
+</div>
+		<div id="menubar-wrapper">
+						<div class="menunav">
+								<div class="menunav-search">
+					<form method="get" id="searchform" action="http://www.emeraldtokyo.com">
+	<div>
+		<input type="text" value="Search..." name="s" id="s-search" onfocus="this.value=(this.value=='Search...') ? '' : this.value;" onblur="this.value=(this.value=='') ? 'Search...' : this.value;" />
+		<button type="submit">&raquo;</button>
+	</div>
+	<div class="clear"></div>
+</form>
+				</div>
+																	<a href="http://www.emeraldtokyo.com/?feed=rss2" title="RSS Feed" class="menunav-rss">RSS</a>
+										</div>
+			<div class="menu"><ul id="menu-navigation" class="menu"><li id="menu-item-251" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item current_page_item menu-item-home menu-item-251"><a href="http://www.emeraldtokyo.com/">Home</a></li>
+<li id="menu-item-252" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-252"><a title="Support us!" href="http://www.emeraldtokyo.com/?page_id=166">Shop</a></li>
+<li id="menu-item-268" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-268"><a title="The Web Comics!" href="http://www.emeraldtokyo.com/?page_id=258">Comics</a>
+<ul class="sub-menu">
+	<li id="menu-item-614" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-614"><a href="http://www.emeraldtokyo.com/?page_id=258">All Comics</a></li>
+	<li id="menu-item-591" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-591"><a href="http://www.emeraldtokyo.com/?cat=7">Legends of Memorandum</a></li>
+	<li id="menu-item-603" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-603"><a href="http://www.emeraldtokyo.com/?cat=106">The Adventures of Chibi Chrissy</a></li>
+	<li id="menu-item-589" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-589"><a href="http://www.emeraldtokyo.com/?cat=13">Miscellaneous</a></li>
+	<li id="menu-item-588" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-588"><a href="http://www.emeraldtokyo.com/?cat=5">Sketchbooks</a></li>
+</ul>
+</li>
+<li id="menu-item-254" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-254"><a href="http://www.emeraldtokyo.com/?page_id=150">Gallery</a>
+<ul class="sub-menu">
+	<li id="menu-item-540" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-540"><a href="http://www.emeraldtokyo.com/?page_id=535">Video Gallery</a></li>
+	<li id="menu-item-255" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-255"><a href="http://www.emeraldtokyo.com/?page_id=125">Flash Gallery</a></li>
+	<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-542"><a href="http://www.emeraldtokyo.com/?page_id=516">Traditional Art</a></li>
+	<li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="http://www.emeraldtokyo.com/?page_id=525">Digital Coloring</a></li>
+	<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="http://www.emeraldtokyo.com/?page_id=511">3D Gallery</a></li>
+	<li id="menu-item-752" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-752"><a href="http://www.emeraldtokyo.com/?page_id=747">Internet Memes</a></li>
+	<li id="menu-item-278" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-278"><a href="http://www.emeraldtokyo.com/?page_id=276">Icons</a></li>
+</ul>
+</li>
+<li id="menu-item-360" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-360"><a href="http://www.emeraldtokyo.com/?page_id=357">Resources</a>
+<ul class="sub-menu">
+	<li id="menu-item-253" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-253"><a href="http://www.emeraldtokyo.com/?page_id=153">Tutorials</a></li>
+	<li id="menu-item-368" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-368"><a href="http://www.emeraldtokyo.com/?page_id=363">Comic Templates</a></li>
+	<li id="menu-item-367" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-367"><a href="http://www.emeraldtokyo.com/?page_id=365">Screentones</a></li>
+	<li id="menu-item-369" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-369"><a href="http://www.emeraldtokyo.com/?page_id=361">Brushes and Textures</a></li>
+	<li id="menu-item-386" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-386"><a href="http://www.emeraldtokyo.com/?page_id=372">Help and Info</a></li>
+</ul>
+</li>
+<li id="menu-item-356" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-356"><a href="http://www.emeraldtokyo.com/?page_id=354">Affiliate Program</a>
+<ul class="sub-menu">
+	<li id="menu-item-348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-348"><a title="Our Friends!" href="http://www.emeraldtokyo.com/?page_id=346">Affiliates</a></li>
+	<li id="menu-item-256" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-256"><a title="Friends?" href="http://www.emeraldtokyo.com/?page_id=122">Link to Us</a></li>
+</ul>
+</li>
+<li id="menu-item-257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-257"><a title="Meet the Staff!" href="http://www.emeraldtokyo.com/?page_id=2">About</a></li>
+</ul></div>						<div class="clear"></div>
+		</div>
+	<div id="content-wrapper">
+			<div id="subcontent-wrapper">
+		<div id="sidebar-left">
+			<div class="sidebar">
+		<div id="tip_jar-3" class="widget widget_tip_jar">
+<div class="widget-content">
+<h2 class="widgettitle"> </h2>
+<p class="widget_tip_desc"> </p><p><center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="H7XZ3GHMUUFH8">
+<input type="image" src="images/donate.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form><br><a href="http://www.facebook.com/pages/Emerald-Angel-Comics/148057668549320"><img src="images/fanbtn.PNG"></a><p><a href="https://twitter.com/intent/follow?original_referer=http%3A%2F%2Fwww.emeraldtokyo.com%2F&region=follow&screen_name=EmeraldTokyo&source=followbutton&variant=1.0"><img src="images/follow.gif"></a><br><br><a href="http://www.newgrounds.com/refer/emeraldtokyo"><img src="images/emerald.jpg"></a>
+</center></p></div>
+</div>
+<div id="fsmwidget-3" class="widget fsmWidgetBox">
+<div class="widget-content">
+<h2 class="widgettitle">Ask Me Anything</h2>
+<iframe src="http://www.formspring.me/widget/view/EmeraldTokyo?&size=medium&bgcolor=%23ffffff&fgcolor=%23000000" frameborder="0" scrolling="no" width="180px" height="275px" style="border:none;"><a href="http://www.formspring.me/EmeraldTokyo">http://www.formspring.me/EmeraldTokyo</a></iframe></div>
+</div>
+<div id="comicpress_latest_comics_widget-3" class="widget comicpress_latest_comics_widget">
+<div class="widget-content">
+<h2 class="widgettitle">Latest Comics</h2>
+		<ul>
+				</ul>
+		</div>
+</div>
+<div id="search-3" class="widget widget_search">
+<div class="widget-content">
+<h2 class="widgettitle">Search</h2>
+<form method="get" id="searchform" action="http://www.emeraldtokyo.com">
+	<div>
+		<input type="text" value="Search..." name="s" id="s-search" onfocus="this.value=(this.value=='Search...') ? '' : this.value;" onblur="this.value=(this.value=='') ? 'Search...' : this.value;" />
+		<button type="submit">&raquo;</button>
+	</div>
+	<div class="clear"></div>
+</form>
+</div>
+</div>
+<div id="linkcat-2" class="widget widget_links">
+<div class="widget-content">
+<h2 class="widgettitle">Links</h2>
+
+	<ul class='xoxo blogroll'>
+<li><a href="http://emeraldtokyo.deviantart.com/">DeviantART</a></li>
+<li><a href="http://www.facebook.com/pages/Emerald-Angel-Comics/148057668549320">Facebook</a></li>
+<li><a href="http://www.youtube.com/user/EmeraldTokyo">YouTube</a></li>
+
+	</ul>
+</div>
+</div>
+
+<div id="archives-3" class="widget widget_archive">
+<div class="widget-content">
+<h2 class="widgettitle">Archives</h2>
+		<ul>
+			<li><a href='http://www.emeraldtokyo.com/?m=201206' title='June 2012'>June 2012</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201205' title='May 2012'>May 2012</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201201' title='January 2012'>January 2012</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201112' title='December 2011'>December 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201111' title='November 2011'>November 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201110' title='October 2011'>October 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201109' title='September 2011'>September 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201107' title='July 2011'>July 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201106' title='June 2011'>June 2011</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201002' title='February 2010'>February 2010</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=201001' title='January 2010'>January 2010</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200911' title='November 2009'>November 2009</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200910' title='October 2009'>October 2009</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200903' title='March 2009'>March 2009</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200902' title='February 2009'>February 2009</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200901' title='January 2009'>January 2009</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200812' title='December 2008'>December 2008</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200807' title='July 2008'>July 2008</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200806' title='June 2008'>June 2008</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200805' title='May 2008'>May 2008</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200803' title='March 2008'>March 2008</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200709' title='September 2007'>September 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200708' title='August 2007'>August 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200707' title='July 2007'>July 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200706' title='June 2007'>June 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200705' title='May 2007'>May 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200703' title='March 2007'>March 2007</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200611' title='November 2006'>November 2006</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200507' title='July 2005'>July 2005</a></li>
+	<li><a href='http://www.emeraldtokyo.com/?m=200502' title='February 2005'>February 2005</a></li>
+		</ul>
+</div>
+</div>
+<div id="comicpress_control_panel_widget-3" class="widget comicpress_control_panel_widget">
+<div class="widget-content">
+<h2 class="widgettitle">Control Panel</h2>
+
+		<form name="loginform" id="loginform" action="http://www.emeraldtokyo.com/wp-login.php" method="post">
+			
+			<p class="login-username">
+				<label for="user_login">Username</label>
+				<input type="text" name="log" id="user_login" class="input" value="" size="20" tabindex="10" />
+			</p>
+			<p class="login-password">
+				<label for="user_pass">Password</label>
+				<input type="password" name="pwd" id="user_pass" class="input" value="" size="20" tabindex="20" />
+			</p>
+			
+			<p class="login-remember"><label><input name="rememberme" type="checkbox" id="rememberme" value="forever" tabindex="90" /> Remember Me</label></p>
+			<p class="login-submit">
+				<input type="submit" name="wp-submit" id="wp-submit" class="button-primary" value="Log In" tabindex="100" />
+				<input type="hidden" name="redirect_to" value="http://www.emeraldtokyo.com/" />
+			</p>
+			
+		</form>			<ul>
+							<li><a href="http://www.emeraldtokyo.com/wp-register.php">Register</a></li>
+						<li><a href="http://www.emeraldtokyo.com/wp-login.php?action=lostpassword">Recover password</a></li>
+			</ul>
+				</div>
+</div>
+<div id="calendar-3" class="widget widget_calendar">
+<div class="widget-content">
+<h2 class="widgettitle">&nbsp;</h2>
+<div id="calendar_wrap"><table id="wp-calendar">
+	<caption>December 2012</caption>
+	<thead>
+	<tr>
+		<th scope="col" title="Monday">M</th>
+		<th scope="col" title="Tuesday">T</th>
+		<th scope="col" title="Wednesday">W</th>
+		<th scope="col" title="Thursday">T</th>
+		<th scope="col" title="Friday">F</th>
+		<th scope="col" title="Saturday">S</th>
+		<th scope="col" title="Sunday">S</th>
+	</tr>
+	</thead>
+
+	<tfoot>
+	<tr>
+		<td colspan="3" id="prev"><a href="http://www.emeraldtokyo.com/?m=201206" title="View posts for June 2012">&laquo; Jun</a></td>
+		<td class="pad">&nbsp;</td>
+		<td colspan="3" id="next" class="pad">&nbsp;</td>
+	</tr>
+	</tfoot>
+
+	<tbody>
+	<tr>
+		<td colspan="5" class="pad">&nbsp;</td><td>1</td><td>2</td>
+	</tr>
+	<tr>
+		<td id="today">3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td>
+	</tr>
+	<tr>
+		<td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td>
+	</tr>
+	<tr>
+		<td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td>
+	</tr>
+	<tr>
+		<td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td>
+	</tr>
+	<tr>
+		<td>31</td>
+		<td class="pad" colspan="6">&nbsp;</td>
+	</tr>
+	</tbody>
+	</table></div></div>
+</div>
+		</div>
+	</div>								<div id="content" class="narrowcolumn">
+						<div id="sidebar-blog" class="customsidebar ">
+	<div id="text-5" class="widget widget_text">
+<div class="widget-content">
+<h2 class="widgettitle">Our Vistors are From:</h2>
+			<div class="textwidget"><center><a href="http://m.maploco.com/details/7b72dmq2"><img style="border:0px;" src="http://www.maploco.com/vmap/3995210.png" alt="Locations of Site Visitors" title="Locations of Site Visitors"/></a></center></div>
+		</div>
+</div>
+<div id="whitcounter-3" class="widget widget_whitcounter">
+<div class="widget-content">
+<div class="wordpress-hit-counter" align="center"><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/0.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/6.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/5.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/5.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/7.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/0.gif'><img src='http://www.emeraldtokyo.com/wp-content/plugins/wordpress-hit-counter/styles/Digital/grvygrn/2.gif'></div></div>
+</div>
+</div>
+	<div id="blogheader"></div>
+						<div class="blogindex">
+									<div class="post-744 post type-post status-publish format-standard hentry category-sitenews uentry post-blog postonpage-1 odd post-author-emeraldadmin">
+									<div class="post-content">
+				<div class="post-info">
+																			<div class="post-mood post-confused"><img src="http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/moods/default/confused.png" alt="confused" title="confused" /></div>
+								<div class="post-text">
+						<h2 class="post-title"><a href="http://www.emeraldtokyo.com/?p=744">So &#8230; down again</a></h2>
+<span class="post-author">by <a href="http://www.emeraldtokyo.com/?author=1">EmeraldTokyo</a></span>
+<span class="posted-on">on&nbsp;</span><span class="post-date">June 26, 2012</span>
+<span class="posted-at">at&nbsp;</span><span class="post-time">1:27 pm</span>
+<div class="post-cat">Posted In: <a href="http://www.emeraldtokyo.com/?cat=1" title="View all posts in Website News" rel="category">Website News</a></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="entry">
+					<p>Now, I updated the software running the website and all the comics went down.</p>
+<p>Funny thing is they are there, but they&#8217;re not showing up. So now I have to rework the comics with a different layout. This is going to take awhile.</p>
+<p>Luv,</p>
+<p>Chrissy.</p>
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+								<div class="post-extras">
+					<div class="post-tags"></div>
+								<div class="comment-link">
+				<a href="http://www.emeraldtokyo.com/?p=744#respond" title="Comment on So &#8230; down again"><span class="comment-balloon comment-balloon-empty">&nbsp;</span> Comment </a>			</div>
+													<div class="clear"></div>
+				</div>
+															</div>
+					</div>
+								<div class="post-737 post type-post status-publish format-standard hentry category-sitenews uentry post-blog postonpage-2 even post-author-emeraldadmin">
+									<div class="post-content">
+				<div class="post-info">
+																			<div class="post-mood post-fire"><img src="http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/moods/default/fire.png" alt="fire" title="fire" /></div>
+								<div class="post-text">
+						<h2 class="post-title"><a href="http://www.emeraldtokyo.com/?p=737">Advertizing in Comments?</a></h2>
+<span class="post-author">by <a href="http://www.emeraldtokyo.com/?author=1">EmeraldTokyo</a></span>
+<span class="posted-on">on&nbsp;</span><span class="post-date">May 19, 2012</span>
+<span class="posted-at">at&nbsp;</span><span class="post-time">2:37 am</span>
+<div class="post-cat">Posted In: <a href="http://www.emeraldtokyo.com/?cat=1" title="View all posts in Website News" rel="category">Website News</a></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="entry">
+					<p>Shame shame shame! I caught a few people trying to spam their own websites on mine in the comments sections of completely unrelated news posts.</p>
+<p>This will not be tolerated. I have things set to where I have to approve the comments first before they are seen publicly. So, you&#8217;re wasting your stinking time even typing them up.</p>
+<p>If you&#8217;re an art related website and you wish to trade links with me, you can contact me via facebook or one of the other sites I frequent. You can send me a private message there to talk to me.</p>
+<p>If you&#8217;re only interested in spamming &#8230; find someplace else.</p>
+<p>Luv,<br />
+Chrissy.</p>
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+								<div class="post-extras">
+					<div class="post-tags"></div>
+								<div class="comment-link">
+				<a href="http://www.emeraldtokyo.com/?p=737#respond" title="Comment on Advertizing in Comments?"><span class="comment-balloon comment-balloon-empty">&nbsp;</span> Comment </a>			</div>
+													<div class="clear"></div>
+				</div>
+															</div>
+					</div>
+								<div class="post-729 post type-post status-publish format-standard hentry category-sitenews uentry post-blog postonpage-3 odd post-author-emeraldadmin">
+									<div class="post-content">
+				<div class="post-info">
+																			<div class="post-mood post-pwnburn"><img src="http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/moods/default/pwnburn.png" alt="pwnburn" title="pwnburn" /></div>
+								<div class="post-text">
+						<h2 class="post-title"><a href="http://www.emeraldtokyo.com/?p=729">EAC is going Dark on Jan 18th</a></h2>
+<span class="post-author">by <a href="http://www.emeraldtokyo.com/?author=1">EmeraldTokyo</a></span>
+<span class="posted-on">on&nbsp;</span><span class="post-date">January 15, 2012</span>
+<span class="posted-at">at&nbsp;</span><span class="post-time">6:01 pm</span>
+<div class="post-cat">Posted In: <a href="http://www.emeraldtokyo.com/?cat=1" title="View all posts in Website News" rel="category">Website News</a></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="entry">
+					<p>Emerald Angel Entertainment/Comics and all our related pages will be going dark on January 18th in protest of SOPA.</p>
+<p>I understand why piracy is a problem. but, this bill is poorly written and threatens all of the internet on various levels. The number one reason is, if a complaint is filed against any website for infringing copyrights &#8230; there&#8217;s no need of any proof! The website under scrutiny will be shut down. PERIOD! This means, any little jerk off with a chip on their shoulder can run around and make false claims if they want and there&#8217;s nothing in place to stop them.</p>
+<p>The number two reason this is a horrible bill is because all fan artists out there will no longer be able to sketch and post fan art of their favorite Marvel, DC, Disney, or whatever characters without permission from the original creators. The websites the fan art is posted on will be shut down &#8230; not just the offending piece of art. How ridiculous is this?</p>
+<p>Of course, I&#8217;ll have to yank all my fan art if this passes. However, once my comic series are established, I&#8217;ll post a Public Notice on a page that automatically gives written permission to ALL my fans to draw EAC characters as long as they don&#8217;t sell or profit from them. If any company out there like Marvel, DC, or whatever respects their fans, they would do the same thing.</p>
+<p>Of course, SOPA needs to go down in flames and the entire bill needs to be rewritten. I&#8217;d like to protect my copyrights, but not at the extent of throwing a 5 year old in jail for sticking a scribble of one of my characters on their fridge. I know it&#8217;s probably not THAT bad &#8230; but it&#8217;s close!</p>
+<p>So, don&#8217;t be surprised if we are missing in action on the 18th. We aren&#8217;t the only ones going black either. Here&#8217;s a list of websites going dark on the 18th on NLB&#8217;s website. The Cheezburger Network and Newgrounds are among those going dark. <a href="http://www.nlb-creations.com/2012/01/13/websites-confirmed-for-the-jan-18-blackout-protesting-sopa/" title="Websites Confirmed for the Jan 18 Blackout Protesting SOPA | NLB Creations" target="_blank">Websites Confirmed for the Jan 18 Blackout Protesting SOPA | NLB Creations</a></p>
+<p>Luv,<br />
+Chrissy.</p>
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+								<div class="post-extras">
+					<div class="post-tags"></div>
+								<div class="comment-link">
+				<a href="http://www.emeraldtokyo.com/?p=729#respond" title="Comment on EAC is going Dark on Jan 18th"><span class="comment-balloon comment-balloon-empty">&nbsp;</span> Comment </a>			</div>
+													<div class="clear"></div>
+				</div>
+															</div>
+					</div>
+								<div class="post-725 post type-post status-publish format-standard hentry category-personal uentry post-blog postonpage-4 even post-author-emeraldadmin">
+									<div class="post-content">
+				<div class="post-info">
+																			<div class="post-mood post-sleep"><img src="http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/moods/default/sleep.png" alt="sleep" title="sleep" /></div>
+								<div class="post-text">
+						<h2 class="post-title"><a href="http://www.emeraldtokyo.com/?p=725">Here I am, being creative at 1AM!</a></h2>
+<span class="post-author">by <a href="http://www.emeraldtokyo.com/?author=1">EmeraldTokyo</a></span>
+<span class="posted-on">on&nbsp;</span><span class="post-date">January 9, 2012</span>
+<span class="posted-at">at&nbsp;</span><span class="post-time">1:42 am</span>
+<div class="post-cat">Posted In: <a href="http://www.emeraldtokyo.com/?cat=17" title="View all posts in Personal Blogging" rel="category">Personal Blogging</a></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="entry">
+					<p>*squeals with excitement* I&#8217;m up at 1AM and I&#8217;m OH SO HAPPY! HAP HAP HAPPY!</p>
+<p>Ok, I&#8217;ll calm down and tell you why. I have been working non-stop this week on 3D Backgrounds for my comic series. Yeah, I&#8217;m better at modeling than drawing buildings in perspective. Plus, it takes less time to model my stuff and take screenshots for backgrounds. That way once the model is finished, I just have to render the scene for the background, toss my characters INTO this nice 3D perspective and BING! Next scene!</p>
+<p>Now, I don&#8217;t have a lot of money &#8230; in fact &#8230; I&#8217;m as poor as you expect a dirt poor artist to get. I haggle at Goodwill that&#8217;s how poor I am right now.</p>
+<p>Anyway, I digressed. The fact of the matter is a lot of 3D Programs out there sure aren&#8217;t cheap. Unless you&#8217;re a hard core penny pincher and you sniff out the free stuff. So, not long ago I ran into Google Sketchup. The regular version is free &#8230; the pro version costs a little. But, right now I only need the free version.</p>
+<p>It&#8217;s insanely easy to model with &#8230; beats Studio Max in how quick it is to model with and I like that. I hated Max in school. In fact I hated it so much I swore off 3D modeling as any part of my future whatsoever. Enter &#8230; Sketchup &#8230;</p>
+<p>I saw a simple tutorial while messing around on YouTube and my jaw dropped. That easy huh? Then saw some tutorials about how to export the models as line art for comic book backgrounds. I was intrigued seeing as how drawing backgrounds was my weak point and I got the program. I messed with it a little bit. Did a few models. Made a 3D Tardis from Dr. Who as a kinda gift for Mark. <img src='http://www.emeraldtokyo.com/wp-includes/images/smilies/icon_biggrin.gif' alt=':D' class='wp-smiley' /> </p>
+<p>See below</p>
+<p><img src="http://fc06.deviantart.net/fs71/i/2011/217/2/9/3d_tardis_finished_by_emeraldtokyo-d45l3g8.png" alt="3D Tardis on DA" /></p>
+<p>And, well then I got so busy with other things and got down on myself &#8230; (Yes, even with my ego I do self loath at times) and kinda quit for awhile. But, for the heck of it I started modeling Chrissy&#8217;s castle for my comics series. I figured, why not? Got so slap happy with it I decided, why just export it as line art to color later? This stuff looks so good I can use it with the colors, shading, shadows, and textures! It&#8217;s awesome! And, it&#8217;d save a lot of time too. Especially since I don&#8217;t wanna pay a colorist to help with line art. Since no one was helping me anyway even if I flashed cash at them. Ya jerks.</p>
+<p>Anyway, I&#8217;ve been having a blast. I have the castle almost complete. It&#8217;s looking nice. Mark says it&#8217;s beautiful. As a perfectionist I don&#8217;t think I can say that til I&#8217;m done with it. I was working on some of the indoor stuff when I realized &#8230; *GASP* &#8230; SketchuTrying URL http://www.neoanime.org/...
+p does not have something Max has. Something vital to my backgrounds &#8230; lights! There&#8217;s no light sources! Only the sun for the shadows. I saw a few tutorials on how to prevent the ceiling of the model from casting a shadow to let the sunlight in &#8230; but that doesn&#8217;t help me with lamps, light-bulbs, campfires, candles, magic spells blasting everything within a ten mile radius, ya know &#8230; that sort of thing. So, I did some more searching &#8230; and found a program that works with Sketchup that costs &#8230; $800 bucks! Yeah sure, there&#8217;s a 30 day trial version &#8230; and I could pirate &#8230; but why risk my freedom? I am now up at 1AM doing research into trying to find something free that does what I need. And, via the Ruby Scripts with Sketchup I FOUND IT! A free ray-tracing rendering program called POV-Ray! Oh boy, the learning curve! Took me all of an hour to figure this one out. I&#8217;m ashamed. Shoulda been instant &#8230; but I am tired &#8230; yeah I&#8217;ll blame it on that.</p>
+<p>Anyway, there&#8217;s a Ruby script that works with POV-Ray called SU2POV. So I downloaded the ruby script and after being frustrated for some time because it didn&#8217;t set up in the folder correctly so it didn&#8217;t even show in the plugin&#8217;s drop down menu &#8230; ergh &#8230; I got it to work. Downloaded and installed POV-Ray and it&#8217;s BEAUTIFUL! I got it working after a little bit of tutorials reading and it renders night scenes with reflections and everything! I&#8217;m so excited now I can&#8217;t sleep!</p>
+<p>I&#8217;m going to be up all night long working on this! Eeeeeeee!!!</p>
+<p>Luv,<br />
+Chrissy.</p>
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+								<div class="post-extras">
+					<div class="post-tags"></div>
+								<div class="comment-link">
+				<a href="http://www.emeraldtokyo.com/?p=725#comments" title="Comment on Here I am, being creative at 1AM!"><span class="comment-balloon">1</span> Comment </a>			</div>
+													<div class="clear"></div>
+				</div>
+															</div>
+					</div>
+								<div class="post-723 post type-post status-publish format-standard hentry category-sitenews uentry post-blog postonpage-5 odd post-author-emeraldadmin">
+									<div class="post-content">
+				<div class="post-info">
+																			<div class="post-mood post-ninja"><img src="http://www.emeraldtokyo.com/wp-content/themes/comicpress/images/moods/default/ninja.png" alt="ninja" title="ninja" /></div>
+								<div class="post-text">
+						<h2 class="post-title"><a href="http://www.emeraldtokyo.com/?p=723">Sold Out!</a></h2>
+<span class="post-author">by <a href="http://www.emeraldtokyo.com/?author=1">EmeraldTokyo</a></span>
+<span class="posted-on">on&nbsp;</span><span class="post-date">December 20, 2011</span>
+<span class="posted-at">at&nbsp;</span><span class="post-time">8:07 pm</span>
+<div class="post-cat">Posted In: <a href="http://www.emeraldtokyo.com/?cat=1" title="View all posts in Website News" rel="category">Website News</a></div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="entry">
+					<p><strong>The EAE: 2009 Sketchbook</strong> is sold out for now. So, if you didn&#8217;t get it (and we gave you a couple years to buy it!) Then, you&#8217;ve missed out on it. Since it&#8217;s our first publication and all we felt it best to limit the amount actually printed to only 50 books! That means if you didn&#8217;t get it &#8230; you probably won&#8217;t now. The book was removed because some new projects are under way and almost ready for publishing for next year. Depending on how busy I am with my new marriage. XD</p>
+<p><strong>The Macabre Art of Blaklyon</strong> has also been removed from our listings. So, for those of you who&#8217;re a fan of his work &#8230; you missed out. Don&#8217;t get your hopes up about any new projects from him here. We&#8217;re no longer working with him at all and we no longer endorse any of his projects/work. You&#8217;ll have to find him and follow him elsewhere to find out what he&#8217;s up to.</p>
+<p>Have a Merry Christmas!</p>
+<p>Luv,<br />
+Chrissy.</p>
+					<div class="clear"></div>
+				</div>
+				<div class="clear"></div>
+								<div class="post-extras">
+					<div class="post-tags"></div>
+								<div class="comment-link">
+				<a href="http://www.emeraldtokyo.com/?p=723#comments" title="Comment on Sold Out!"><span class="comment-balloon">1</span> Comment </a>			</div>
+													<div class="clear"></div>
+				</div>
+															</div>
+					</div>
+					</div>
+					<div id="wp-paginav"><div id="paginav"><ul>
+<li class="paginav-pages">Page 1 of 17</li><li class="paginav-current">1</li><li><a href="http://www.emeraldtokyo.com/?paged=2" title="2">2</a></li><li><a href="http://www.emeraldtokyo.com/?paged=3" title="3">3</a></li><li><a href="http://www.emeraldtokyo.com/?paged=4" title="4">4</a></li><li><a href="http://www.emeraldtokyo.com/?paged=5" title="5">5</a></li><li class="paginav-next">
+<a href="http://www.emeraldtokyo.com/?paged=2" >&raquo;</a>
+</li>
+<li><a href="http://www.emeraldtokyo.com/?paged=17" title="Last &raquo;">Last &raquo;</a></li></ul></div><div class="clear"></div></div>
+		</div>
+						<div id="sidebar-right">
+			<div class="sidebar">
+		<div id="text-4" class="widget widget_text">
+<div class="widget-content">
+<h2 class="widgettitle">Affiliates</h2>
+			<div class="textwidget">Conventions:<br></ br>
+<center><a href="http://momocon.moonfruit.com/"><img src="affils/momobuddy.png"></a><p><a href="http://www.dragoncon.org"><img src="affils/dc.png"></a></center>
+Web Comics:<br></ br>
+<center><a href="https://sites.google.com/site/oddcouplecomics/home"><img src="affils/sacbtn.gif "></a><p><a href="http://weblightdreams.synthasite.com/"><img src="affils/WBBanner3.gif "></a><p><a href="http://miskui.webs.com/"><img src="affils/miskuibtn.gif "></a><p><a href="http://farewellfeeling.smackjeeves.com/"><img src="affils/farewellfeelingbtn.gif"></a><p>
+<a href="http://www.jdvesper.com/"><img src="affils/jcrowbtn.gif"></a></center></div>
+		</div>
+</div>
+		</div>
+	</div>				<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>
+		<div id="footer">
+<p class="footer-text">
+&copy;2005-2012 <a href="http://www.emeraldtokyo.com">Emerald Angel Entertainment and Christine Seaman</a> <span class="footer-pipe">|</span> Powered by <a href="http://wordpress.org/">WordPress</a> with <a href="http://comicpress.net/">ComicPress</a>
+<span class="footer-subscribe"><span class="footer-pipe">|</span> Subscribe: <a href="http://www.emeraldtokyo.com/?feed=rss2">RSS</a>
+</span>
+<span class="footer-uptotop"><span class="footer-pipe">|</span> <a href="#outside" onclick="scrollup(); return false;">Back to Top &uarr;</a></span>
+</p>
+	<!-- 51 queries. 0.411 seconds. //-->
+		</div><!-- Ends #footer -->
+	</div><!-- Ends "page/page-wide" -->
+</div><!-- Ends "page-wrap" -->
+
+
+ <div id="fb-root"></div>
+     <script type="text/javascript">
+      window.fbAsyncInit = function() {
+	FB.init({
+	 appId  : '254577506873',
+	  status : true, // check login status
+	  cookie : true, // enable cookies to allow the server to access the session
+	  xfbml  : true,  // parse XFBML
+	  oauth:true
+	});
+      };
+
+      (function() {
+	var e = document.createElement('script');e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';	e.async = true;
+	document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+<!-- Wordbooker code revision : 2.1.13 R01 - Live to Fight Another Day -->
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-includes/js/jquery/ui/jquery.ui.core.min.js?ver=1.8.20'></script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/themes/comicpress/js/ddsmoothmenu.js'></script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/themes/comicpress/js/menubar.js'></script>
+<script type='text/javascript' src='http://www.emeraldtokyo.com/wp-content/themes/comicpress/js/scroll.js'></script>
+</body>
+</html>Trying URL http://www.hcs.harvard.edu/~anime/...
+ua
+<head>
+    	
+      <!--External CSS-->
+      <link rel= "stylesheet" href= "css.css" type="text/css" />
+      <!--Embedded CSS-->
+      
+      <!--Favicon-->
+      <link rel="icon" href="image/favicon.ico">
+      <link rel=â€shortcut iconâ€ href="image/favicon.ico">
+      <!--Favicon End-->
+      
+      <!--JS-->
+	  <script type="text/javascript" src="js/jquery-1.6.min.js"></script>
+	  <!--JS End-->
+      
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Neo Anime Club - Cal Poly Pomona</title>
+        
+        <META name="keywords" content="CPP, Cal Poly Pomona, anime, club, anime club, neo anime, Neo Anime Club, CSU">
+        <META name="discription" content="Neo Anime Club, the officially chartered anime club of California State Polytechnic University, Pomona">
+        
+</head>
+
+<body>
+	<!--Header Banner-->
+	<div class= "divheader"></div>
+	<!--Header Banner End-->
+	
+	<!--Navigation Bar-->
+	<div class= "divmenu">
+		<a class="navselect" href="index.html"><b>Home</b></a>
+		<a class="nav1" href="membership.html">Membership</a>
+		<a class="nav1" href="schedule.html">Schedule</a> 
+		<a class="nav1" href="officers.html">Officers</a> 
+		<a class="nav1" href="gallery.html">Gallery</a> 
+		<a class="nav1" href="contact.html">Contact</a> 
+		<a class="nav1" href="forums">Forums</a> 
+		
+		<a class="nav2" href="http://steamcommunity.com/groups/neoanime" target="_blank"><img src="image/steam.png" alt="Steam" /></a>
+		<a class="nav2" href="http://www.facebook.com/groups/28693791604/" target="_blank"><img src="image/fblogo.png" alt="Facebook" /></a> 
+	</div>
+	<!--Navigation Bar End-->
+
+	<!--Body-->
+	<div class= "divbody">
+
+			<div class= "divleft">
+
+			<img src="image/group.jpg" alt="Club Photo" />
+			
+			<h2>COME JOIN NEO ANIME!</h2>
+				<div class= "post">
+				<b>Weekly Meetings</b><br/>
+				<b>First Meeting:</b> Fall 2012, September 27th<br/>
+				<b>Last Meeting:</b> Fall 2012, November 22nd<br/>
+				<b>Location:</b> <a href="http://www.csupomona.edu/maps/dynamic/?structureID=Bg-1" target="_blank">Building 1, Room 109 <img src="image/new_window_icon.gif" alt="Open in new window"/></a><br/>
+				<b>Time:</b> Every Thursday, 6:00PM - 10:00PM<br/><br/>
+				
+				</div><br/>
+
+			<h2>WHO ARE WE?</h2>
+				<div class= "post2">
+				We of the Neo Anime Club of Cal Poly Pomona strive to bring the community (particulary the otaku) together. Whether your new to anime, or have been enjoying it for years, 
+				we welcome all and hope to expose our members to whats new, or suggest whats old that would meet your tastes. While we have our weekly viewings, we are more than 
+				just a group that just sits around. Join us on weekly games, such as trivia, or anime pictionary. 
+				<br/><br/>
+				New to cosplay?  Or have no idea who to be?  Join us in 
+				Cosplay Suggestion Night, or ask our members for help on completing your own work, and show it off at Cosplay Night.  Participate our Game Nights, Movie Nights, 
+				as well as our trips to Round 1 and Hobby Shops.  We also have frield trips to Little Tokyo, for alittle sight seeing, shopping, and even alittle history tour around the city.
+				</div>
+
+			</div>
+
+
+			<div class= "divright">
+
+			<h2>UPCOMING EVENTS</h2>
+			<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+				<script>
+				new TWTR.Widget({
+				  version: 2,
+				  type: 'profile',
+				  rpp: 10,
+				  interval: 30000,
+				  width: 250,
+				  height: 400,
+				  theme: {
+				    shell: {
+				      background: '#ffe9bb',
+				      color: '#000000'
+				    },
+				    tweets: {
+				      background: '#ffffff',
+				      color: '#000000',
+				      links: '#546c8e'
+				    }
+				  },
+				  features: {
+				    scrollbar: true,
+				    loop: false,
+				    live: false,
+				    hashtags: true,
+				    timestamp: true,
+				    avatars: true,
+				    behavior: 'all'
+				  }
+				}).render().setUser('NeoAnimeClub').start();
+				</script>
+
+			</div>
+	</div>
+	<!--Body End-->	
+
+	<!--Footer-->	
+	<div class= "footer">
+	Â© 2011 Neo Anime Club.  Officially chartered club of California State Polytechnic University, Pomona.
+	</div>		
+	<!--End of Footer-->
+</body>Trying URL http://www.haas-online.net/...
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Harvard Anime Society</title>
+<link rel="icon" href="../images/base_design/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="../images/base_design/favicon.ico" type="image/x-icon">
+<link type="text/css" rel="stylesheet" href="../css/base.css">
+<link type="text/css" rel="stylesheet" href="../css/iphone.css" media="handheld, only screen and (max-device-width: 480px)">
+
+<!--[if lt IE 7]>
+<style type="text/css">
+#old_ie_warning { display:block; }
+</style>
+<![endif]-->
+
+</head>
+<body>
+
+<div id="bg_decoration"></div>
+<div id="master_container">
+
+<img id="logo" class="left_side" src="../images/base_design/elements/logo_6bit.png">
+
+<div id="sidebar" class="left_side">
+	<div id="next_showing" class="sidebox">
+		<div class="titlebar">Next Showing</div>
+		<table class="content">
+			<tr><td class='icon' valign='top'><img src="../images/base_design/icons/when.png"></td><td>Tues Dec 4, 8-10PM
+</td></tr>
+			<tr><td class='icon' valign='top'><img src="../images/base_design/icons/where.png"></td><td>SOCH P14
+</td></tr>
+			<tr><td class='icon' valign="top"><img src="../images/base_design/icons/what.png"></td><td><ul><li>Durarara!! 23-25 (end)</li>
+<li>Jellyfish Princess 11 (end)</li>
+</ul></td></tr>
+			<tr><td class="icon" valign="top"><img src="../images/base_design/icons/notes.png"></td><td class='note'>Wrapping up DRRR and JF. Last Tuesday showing of the Semester.
+</td></tr>
+		</table>
+	</div><!-- sidebox -->
+	<div id="sidebar_decoration"></div>
+</div><!-- sidebar -->
+
+<div id="navbar" class="right_side">
+	<div class="menu">
+		<a class="title" href="#">navigation</a>
+		<div class="body">
+			<a id="menu_home"	href="home.shtml"	>home &amp; news</a>
+			<a id="menu_about"	href="about.shtml"	>about the club</a>
+			<a id="menu_schedule"	href="schedule.shtml"	>showing schedule</a>
+			<a id="menu_events"	href="events.shtml"	>special events</a>
+			<a id="menu_library"	href="library.shtml"	>video library</a>
+			<a id="menu_links"	href="links.shtml"	>links &amp; resources</a>
+		</div>
+	</div>
+</div>
+
+<div id="page_content" class="right_side">
+
+<!-- ============= END HEAD ============= -->
+<!-- ============= END HEAD ============= -->
+
+
+
+<style type="text/css">
+
+#sidebar_decoration {
+	display:block;
+	position:absolute;
+	bottom:0px;
+	right:0px;
+	width:52px;
+	height:89px;
+	background-image:url('../images/one_shot/miku_right.gif');
+	background-position:bottom left;
+	background-repeat:no-repeat;
+}
+
+#page_content #splash {
+	position:relative;
+	margin-bottom:2em;
+	padding-bottom:.5em;
+	overflow:hidden;
+}
+
+#page_content #splash img {
+	width:100%;
+}
+
+#page_content #splash h1 {
+	background-image:none;
+	border:none;
+	position:absolute;
+	top:.3em;
+	right:.25em;
+	color:white;
+	background-color:transparent;
+	text-shadow:0px 1px 3px #0099ff;
+	padding:0px;
+	margin:0px;
+	line-height:1em;
+	font-size:4em;
+	font-weight:bolder;
+}
+
+#page_content #splash div {
+	font-weight:bolder;
+	font-size:1.5em;
+	margin-top:1em !important;
+	margin-bottom:.5em;
+	color:#d55588;
+}
+
+#page_content #news, #page_content #news li {
+	/* IE7 is reluctant to override list styles,
+	   so we need this crap to kick it */
+	list-style:none !important;
+	list-style-type:none !important;
+	list-style-image:none !important;
+}
+
+
+#page_content #news li {
+	list-style:none;
+	border-top:1px solid #cccccc !important;
+	/* IE7 refuses to draw the border on these
+	   for some reason. it's not worth figuring
+	   out why */
+	margin:0;
+	margin-bottom:1em;
+	padding-top:1em;
+	padding-left:5em;
+	position:relative;
+}
+
+#page_content #news li:first-child {
+	font-weight:bolder;
+	border-top:none !important;
+	padding-top:0;
+}
+
+
+#page_content #news li > span.date {
+	display:block;
+	position:absolute;
+	left:0px;
+	color:#AA88EE;
+}
+
+
+#page_content #legal {
+	font-size:.9em;
+	color:#777777;
+	margin-top:3em;
+	padding:1em;
+	padding-bottom:0;
+	border-top:1px solid #cccccc;
+	font-style:italic;
+}
+
+</style>
+
+<div id='splash'>
+<img src='../images/page_splash_pictures/dangos.jpg'>
+<h1>Join Us!</h1>
+<div>Welcome to the Harvard Anime Society!</div>
+We hold three independent showings split across Tuesday and Saturday evenings, open to the public. For additional information, check out our <a href="schedule.shtml">schedule</a> and <a href="about.shtml">about</a> pages, join our mailing lists (<a href="https://lists.hcs.harvard.edu/mailman/listinfo/anime-list">anime-list</a> and <a href="https://lists.hcs.harvard.edu/mailman/listinfo/anime-social">anime-social</a>), or <a href="mailto:anime@hcs.harvard.edu">email us</a>.<br><span>Come join us for food, fun, and discussion!</span>
+</div>
+
+<h2>News &amp; Updates</h2>
+<ul id="news">
+<li><span class='date'>Nov 28</span> Since the semester's wrapping up, we're once again taking suggestions for shows to watch when we reconvene next semester. See the links in the announcement e-mail, or just send us an e-mail at the address listed above.</li>
+<li><span class='date'>Nov 13</span> We got a location in the Yard for 'Arrietty', so the official time and place is Sever 103 from 7-9pm.</li>
+<li><span class='date'>Nov 10</span> We'll be screening Studio Ghibli's "The Secret World of Arrietty" next Friday (Nov. 16th). Exact time and place soon TBA.</li>
+<li><span class='date'>Nov 06</span> Totally forgot tonight's showing coincided with the Presidential Election, and so it's canceled. It'll be held next Tuesday instead. Apologies!</li>
+<li><span class='date'>Oct 21</span> The joint HAS/HCCC storyboarding workshop went well - hope everyone who came by had a good time!</li>
+<li><span class='date'>Oct 15</span>We're teaming up with the Harvard College Comics Club for a joint workshop about storyboarding this Saturday. Check out the events page for more info.</li>
+<li><span class='date'>Oct 13</span> Thanks to everyone for coming to our Satoshi Kon movie nights! Hopefully we'll  have more cool events with HRSFA in the future.</li>
+<li><span class='date'>Oct 08</span> The location for the screening of Kon's 'Millennium Actress' has been finalized - it will take place in the Eliot Golden Arm rather than our usual room in the SOCH. </li>
+<li><span class='date'>Oct 02</span> We'll be holding two movie nights on Oct 9th and 13th in memory of Satoshi Kon. These will be in place of the normal showings. Check out the events page for more info.</li>
+<li><span class='date'>Oct 02</span> Minor updates to the Saturday schedule to spread out the shows a little more evenly and fit in the second Satoshi Kon movie.</li>
+<li><span class='date'>Sep 24</span> We've cleared up the mailing lists. Starting today we'll be using "list" for official announcements, and "social" for things informally club or anime-related. We'll keep sending announcements to both lists for around a week or so though.</li>
+<li><span class='date'>Sep 23</span> SHOWING TONIGHT, SUNDAY SEPT 23rd. Last night's showing had technical difficulties, so it's been moved to tonight. We don't have P14 reserved, but the chances of someone being in there are low, so we'll try anyway.</li>
+<li><span class='date'>Sep 17</span> We forgot about one of the Kara no Kyoukai movies, and so we've adjusted the Saturday-slot-A's schedule to fit it in.</li>
+<li><span class='date'>Sep 08</span> Welcome any new folks who found us at the fair!</li>
+<li><span class='date'>Sep 07</span> We'll be at the <a href="http://osl.fas.harvard.edu/icb/icb.do?keyword=k65178&pageid=icb.page337087">Activities Fair</a> today, table 513. Hit us up!</li>
+<li><span class='date'>Sep 06</span> New year underway, new weekly showing format. Check out the About and Schedule pages for more info.</li>
+
+</ul>
+
+<div id="legal">
+Harvard Anime Society is an officially recognized student-run organization at Harvard College. The Harvard College name and/or shield are trademarks of the President and
+Fellows of Harvard College and are used by permission of Harvard University.
+</div>
+
+
+<!--  ==================== BEGIN FOOT ====================== -->
+<!--  ==================== BEGIN FOOT ====================== -->
+
+<div id="padding_ie_fix"></div>
+
+</div><!-- page_content -->
+
+</div><!-- master_container -->
+
+<div id="old_ie_warning">
+<h1>WARNING</h1>
+You are using a version of Internet Explorer that is <b><i>over 10 years old</i></b><br>
+and has no hope of rendering this page correctly.<br><br>
+Please upgrade to something that at least pretends to be modern:<br>
+<a href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie">http://windows.microsoft.com/en-US/internet-explorer/downloads/ie</a><br>
+<a href="https://www.mozilla.org/en-US/firefox/new/">https://www.mozilla.org/en-US/firefox/new</a><br>
+<a href="https://www.google.com/chrome">https://www.google.com/chrome</a><br>
+<a href="http://www.opera.com/download/">http://www.opera.com/download</a>
+</div>
+
+</body>
+</html>
+
+<html>
+
+<html>
+<META HTTP-EQUIV="Refresh" content= "0;URL=http://www.haas-online.net/neopress/">
+</html>
+
+</html>Trying URL http://www.umich.edu/~animania/...
+ua
+Trying URL http://wpganime.ca/...

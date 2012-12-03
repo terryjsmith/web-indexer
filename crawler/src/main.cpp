@@ -25,9 +25,9 @@ using namespace std;
 
 /* DEFINITIONS */
 
-#define NUM_CONNECTIONS 2
+#define NUM_CONNECTIONS 20
 #define BASE_PATH	"/mnt/indexer/"
-#define MIN_ACCESS_TIME 600
+#define MIN_ACCESS_TIME 10
 
 /* GLOBALS */
 
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
 	unsigned int max_tries = 100;
 
 	redisReply* reply = (redisReply*)redisCommand(context, "LLEN url_queue");
-	max_tries = max(max_tries, reply->integer);
+	max_tries = min(max_tries, reply->integer);
 	freeReplyObject(reply);
 
 	unsigned int counter = 0;
@@ -98,15 +98,9 @@ int main(int argc, char** argv) {
 		printf("Trying URL %s...\n", reply->str);
 
 		// Split the URL info it's parts; no base URL
-		unsigned int copy_length = strlen(reply->str) - 2;
-		char* actual = (char*)malloc(copy_length + 1);
-		strncpy(actual, reply->str + 1, copy_length);
-		actual[copy_length] = '\0';
-
-		URL* url = new URL(actual);
+		URL* url = new URL(reply->str);
 		url->Parse(0);
 
-		free(actual);
 		freeReplyObject(reply);
 
 		// Load the site info from the database
@@ -117,8 +111,10 @@ int main(int argc, char** argv) {
 		// Check whether this domain is on a timeout
 		time_t now = time(NULL);
 		if((now - site->GetLastAccess()) < MIN_ACCESS_TIME) {
-                        redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+                        reply = (redisReply*)redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+			freeReplyObject(reply);
 
+			delete site;
                         delete url;
                         i--;
                         continue;
@@ -126,6 +122,7 @@ int main(int argc, char** argv) {
 
 		// Next check if we've already parsed this URL
 		if(url->Load(conn)) {
+			delete site;
 			delete url;
 			i--;
 			continue;
@@ -135,6 +132,7 @@ int main(int argc, char** argv) {
 		RobotsTxt* robots = new RobotsTxt();
 		robots->Load(url, conn);
 		if(robots->Check(url) == true) {
+			delete site;
 			delete url;
                         i--;
                         continue;
@@ -155,16 +153,21 @@ int main(int argc, char** argv) {
         	dir[dir_length] = '\0';
 
 	        mkdir(dir, 0644);
+		free(dir);
 
-		unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2);
+		unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
 		char* filename = (char*)malloc(length + 1);
 		sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], url->hash);
+		filename[length] = '\0';
 
-		request->Open(filename);
+		if(!(request->Open(filename))) {
+			printf("Unable to open file %s.\n", filename);
+			return(0);
+		}
 
 		// Clean up
+		free(filename);
 		delete url;
-		freeReplyObject(reply);
 
 		// Add it to the multi stack
 		curl_multi_add_handle(multi, request->GetHandle());
@@ -180,9 +183,11 @@ int main(int argc, char** argv) {
 		int msgs = 0;
 		CURLMsg* msg = curl_multi_info_read(multi, &msgs);
 		while(msg != NULL) {
-			// Get the HttpRequest this was associated with
+			/// Get the HttpRequest this was associated with
                         HttpRequest* request = 0;
                         curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
+
+			if(!request) continue;
 
 			// This means that something finished; either with an error or with success
 			if(msg->data.result != CURLE_OK) {
@@ -196,21 +201,20 @@ int main(int argc, char** argv) {
 				final[length] = '\0';
 
 				log(final);
-
-				free(curl_error);
 				free(final);
-			}
 
-			// Remove it from the stack
-                        curl_multi_remove_handle(multi, msg->easy_handle);
+				msg = curl_multi_info_read(multi, &msgs);
+				continue;
+			}
 
 			// Get the URL from the request
 			URL* url = request->GetURL();
 
 			// Find the file this page was written to
-			unsigned int length = strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2);
+			unsigned int length = strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
 	                char* filename = (char*)malloc(length + 1);
         	        sprintf(filename, "%s/%s.html", url->parts[URL_DOMAIN], url->hash);
+			filename[length] = '\0';
 
 			// Add it to the parse_queue in redis
 			redisReply* reply = (redisReply*)redisCommand(context, "RPUSH parse_queue \"%s\"", filename);
@@ -254,7 +258,8 @@ int main(int argc, char** argv) {
 
 					// Make sure we update the first URL to reflect the status of the last
 					query = (char*)malloc(1000);
-		                        length = sprintf(query, "UPDATE url SET last_code = %ld WHERE url_id = %ld", code, url->url_id);
+					time_t now = time(NULL);
+		                        length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld WHERE url_id = %ld", code, now, url->url_id);
                 		        query[length] = '\0';
 		                        mysql_query(conn, query);
 
@@ -267,11 +272,15 @@ int main(int argc, char** argv) {
 			}
 
                         char* query = (char*)malloc(1000);
-                        length = sprintf(query, "UPDATE url SET last_code = %ld WHERE url_id = %ld", code, url->url_id);
+			time_t now = time(NULL);
+                        length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
                         query[length] = '\0';
                         mysql_query(conn, query);
 
                         free(query);
+
+			// Remove it from the stack
+                        curl_multi_remove_handle(multi, msg->easy_handle);
 
 			// Clean up
                         delete request;
@@ -281,7 +290,7 @@ int main(int argc, char** argv) {
 		        unsigned int max_tries = 100;
 
 		        reply = (redisReply*)redisCommand(context, "LLEN url_queue");
-		        max_tries = max(max_tries, reply->integer);
+		        max_tries = min(max_tries, reply->integer);
 		        freeReplyObject(reply);
 
 			// Fetch a new URL from redis
@@ -292,16 +301,12 @@ int main(int argc, char** argv) {
 				// Fetch a URL from redis
         	        	redisReply* reply = (redisReply*)redisCommand(context, "LPOP url_queue");
 
-	        	        // Split the URL info it's parts; no base URL
-				unsigned int copy_length = strlen(reply->str) - 2;
-	        	        char* actual = (char*)malloc(copy_length + 1);
-        	        	strncpy(actual, reply->str + 1, copy_length);
-				actual[copy_length] = '\0';
+				printf("Trying URL %s...\n", reply->str);
 
-        	        	url = new URL(actual);
+	        	        // Split the URL info it's parts; no base URL
+        	        	url = new URL(reply->str);
 	                	url->Parse(NULL);
 
-				free(actual);
 				freeReplyObject(reply);
 
 				// Load the site info from the database
@@ -312,14 +317,17 @@ int main(int argc, char** argv) {
                 		// Check whether this domain is on a timeout
 		                time_t now = time(NULL);
                 		if((now - site->GetLastAccess()) < MIN_ACCESS_TIME) {
-		                        redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+		                        reply = (redisReply*)redisCommand(context, "RPUSH url_queue \"%s\"", url->url);
+					freeReplyObject(reply);
 
+					delete site;
                 		        delete url;
 		                        continue;
                 		}
 
 		                // Next check if we've already parsed this URL
                 		if(url->Load(conn)) {
+					delete site;
 		                        delete url;
 		                        continue;
                 		}
@@ -328,6 +336,7 @@ int main(int argc, char** argv) {
                 		RobotsTxt* robots = new RobotsTxt();
 		                robots->Load(url, conn);
                 		if(robots->Check(url) == true) {
+					delete site;
 		                        delete url;
                         		continue;
 		                }
@@ -340,7 +349,26 @@ int main(int argc, char** argv) {
 
 	                	HttpRequest* new_request = new HttpRequest(url);
 
+				unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
+		                char* dir = (char*)malloc(dir_length + 1);
+                		sprintf(dir, "%s%s", BASE_PATH, url->parts[URL_DOMAIN]);
+		                dir[dir_length] = '\0';
+
+                		mkdir(dir, 0644);
+				free(dir);
+
+		                unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
+                		char* filename = (char*)malloc(length + 1);
+		                sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], url->hash);
+				filename[length] = '\0';
+
+				if(!(new_request->Open(filename))) {
+                 			printf("Unable to open file %s.\n", filename);
+		                	return(0);
+                		}
+
 				// Clean up
+				free(filename);
 				delete url;
 
         	        	// Add it to the multi stack

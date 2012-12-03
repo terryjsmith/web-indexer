@@ -19,6 +19,7 @@
 
 RobotsTxt::RobotsTxt() {
 	m_rules = 0;
+	m_count = 0;
 }
 
 RobotsTxt::~RobotsTxt() {
@@ -84,7 +85,10 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                         while(!feof(fp)) {
                                 char* line = (char*)malloc(1000);
                                 char* read = fgets(line, 1000, fp);
-				if(read == NULL) break;
+				if(read == NULL) {
+					free(line);
+					break;
+				}
 
                                 // Check to see if this is a user agent line, start by making it all lowercase
                                 for(unsigned int i = 0; i < strlen(line); i++) {
@@ -94,7 +98,6 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                                 // If it is a user-agent line, make sure it's aimed at us
                                 if(strstr(line, "user-agent") != NULL) {
                                         if(strstr(line, "user-agent: *")) {
-						printf("ua\n");
                                                 applicable = true;
 					}
                                         else
@@ -108,7 +111,10 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                                                 unsigned int copy_length = (strchr(line, '\n') - line) - 10;
 
                                                 // If copy length is 1, it's just a newline, "Disallow: " means you can index everything
-                                                if(copy_length == 1) continue;
+                                                if(copy_length <= 1) {
+							free(line);
+							continue;
+						}
 
                                                 char* disallowed = (char*)malloc(copy_length + 1);
                                                 strncpy(disallowed, line + 10, copy_length);
@@ -138,6 +144,7 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                 query[length] = '\0';
 
                 mysql_query(conn, query);
+		free(query);
         }
 
 	// Okay, once we're here, we can load the rules and compare the URL
@@ -173,9 +180,11 @@ bool RobotsTxt::Check(URL* url) {
 
         for(unsigned int i = 0; i < m_count; i++) {
                 if(strncmp(lowercase, m_rules[i], strlen(m_rules[i])) == 0) {
+			free(lowercase);
                         return(true);
                 }
         }
 
+	free(lowercase);
 	return(false);
 }

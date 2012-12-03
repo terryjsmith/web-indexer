@@ -68,6 +68,9 @@ URL* URL::Clone() {
 		strcpy(temp->hash, this->hash);
 	}
 
+	temp->domain_id = this->domain_id;
+	temp->url_id = this->url_id;
+
 	return(temp);
 }
 

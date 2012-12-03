@@ -27,6 +27,8 @@ HttpRequest::HttpRequest(URL* url) {
         curl_easy_setopt(m_curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv2);
         curl_easy_setopt(m_curl, CURLOPT_PRIVATE, this);
         curl_easy_setopt(m_curl, CURLOPT_FORBID_REUSE, 1);
+
+	m_fp = 0;
 }
 
 HttpRequest::~HttpRequest() {
@@ -47,9 +49,15 @@ HttpRequest::~HttpRequest() {
 }
 
 FILE* HttpRequest::Open(char* filename) {
-	if(!(m_fp = fopen(filename, "w+")))
-		return(0);
+	m_fp = fopen(filename, "w");
+	if(!m_fp)
+		return(false);
 
-	curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, m_fp);
+	CURLcode code = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, m_fp);
+	if(code != CURLE_OK) {
+		printf("ERROR: %s\n", curl_easy_strerror(code));
+		return(false);
+	}
+
 	return(m_fp);
 }
