@@ -6,6 +6,7 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
+#include <openssl/md5.h>
 #include <url.h>
 
 regex_t* URL::m_regex = 0;
@@ -13,6 +14,8 @@ regex_t* URL::m_regex = 0;
 URL::URL(char* url) {
 	// Initialize
 	parts[0] = parts[1] = parts[2] = parts[3] = 0;
+	hash = 0;
+	domain_id = url_id = 0;
 
 	// Save a copy of our URL
         this->url = (char*)malloc(strlen(url) + 1);
@@ -23,6 +26,11 @@ URL::~URL() {
 	if(url) {
 		free(url);
 		url = 0;
+	}
+
+	if(hash) {
+		free(hash);
+		hash = 0;
 	}
 
 	for(int i = 0; i < 4; i++) {
@@ -44,6 +52,21 @@ regex_t* URL::GetRegex() {
         }
 
 	return(m_regex);
+}
+
+URL* URL::Clone() {
+	URL* temp = new URL(this->url);
+	for(unsigned int i = 0; i < 4; i++) {
+		temp->parts[i] = (char*)malloc(strlen(this->parts[i]) + 1);
+		strcpy(temp->parts[i], this->parts[i]);
+	}
+
+	if(hash) {
+		temp->hash = (char*)malloc(strlen(this->hash) + 1);
+		strcpy(temp->hash, this->hash);
+	}
+
+	return(temp);
 }
 
 bool URL::Parse(URL* base) {
@@ -201,6 +224,18 @@ bool URL::_split() {
 
 	for(unsigned int i = 0; i < strlen(parts[URL_DOMAIN]); i++)
 		parts[URL_DOMAIN][i] = tolower(parts[URL_DOMAIN][i]);
+
+	// Get the MD5 hash of the path
+        unsigned char temp[MD5_DIGEST_LENGTH];
+        memset(temp, 0, MD5_DIGEST_LENGTH);
+        MD5((const unsigned char*)parts[URL_PATH], strlen(parts[URL_PATH]), temp);
+
+        // Convert it to hex
+        hash = (char*)malloc((MD5_DIGEST_LENGTH * 2) + 1);
+        for(unsigned int k = 0; k < MD5_DIGEST_LENGTH; k++) {
+                sprintf(hash + (k * 2), "%02x", temp[k]);
+        }
+        hash[MD5_DIGEST_LENGTH * 2] = '\0';
 
         return(true);
 }

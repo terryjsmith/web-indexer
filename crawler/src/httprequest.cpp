@@ -9,8 +9,7 @@
 
 HttpRequest::HttpRequest(URL* url) {
 	// Save a copy of the URL
-	m_url = new URL(url->url);
-	m_url->Parse(NULL);
+	m_url = url->Clone();
 
 	// Set up to start doing transfers
         m_curl = curl_easy_init();
