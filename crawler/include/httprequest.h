@@ -8,7 +8,7 @@ public:
 	~HttpRequest();
 
 	// Set the output file
-	bool Open(char* filename);
+	FILE* Open(char* filename);
 
 	// Getters
 	CURL* GetHandle() { return m_curl; }

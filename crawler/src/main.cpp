@@ -6,10 +6,11 @@ using namespace std;
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 #include <regex.h>
 #include <curl/curl.h>
 #include <hiredis/hiredis.h>
@@ -154,6 +155,147 @@ bool check_last_access(URL* url) {
 	return(retval);
 }
 
+bool check_robots_txt(URL* url) {
+	// Our return value; false = not found in robots.txt, true = found and should discard
+	bool retval = false;
+
+	// First check whether we have a robots.txt record
+        char* query = (char*)malloc(1000);
+        unsigned int length = sprintf(query, "SELECT robots_last_access FROM domain WHERE domain_id = %ld", url->domain_id);
+        query[length] = '\0';
+
+        mysql_query(conn, query);
+        MYSQL_RES* result = mysql_store_result(conn);
+
+	bool robots_valid = true;
+	if(mysql_num_rows(result)) {
+                MYSQL_ROW row = mysql_fetch_row(result);
+                long int last_access = atol(row[0]);
+                if(abs(time(NULL) - last_access) < (60*60*24*7)) {
+                        robots_valid = false;
+                }
+        }
+
+        free(query);
+        mysql_free_result(result);
+
+	if(!robots_valid) {
+		// We need to fetch the robots.txt file and parse it, get the path to the robots.txt file
+		char* robots_path = "/robots.txt";
+		URL* robots_url = new URL(robots_path);
+		robots_url->Parse(url);
+
+		HttpRequest* req = new HttpRequest(robots_url);
+		CURL* curl = req->GetHandle();
+
+		// Set the filename to output to
+		char* tmpname = tmpnam(robots_url->hash);
+		unsigned int length = strlen(tmpname);
+
+		char* filename = (char*)malloc(length + 5 + 1);
+		sprintf(filename, "/tmp/%s", tmpname);
+		filename[length] = '\0';
+
+		FILE* fp = req->Open(filename);
+
+		if(curl_easy_perform(curl)) {
+			// Do a complete refresh of the rules we have
+			query = (char*)malloc(1000);
+                	length = sprintf(query, "DELETE FROM robotstxt WHERE domain_id = %ld",url->domain_id);
+	                query[length] = '\0';
+			mysql_query(conn, query);
+			free(query);
+
+			// We successfully got a robots.txt file back, parse it
+			fseek(fp, 0, SEEK_SET);
+
+			// Read the file in one line at a time
+			bool applicable = false;
+			while(!feof(fp)) {
+				char* line = (char*)malloc(1000);
+				fgets(line, 1000, fp);
+
+				// Check to see if this is a user agent line, start by making it all lowercase
+				for(unsigned int i = 0; i < strlen(line); i++) {
+                                	line[i] = tolower(line[i]);
+                                }
+
+				// If it is a user-agent line, make sure it's aimed at us
+				if(strstr(line, "user-agent") != NULL) {
+					if(strstr(line, "user-agent: *")) 
+						applicable = true;
+					else
+						applicable = false;
+				}
+
+				if(applicable) {
+					// Record the rule in the database
+					char* part = NULL;
+					if((part = strstr(line, "disallow: ")) != NULL) {
+						unsigned int copy_length = strlen(line) - 10;
+
+						// If copy length is 1, it's just a newline, "Disallow: " means you can index everything
+						if(copy_length == 1) continue;
+
+						char* disallowed = (char*)malloc(copy_length);
+						strncpy(disallowed, line + 10, copy_length);
+						disallowed[copy_length] = '\0';
+
+						query = (char*)malloc(1000);
+			                        length = sprintf(query, "INSERT INTO robotstxt(%ld, '%s');", url->domain_id, disallowed);
+                        			query[length] = '\0';
+			                        mysql_query(conn, query);
+
+						free(disallowed);
+                        			free(query);
+					}
+				}
+
+				free(line);
+			}
+		}
+
+		delete robots_url;
+		delete req;
+
+		// Update that we checked it
+		query = (char*)malloc(1000);
+		time_t last_access = time(NULL);
+	        length = sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", last_access, url->domain_id);
+        	query[length] = '\0';
+
+	        mysql_query(conn, query);
+	}
+
+	// Okay, once we're here, we can load the rules and compare the URL
+	query = (char*)malloc(1000);
+        length = sprintf(query, "SELECT rule FROM robotstxt WHERE domain_id = %ld", url->domain_id);
+        query[length] = '\0';
+
+        mysql_query(conn, query);
+        result = mysql_store_result(conn);
+
+	// Make a lowercase copy of the URL to use for comparison
+	char* lowercase = (char*)malloc(strlen(url->parts[URL_PATH]) + 1);
+	strcpy(lowercase, url->parts[URL_PATH]);
+
+	for(unsigned int i = 0; i < strlen(url->parts[URL_PATH]); i++)
+		lowercase[i] = tolower(lowercase[i]);
+
+	for(unsigned int i = 0; i < mysql_num_rows(result); i++) {
+                MYSQL_ROW row = mysql_fetch_row(result);
+		if(strncmp(lowercase, row[0], strlen(row[0])) == 0) {
+			retval = true;
+		}
+        }
+
+	free(lowercase);
+        free(query);
+        mysql_free_result(result);
+
+	return(retval);
+}
+
 int main(int argc, char** argv) {
 	redisContext *context = NULL;
 
@@ -212,6 +354,13 @@ int main(int argc, char** argv) {
 			delete url;
 			i--;
 			continue;
+		}
+
+		// Finally, make sure the URL isn't disallowed by robots.txt
+		if(check_robots_txt(url) == true) {
+			delete url;
+                        i--;
+                        continue;
 		}
 
 		// Otherwise, we're good
@@ -292,6 +441,10 @@ int main(int argc, char** argv) {
 			char* redirect = 0;
 			curl_easy_getinfo(msg->easy_handle, CURLINFO_EFFECTIVE_URL, redirect);
 
+			// Also save the HTTP code to the database
+                        long code = 0;
+                        curl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
+
 			// Only need to do this if there was a new URL
 			if(redirect) {
 				if(strcmp(redirect, url->url)) {
@@ -313,18 +466,22 @@ int main(int argc, char** argv) {
 
                 		        free(query);
 
+					// Make sure we update the first URL to reflect the status of the last
+					query = (char*)malloc(1000);
+		                        length = sprintf(query, "UPDATE url SET last_code = %ld WHERE url_id = %ld", code, url->url_id);
+                		        query[length] = '\0';
+		                        mysql_query(conn, query);
+
+                		        free(query);
+
 					// Finally, delete the old URL and use the new one
 					delete url;
 					url = new_url;
 				}
 			}
 
-			// Also save the HTTP code to the database
-                        long code = 0;
-                        curl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
-
                         char* query = (char*)malloc(1000);
-                        length = sprintf(query, "UPDATE url SET last_code = %d WHERE url_id = %ld", code, url->url_id);
+                        length = sprintf(query, "UPDATE url SET last_code = %ld WHERE url_id = %ld", code, url->url_id);
                         query[length] = '\0';
                         mysql_query(conn, query);
 
@@ -357,6 +514,12 @@ int main(int argc, char** argv) {
                 		        delete url;
 		                        continue;
                 		}
+
+				// Finally, make sure the URL isn't disallowed by robots.txt
+		                if(check_robots_txt(url) == true) {
+                		        delete url;
+                		        continue;
+		                }
 
 	                	HttpRequest* new_request = new HttpRequest(url);
 

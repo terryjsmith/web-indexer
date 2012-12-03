@@ -44,10 +44,10 @@ HttpRequest::~HttpRequest() {
 	}
 }
 
-bool HttpRequest::Open(char* filename) {
+FILE* HttpRequest::Open(char* filename) {
 	if(!(m_fp = fopen(filename, "w+")))
-		return(false);
+		return(0);
 
 	curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, m_fp);
-	return(true);
+	return(m_fp);
 }
