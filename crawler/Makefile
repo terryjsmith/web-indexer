@@ -4,7 +4,7 @@ CFLAGS=-Wall -g -Iinclude -I/usr/include/mysql
 LDFLAGS=-lcurl -lmysqlclient -lhiredis -lssl
 
 # Link command:
-crawler: src/main.o src/url.o src/httprequest.o src/robotstxt.o src/site.o
+crawler: src/main.o src/url.o src/httprequest.o src/robotstxt.o src/site.o src/worker.o
 	$(CC) $^ -o bin/$@ $(LDFLAGS)
 
 urltest: test/urltest.o src/url.o
