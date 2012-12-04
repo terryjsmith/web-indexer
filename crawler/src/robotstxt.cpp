@@ -70,81 +70,98 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                 char* tmpname = tmpnam(robots_url->hash);
                 FILE* fp = req->Open(tmpname);
 
-                if(curl_easy_perform(curl) == 0) {
-                        // Do a complete refresh of the rules we have
-                        query = (char*)malloc(1000);
-                        length = sprintf(query, "DELETE FROM robotstxt WHERE domain_id = %ld", url->domain_id);
-                        query[length] = '\0';
-                        mysql_query(conn, query);
-                        free(query);
+                curl_easy_perform(curl);
 
-                        // We successfully got a robots.txt file back, parse it
-                        fseek(fp, 0, SEEK_SET);
+		long code = 0;
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
 
-                        bool applicable = false;
-                        while(!feof(fp)) {
-                                char* line = (char*)malloc(1000);
-                                char* read = fgets(line, 1000, fp);
-				if(read == NULL) {
-					free(line);
-					break;
+		delete req;
+
+		if(true) {
+			if(code == 200)  {
+	                        // Do a complete refresh of the rules we have
+        	                query = (char*)malloc(1000);
+                	        length = sprintf(query, "DELETE FROM robotstxt WHERE domain_id = %ld", url->domain_id);
+                        	query[length] = '\0';
+	                        mysql_query(conn, query);
+        	                free(query);
+
+				fp = fopen(tmpname, "r");
+				if(!fp) {
+					printf("Unable to open robots.txt file %s for URL %s.\n", tmpname, url->url);
 				}
 
-                                // Check to see if this is a user agent line, start by making it all lowercase
-                                for(unsigned int i = 0; i < strlen(line); i++) {
-                                        line[i] = tolower(line[i]);
-                                }
+				if(fseek(fp, 0, SEEK_SET)) {
+					printf("Unable to seek in robots.txt file %s for URL %s.\n", tmpname, url->url);
+				}
 
-                                // If it is a user-agent line, make sure it's aimed at us
-                                if(strstr(line, "user-agent") != NULL) {
-                                        if(strstr(line, "user-agent: *")) {
-                                                applicable = true;
-					}
-                                        else
-                                                applicable = false;
-                                }
+                        	// We successfully got a robots.txt file back, parse it
+	                        bool applicable = false;
+				char* line = (char*)malloc(1000);
+                	        while(fgets(line, 1000, fp) != NULL) {
+                        	        // Check to see if this is a user agent line, start by making it all lowercase
+                                	for(unsigned int i = 0; i < strlen(line); i++) {
+                                        	line[i] = tolower(line[i]);
+	                                }
 
-                                if(applicable) {
-                                        // Record the rule in the database
-                                        char* part = strstr(line, "disallow: ");
-                                        if(part) {
-                                                unsigned int copy_length = (strchr(line, '\n') - line) - 10;
-
-                                                // If copy length is 1, it's just a newline, "Disallow: " means you can index everything
-                                                if(copy_length <= 1) {
-							free(line);
-							continue;
+        	                        // If it is a user-agent line, make sure it's aimed at us
+                	                if(strstr(line, "user-agent") != NULL) {
+                        	                if(strstr(line, "user-agent: *") != NULL) {
+                                	                applicable = true;
 						}
+	                                        else
+        	                                        applicable = false;
+                	                }
 
-                                                char* disallowed = (char*)malloc(copy_length + 1);
-                                                strncpy(disallowed, line + 10, copy_length);
-                                                disallowed[copy_length] = '\0';
+                        	        if(applicable) {
+                                	        // Record the rule in the database
+                                        	char* part = strstr(line, "disallow: ");
+	                                        if(part) {
+							char* position = strchr(line, '\n');
+        	                                        unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
+							copy_length -= 10;
 
-                                                query = (char*)malloc(1000);
-                                                length = sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->domain_id, disallowed);
-                                                query[length] = '\0';
-                                                mysql_query(conn, query);
+                	                                // If copy length is 1, it's just a newline, "Disallow: " means you can index everything
+                        	                        if(copy_length <= 1) {
+								free(line);
+								line = (char*)malloc(1000);
+								continue;
+							}
 
-                                                free(disallowed);
-                                                free(query);
-                                        }
-                                }
+	                                                char* disallowed = (char*)malloc(copy_length + 1);
+        	                                        strncpy(disallowed, line + 10, copy_length);
+                	                                disallowed[copy_length] = '\0';
 
-                                free(line);
-                        }
+	                                                query = (char*)malloc(5000);
+        	                                        length = sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->domain_id, disallowed);
+                	                                query[length] = '\0';
+                        	                        mysql_query(conn, query);
+
+                                	                free(disallowed);
+                                        	        free(query);
+	                                        }
+        	                        }
+
+                	                free(line);
+					line = (char*)malloc(1000);
+
+                        	}
+
+				free(line);
+				fclose(fp);
+			}
+
+			// Update that we checked it
+                	query = (char*)malloc(1000);
+        	        time_t last_access = time(NULL);
+	               	length = sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", last_access, url->domain_id);
+	               	query[length] = '\0';
+
+        	        mysql_query(conn, query);
+	                free(query);
                 }
-
+		
                 delete robots_url;
-                delete req;
-
-                // Update that we checked it
-                query = (char*)malloc(1000);
-                time_t last_access = time(NULL);
-                length = sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", last_access, url->domain_id);
-                query[length] = '\0';
-
-                mysql_query(conn, query);
-		free(query);
         }
 
 	// Okay, once we're here, we can load the rules and compare the URL

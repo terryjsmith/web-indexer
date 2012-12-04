@@ -31,13 +31,16 @@ int main(int argc, char** argv) {
 	// Global CURL init
         curl_global_init(CURL_GLOBAL_ALL);
 
+	// Multiple connections to MySQL requires this first
+	mysql_library_init(0, 0, 0);
+
 	// Initialize a pool of workers
         Worker** workers = (Worker**)malloc(sizeof(Worker*) * NUM_THREADS);
 
         // Initialize them
         for(unsigned int i = 0; i < NUM_THREADS; i++) {
                 workers[i] = new Worker;
-                workers[i]->Start();
+                workers[i]->Start(i);
         }
 
         // Enter the main loop

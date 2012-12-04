@@ -23,13 +23,22 @@
 
 Worker::Worker() {
 	m_threadid = 0;
+	m_conn = 0;
+	m_context = 0;
 }
 
 Worker::~Worker() {
 }
 
-void Worker::Start() {
-	m_threadid = pthread_create(&m_thread, NULL, _thread_function, this);
+void Worker::Start(int pos) {
+	m_threadid = pos;
+
+	int rc = pthread_create(&m_thread, NULL, Worker::_thread_function, this);
+	if(rc) {
+		printf("Unable to create thread %d.\n", pos);
+		return;
+	}
+	printf("Created thread #%d\n", m_threadid);
 }
 
 void* Worker::_thread_function(void* ptr) {
@@ -40,23 +49,29 @@ void* Worker::_thread_function(void* ptr) {
 }
 
 void Worker::Run() {
+	printf("Started thread #%d\n", m_threadid);
+
 	// Get a connection to redis to grab URLs
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
         if(m_context->err) {
-                printf("Unable to connect to redis.");
-                exit(0);
+                printf("Unable to connect to redis.\n");
+                pthread_exit(0);
         }
+	printf("Thread #%d connected to redis.\n", m_threadid);
 
         // Connect to MySQL
         m_conn = mysql_init(NULL);
-        if(mysql_real_connect(m_conn, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, NULL, 0, NULL, 0) == NULL) {
-                printf("Unable to connect to MySQL.\n");
-                exit(0);
+        if(!mysql_real_connect(m_conn, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, 0, NULL, 0)) {
+                printf("Unable to connect to MySQL: %s\n", mysql_error(m_conn));
+                pthread_exit(0);
         }
+	printf("Thread #%d connected to MySQL.\n", m_threadid);
 
-        mysql_select_db(m_conn, MYSQL_DB);
+	mysql_set_character_set(m_conn, "utf8");
 
         CURLM* multi = curl_multi_init();
+
+	printf("Thread #%d initialized cURL.\n", m_threadid);
 
 	// Set up to start doing transfers
         unsigned int max_tries = 100;
@@ -165,7 +180,7 @@ void Worker::Run() {
                // Main loop, start any transfers that need to be started
                 int running = 0;
                 CURLMcode code = curl_multi_perform(multi, &running);
-                while((code = curl_multi_perform(multi, &running)))
+                while(code)
                         code = curl_multi_perform(multi, &running);
 
                 int msgs = 0;
@@ -188,13 +203,10 @@ void Worker::Run() {
                                 char* curl_error = (char*)curl_easy_strerror(msg->data.result);
                                 char* url =  request->GetURL()->url;
 
-                                unsigned int length = strlen(url) + 2 + strlen(curl_error);
-                                char* final = (char*)malloc(length + 1);
-                                sprintf(final, "%s: %s", url, curl_error);
-                                final[length] = '\0';
+                                printf("%s: %s\n", url, curl_error);
 
-                                printf(final);
-                                free(final);
+				reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url);
+	                        freeReplyObject(reply);
 
                                 msg = curl_multi_info_read(multi, &msgs);
                                 continue;
