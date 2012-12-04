@@ -8,11 +8,11 @@
 #include <unistd.h>
 #include <regex.h>
 #include <pthread.h>
-#include <curl/curl.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <sys/epoll.h>
 
 #include <defines.h>
 #include <url.h>
@@ -54,7 +54,7 @@ void Worker::Run() {
 	// Get a connection to redis to grab URLs
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
         if(m_context->err) {
-                printf("Unable to connect to redis.\n");
+                printf("Thread #%d unable to connect to redis.\n", m_threadid);
                 pthread_exit(0);
         }
 	printf("Thread #%d connected to redis.\n", m_threadid);
@@ -62,16 +62,21 @@ void Worker::Run() {
         // Connect to MySQL
         m_conn = mysql_init(NULL);
         if(!mysql_real_connect(m_conn, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, 0, NULL, 0)) {
-                printf("Unable to connect to MySQL: %s\n", mysql_error(m_conn));
+                printf("Thread #%d unable to connect to MySQL: %s\n", m_threadid, mysql_error(m_conn));
                 pthread_exit(0);
         }
 	printf("Thread #%d connected to MySQL.\n", m_threadid);
 
 	mysql_set_character_set(m_conn, "utf8");
 
-        CURLM* multi = curl_multi_init();
+	// Set up our libevent notification base
+	int epoll = epoll_create(CONNECTIONS_PER_THREAD);
+	if(epoll < 0) {
+		printf("Thread #%d unable to create epoll interface.\n", m_threadid);
+                pthread_exit(0);
+	}
 
-	printf("Thread #%d initialized cURL.\n", m_threadid);
+	printf("Thread #%d initialized epoll.\n", m_threadid);
 
 	// Set up to start doing transfers
         unsigned int max_tries = 100;
@@ -79,6 +84,10 @@ void Worker::Run() {
         redisReply* reply = (redisReply*)redisCommand(m_context, "LLEN url_queue");
         max_tries = min(max_tries, reply->integer);
         freeReplyObject(reply);
+
+	// Initialize our stack of HttpRequests
+	HttpRequest** requests = (HttpRequest**)malloc(CONNECTIONS_PER_THREAD * sizeof(HttpRequest*));
+	memset(requests, 0, CONNECTIONS_PER_THREAD * sizeof(HttpRequest*));
 
         unsigned int active_connections = 0;
 
@@ -147,150 +156,88 @@ void Worker::Run() {
                 printf("Fetching URL %s...\n", url->url);
 
                 // Otherwise, we're good
-                HttpRequest* request = new HttpRequest(url);
+                requests[i] = new HttpRequest(url);
+		int socket = requests[i]->Initialize();
+		if(!socket) {
+			printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->url);
+	                pthread_exit(0);
+		}
 
-                unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
-                char* dir = (char*)malloc(dir_length + 1);
-                sprintf(dir, "%s%s", BASE_PATH, url->parts[URL_DOMAIN]);
-                dir[dir_length] = '\0';
+		// Add the socket to epoll
+		struct epoll_event event;
+		event.data.fd = socket;
+		event.events = EPOLLIN | EPOLLET;
+		if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+			printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
+                        pthread_exit(0);
+		}
 
-                mkdir(dir, 0644);
-                free(dir);
-
-                unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
-                char* filename = (char*)malloc(length + 1);
-                sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], url->hash);
-                filename[length] = '\0';
-
-                if(!(request->Open(filename))) {
-                        printf("Unable to open file %s.\n", filename);
-                        return;
-                }
+		requests[i]->Start();
 
                 // Clean up
-                free(filename);
                 delete url;
 
                 // Add it to the multi stack
                 active_connections++;
-                curl_multi_add_handle(multi, request->GetHandle());
         }
 
         while(true) {
-               // Main loop, start any transfers that need to be started
-                int running = 0;
-                CURLMcode code = curl_multi_perform(multi, &running);
-                while(code)
-                        code = curl_multi_perform(multi, &running);
+		epoll_event* events = (epoll_event*)malloc(CONNECTIONS_PER_THREAD * sizeof(epoll_event));
+		memset(events, 0, CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 
-                int msgs = 0;
-                CURLMsg* msg = curl_multi_info_read(multi, &msgs);
-                while(msg != NULL) {
-                        active_connections--;
+		int msgs = epoll_wait(epoll, events, CONNECTIONS_PER_THREAD, -1);
+		for(unsigned int i = 0; i < msgs; i++) {
+			// Find the applicable HttpRequest object
+			HttpRequest* request = 0;
+			int position = 0;
+			for(unsigned int j = 0; j < CONNECTIONS_PER_THREAD; j++) {
+				if(requests[j]->GetFD() == events[i].data.fd) {
+					request = requests[j];
+					position = j;
+					break;
+				}
+			}
 
-                        /// Get the HttpRequest this was associated with
-                        HttpRequest* request = 0;
-                        curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
+			if(!request) {
+				printf("Thread #%d unable to look up request for socket.\n", m_threadid);
+				pthread_exit(0);
+			}
 
-                        if(!request) {
-                                msg = curl_multi_info_read(multi, &msgs);
-                                continue;
-                        }
+			bool process = false;
+			if(!(events[i].events & EPOLLIN)) {
+				process = true;
+			}
+			else {
+				if(!request->Read())
+					process = true;
+			}
 
-                        // This means that something finished; either with an error or with success
-                        if(msg->data.result != CURLE_OK) {
-                                // Get the error and URL to be logged
-                                char* curl_error = (char*)curl_easy_strerror(msg->data.result);
-                                char* url =  request->GetURL()->url;
+			if(process) {
+				request->Process();
+				URL* url = request->GetURL();
 
-                                printf("%s: %s\n", url, curl_error);
+				char* filename = request->GetFilename();
 
-				reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url);
-	                        freeReplyObject(reply);
+				// Add it to the parse_queue in redis
+	                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
+        	                freeReplyObject(reply);
 
-                                msg = curl_multi_info_read(multi, &msgs);
-                                continue;
-                        }
+				char* query = (char*)malloc(1000);
+	                        time_t now = time(NULL);
+				long int code = 200;
 
-                        // Get the URL from the request
-                        URL* url = request->GetURL();
+        	                int length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
+                	        query[length] = '\0';
+                        	mysql_query(m_conn, query);
+				free(query);
 
-                        // Find the file this page was written to
-                        unsigned int length = strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
-                        char* filename = (char*)malloc(length + 1);
-                        sprintf(filename, "%s/%s.html", url->parts[URL_DOMAIN], url->hash);
-                        filename[length] = '\0';
+				active_connections--;
+				delete request;
+				requests[i] = 0;
+			}
+		}
 
-                        // Add it to the parse_queue in redis
-                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
-                        freeReplyObject(reply);
-                        free(filename);
-
-                        // If the URL changed (ie. a redirect, save the redirected to URL as well)
-                        char* redirect = 0;
-                        curl_easy_getinfo(msg->easy_handle, CURLINFO_EFFECTIVE_URL, redirect);
-
-                        // Also save the HTTP code to the database
-                        long code = 0;
-                        curl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
-
-                        // Only need to do this if there was a new URL
-                        if(redirect) {
-                                if(strcmp(redirect, url->url)) {
-                                        // There was a change in the URL, handle it
-                                        URL* new_url = new URL(redirect);
-                                        new_url->Parse(NULL);
-
-                                        // Load the site info from the database
-                                        Site* site = new Site();
-                                        site->Load(new_url->parts[URL_DOMAIN], m_conn);
-                                        new_url->domain_id = site->domain_id;
-
-                                        // Find the new domain and path info
-                                        new_url->Load(m_conn);
-
-                                        // Make sure we mark that we actually checked this domain as well
-                                        site->SetLastAccess(time(NULL));
-                                        delete site;
-
-                                        // Insert a record into the URL table
-                                        char* query = (char*)malloc(1000);
-                                        length = sprintf(query, "INSERT INTO redirect VALUES(%ld, %ld)", url->url_id, new_url->url_id);
-                                        query[length] = '\0';
-                                        mysql_query(m_conn, query);
-
-                                        free(query);
-                                        // Make sure we update the first URL to reflect the status of the last
-                                        query = (char*)malloc(1000);
-                                        time_t now = time(NULL);
-                                        length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld WHERE url_id = %ld", code, now, url->url_id);
-                                        query[length] = '\0';
-                                        mysql_query(m_conn, query);
-
-                                        free(query);
-
-                                        // Finally, delete the old URL and use the new one
-                                        delete url;
-                                        url = new_url;
-                                }
-                        }
-
-                        char* query = (char*)malloc(1000);
-                        time_t now = time(NULL);
-                        length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
-                        query[length] = '\0';
-                        mysql_query(m_conn, query);
-
-                        free(query);
-
-                        // Remove it from the stack
-                        curl_multi_remove_handle(multi, msg->easy_handle);
-
-                        // Clean up
-                        delete request;
-
-                        msg = curl_multi_info_read(multi, &msgs);
-                }
+		free(events);
 
                 // Set up a maximum number of tries to get a new URL
                 unsigned int counter = 0;
@@ -303,6 +250,15 @@ void Worker::Run() {
                 while(active_connections < CONNECTIONS_PER_THREAD) {
                         if(counter >= max_tries) break;
                         counter++;
+
+			// Make sure we have an empty slot
+			int slot = -1;
+			for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+				if(requests[i] == 0)
+					slot = i;
+			}
+
+			if(slot < 0) break;
 
                         // Fetch a URL from redis
                         redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
@@ -359,33 +315,30 @@ void Worker::Run() {
 
                         printf("Fetching URL %s...\n", url->url);
 
-                        HttpRequest* new_request = new HttpRequest(url);
+			// Otherwise, we're good
+	                requests[slot] = new HttpRequest(url);
+        	        int socket = requests[slot]->Initialize();
+	                if(!socket) {
+        	                printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->url);
+                	        pthread_exit(0);
+	                }
 
-                        unsigned int dir_length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]);
-                        char* dir = (char*)malloc(dir_length + 1);
-                        sprintf(dir, "%s%s", BASE_PATH, url->parts[URL_DOMAIN]);
-                        dir[dir_length] = '\0';
+        	        // Add the socket to epoll
+                	struct epoll_event event;
+	                event.data.fd = socket;
+        	        event.events = EPOLLIN | EPOLLET;
+                	if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+	                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
+        	                pthread_exit(0);
+                	}
 
-                        mkdir(dir, 0644);
-                        free(dir);
-
-                        unsigned int length = strlen(BASE_PATH) + strlen(url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
-                        char* filename = (char*)malloc(length + 1);
-                        sprintf(filename, "%s%s/%s.html", BASE_PATH, url->parts[URL_DOMAIN], url->hash);
-                        filename[length] = '\0';
-
-                        if(!(new_request->Open(filename))) {
-                                printf("Unable to open file %s.\n", filename);
-                                return;
-                        }
+			requests[slot]->Start();
 
                         // Clean up
-                        free(filename);
                         delete url;
 
                         // Add it to the multi stack
                         active_connections++;
-                        curl_multi_add_handle(multi, new_request->GetHandle());
                 }
 
                 sleep(1);
@@ -393,7 +346,6 @@ void Worker::Run() {
 
         // Clean up
         mysql_close(m_conn);
-        curl_multi_cleanup(multi);
         redisFree(m_context);
 
         return;

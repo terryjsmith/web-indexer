@@ -4,6 +4,7 @@
 
 #define NUM_THREADS			10
 #define CONNECTIONS_PER_THREAD		10
+#define SOCKET_BUFFER_SIZE		1024
 
 #define BASE_PATH       		"/mnt/indexer/"
 

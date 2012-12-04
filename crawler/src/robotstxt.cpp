@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <regex.h>
-#include <curl/curl.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 #include <my_global.h>
@@ -42,7 +41,7 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
         mysql_query(conn, query);
         MYSQL_RES* result = mysql_store_result(conn);
 
-        bool robots_valid = true;
+        bool robots_valid = false;
         if(mysql_num_rows(result)) {
                 MYSQL_ROW row = mysql_fetch_row(result);
                 long int last_access = atol(row[0]);
@@ -64,16 +63,21 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                 robots_url->Parse(url);
 
                 HttpRequest* req = new HttpRequest(robots_url);
-                CURL* curl = req->GetHandle();
+		printf("init\n");
+		if(!req->Initialize())
+			printf("fail\n");
+		printf("start\n");
+		req->Start();
+		printf("read\n");
+		while(req->Read() != 0) ;
+		printf("process\n");
+		req->Process();
 
-                // Set the filename to output to
-                char* tmpname = tmpnam(robots_url->hash);
-                FILE* fp = req->Open(tmpname);
+		int code = req->GetCode();
 
-                curl_easy_perform(curl);
-
-		long code = 0;
-		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		// Get the output filename
+		char* tmpname = (char*)malloc(strlen(req->GetFilename()) + 1);
+		strcpy(tmpname, req->GetFilename());
 
 		delete req;
 
@@ -86,7 +90,7 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 	                        mysql_query(conn, query);
         	                free(query);
 
-				fp = fopen(tmpname, "r");
+				FILE* fp = fopen(tmpname, "r");
 				if(!fp) {
 					printf("Unable to open robots.txt file %s for URL %s.\n", tmpname, url->url);
 				}

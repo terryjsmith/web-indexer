@@ -22,13 +22,11 @@
 int main(int argc, char** argv) {
 	// Connect to MySQL
         MYSQL* conn = mysql_init(NULL);
-        if(mysql_real_connect(conn, "localhost", "crawler", "SpasWehabEp4", NULL, 0, NULL, 0) == NULL) {
+        if(mysql_real_connect(conn, "localhost", "crawler", "SpasWehabEp4", "crawler", 0, NULL, 0) == NULL) {
                 printf("Unable to connect to MySQL.\n");
                 return(0);
         }
         printf("Connected to MySQL.\n");
-
-	mysql_select_db(conn, "crawler");
 
 	URL* url = new URL("http://www.icedteapowered.com/");
 	url->Parse(NULL);
@@ -39,8 +37,13 @@ int main(int argc, char** argv) {
 
 	site->SetLastAccess(time(NULL));
 
+	printf("Loading robots.txt...\n");
+
 	RobotsTxt* robots = new RobotsTxt();
+	printf("HERE\n");
 	robots->Load(url, conn);
+
+	printf("done.\n");
 
 	URL* test = new URL("http://www.icedteapowered.com/");
 	test->Parse(NULL);

@@ -7,22 +7,40 @@ public:
 	HttpRequest(URL* url);
 	~HttpRequest();
 
-	// Set the output file
-	FILE* Open(char* filename);
+	// Initialize this request (create the socket)
+	int Initialize();
+
+	// Run this request
+	bool Start();
+
+	// Read data from socket (returns number of bytes read)
+	int Read();
+
+	// Process what we have
+	bool Process();
 
 	// Getters
-	CURL* GetHandle() { return m_curl; }
+	int GetFD() { return m_socket; }
 	URL* GetURL() { return m_url; }
+	char* GetFilename() { return m_filename; }
+	long int GetCode() { return m_code; }
 
 protected:
-	// The file we're going to write out to
-	FILE* m_fp;
-
 	// The URL we're working on
 	URL* m_url;
 
-	// cURL stuff: internal handle and return HTTP code
-	CURL* m_curl;
+	// Get the filename
+	char* m_filename;
+
+	// The socket for communication
+	int m_socket;
+
+	// The respone we've gotten back
+	char* m_content;
+	unsigned int m_size;
+
+	// The returned HTTP code
+	long int m_code;
 };
 
 #endif

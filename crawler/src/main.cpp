@@ -12,7 +12,6 @@ using namespace std;
 #include <ctype.h>
 #include <unistd.h>
 #include <regex.h>
-#include <curl/curl.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 #include <my_global.h>
@@ -28,9 +27,6 @@ using namespace std;
 /* FUNCTIONS */
 
 int main(int argc, char** argv) {
-	// Global CURL init
-        curl_global_init(CURL_GLOBAL_ALL);
-
 	// Multiple connections to MySQL requires this first
 	mysql_library_init(0, 0, 0);
 
