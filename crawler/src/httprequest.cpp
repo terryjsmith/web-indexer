@@ -67,7 +67,6 @@ bool HttpRequest::Start() {
                 printf("Unable to resolve host: %s.\n", m_url->parts[URL_DOMAIN]);
                 return(false);
         }
-	printf("Resolved host.\n");
 
         memset(&server, 0, sizeof(server));
         server.sin_family = AF_INET;
@@ -79,7 +78,6 @@ bool HttpRequest::Start() {
 		printf("Unable to connect to %s.\n", m_url->url);
 		return(false);
 	}
-	printf("Connected.\n");
 
 	// Make our socket non-blocking
 	int flags;
@@ -87,14 +85,12 @@ bool HttpRequest::Start() {
 		printf("Unable to read socket for non-blocking I/O on %s.\n", m_url->url);
                 return(false);
 	}
-	printf("Got flags.\n");
 
   	flags |= O_NONBLOCK;
   	if((fcntl(m_socket, F_SETFL, flags)) < 0) {
 		printf("Unable to set up socket for non-blocking I/O on %s.\n", m_url->url);
                 return(false);
     	}
-	printf("Set flags.\n");
 
 	// Construct our HTTP request
 	char* request = (char*)malloc(strlen(m_url->parts[URL_PATH]) + strlen(m_url->parts[URL_QUERY]) + strlen(m_url->parts[URL_DOMAIN]) + 200);
@@ -135,6 +131,7 @@ int HttpRequest::Read() {
 		}
 
 		if(count == 0) {
+			m_complete = true;
 			free(buffer);
 			return(0);
 		}
@@ -160,6 +157,8 @@ int HttpRequest::Read() {
 			free(buffer);
 			return(0);
 		}
+
+		free(buffer);
 	}
 
 	return(1);
@@ -175,43 +174,67 @@ bool HttpRequest::Process() {
 		return(false);
 
 	// Parse the first line as the HTTP code
-	if(strlen(line) > 12) {
+	if(strlen(line) >= 13) {
 		char* code = (char*)malloc(4);
 		strncpy(code, line + 9, 3);
 		code[3] = '\0';
-		m_code = atol(code);
+		m_code = atoi(code);
 		free(code);
 	}
 
 	// Process the header first
-	while(strlen(line) > 1) {
-		line = strtok(NULL, "\n");
+	while(line != NULL) {
+		if(strlen(line) <= 2) {
+			pos += strlen(line) + 1;
+			break;
+		}
+
+		if((strstr(line, "Location: ")) == line) {
+			unsigned int length = strlen(line) - 11;
+			char* location = (char*)malloc(length + 1);
+			strncpy(location, line + 10, length);
+			location[length] = '\0';
+
+			printf("Got Location redirect %s for URL %s\n", location, m_url->url);
+
+			URL* new_url = new URL(location);
+			new_url->Parse(m_url);
+
+			free(location);
+			delete m_url;
+			m_url = new_url->Clone();
+			delete new_url;
+		}
+
 		pos += strlen(line) + 1;
+		line = strtok(NULL, "\n");
 	}
 
-	// Save the rest to a file
-	unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->parts[URL_DOMAIN]);
-        char* dir = (char*)malloc(dir_length + 1);
-        sprintf(dir, "%s%s", BASE_PATH, m_url->parts[URL_DOMAIN]);
-        dir[dir_length] = '\0';
+	if(m_code == 200) {
+		// Save the rest to a file
+		unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->parts[URL_DOMAIN]);
+	        char* dir = (char*)malloc(dir_length + 1);
+        	sprintf(dir, "%s%s", BASE_PATH, m_url->parts[URL_DOMAIN]);
+	        dir[dir_length] = '\0';
 
-        mkdir(dir, 0644);
-        free(dir);
+        	mkdir(dir, 0644);
+	        free(dir);
 
-        unsigned int length = strlen(BASE_PATH) + strlen(m_url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
-        m_filename = (char*)malloc(length + 1);
-        sprintf(m_filename, "%s%s/%s.html", BASE_PATH, m_url->parts[URL_DOMAIN], m_url->hash);
-        m_filename[length] = '\0';
+        	unsigned int length = strlen(BASE_PATH) + strlen(m_url->parts[URL_DOMAIN]) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
+	        m_filename = (char*)malloc(length + 1);
+        	sprintf(m_filename, "%s%s/%s.html", BASE_PATH, m_url->parts[URL_DOMAIN], m_url->hash);
+	        m_filename[length] = '\0';
 
-	FILE* fp = fopen(m_filename, "w");
-	if(!fp) {
-                printf("Unable to open file %s.\n", m_filename);
-		free(m_filename);
-                return(false);
-        }
+		FILE* fp = fopen(m_filename, "w");
+		if(!fp) {
+        	        printf("Unable to open file %s.\n", m_filename);
+			free(m_filename);
+	                return(false);
+        	}
 
-	fwrite(m_content + pos, m_size - pos, 1, fp);
-	fclose(fp);
+		fwrite(m_content + pos, m_size - pos, 1, fp);
+		fclose(fp);
+	}
 
 	return(true);
 }

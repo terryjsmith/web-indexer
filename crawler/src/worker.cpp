@@ -141,6 +141,7 @@ void Worker::Run() {
                 RobotsTxt* robots = new RobotsTxt();
                 robots->Load(url, m_conn);
                 if(robots->Check(url) == true) {
+			delete robots;
                         delete site;
                         delete url;
                         i--;
@@ -163,16 +164,24 @@ void Worker::Run() {
 	                pthread_exit(0);
 		}
 
+		if(!requests[i]->Start()) {
+			delete requests[i];
+			requests[i] = 0;
+                        delete url;
+                        i--;
+                        continue;
+		}
+
 		// Add the socket to epoll
 		struct epoll_event event;
+		memset(&event, 0, sizeof(epoll_event));
+
 		event.data.fd = socket;
 		event.events = EPOLLIN | EPOLLET;
 		if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
 			printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
                         pthread_exit(0);
 		}
-
-		requests[i]->Start();
 
                 // Clean up
                 delete url;
@@ -188,52 +197,55 @@ void Worker::Run() {
 		int msgs = epoll_wait(epoll, events, CONNECTIONS_PER_THREAD, -1);
 		for(unsigned int i = 0; i < msgs; i++) {
 			// Find the applicable HttpRequest object
-			HttpRequest* request = 0;
 			int position = 0;
 			for(unsigned int j = 0; j < CONNECTIONS_PER_THREAD; j++) {
+				if(!requests[j]) continue;
+
 				if(requests[j]->GetFD() == events[i].data.fd) {
-					request = requests[j];
 					position = j;
 					break;
 				}
 			}
 
-			if(!request) {
+			if(!requests[position]) {
 				printf("Thread #%d unable to look up request for socket.\n", m_threadid);
 				pthread_exit(0);
 			}
 
 			bool process = false;
-			if(!(events[i].events & EPOLLIN)) {
+			if(requests[position]->Read() == 0) {
 				process = true;
-			}
-			else {
-				if(!request->Read())
-					process = true;
 			}
 
 			if(process) {
-				request->Process();
-				URL* url = request->GetURL();
+				URL* url = requests[position]->GetURL();
+				requests[position]->Process();
 
-				char* filename = request->GetFilename();
-
-				// Add it to the parse_queue in redis
-	                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
-        	                freeReplyObject(reply);
+				int code = requests[position]->GetCode();
 
 				char* query = (char*)malloc(1000);
-	                        time_t now = time(NULL);
-				long int code = 200;
+                                time_t now = time(NULL);
+				int length = sprintf(query, "UPDATE url SET last_code = %d, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
+				printf("UPDATE url SET last_code = %d, last_update = %ld  WHERE url_id = %ld\n", code, now, url->url_id);
+                                query[length] = '\0';
+                                mysql_query(m_conn, query);
+                                free(query);
 
-        	                int length = sprintf(query, "UPDATE url SET last_code = %ld, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
-                	        query[length] = '\0';
-                        	mysql_query(m_conn, query);
-				free(query);
+				if(code == 200) {
+					char* filename = requests[position]->GetFilename();
+
+					// Add it to the parse_queue in redis
+	                        	redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
+	        	                freeReplyObject(reply);
+				}
+
+				if((code == 302) || (code == 301)) {
+					
+				}
 
 				active_connections--;
-				delete request;
-				requests[i] = 0;
+				delete requests[position];
+				requests[position] = 0;
 			}
 		}
 
@@ -302,6 +314,7 @@ void Worker::Run() {
                         RobotsTxt* robots = new RobotsTxt();
                         robots->Load(url, m_conn);
                         if(robots->Check(url) == true) {
+				delete robots;
                                 delete site;
                                 delete url;
                                 continue;
@@ -323,16 +336,23 @@ void Worker::Run() {
                 	        pthread_exit(0);
 	                }
 
+			if(!requests[slot]->Start()) {
+        	                delete requests[slot];
+	                        requests[slot] = 0;
+                        	delete url;
+        	                continue;
+	                }
+
         	        // Add the socket to epoll
                 	struct epoll_event event;
+			memset(&event, 0, sizeof(epoll_event));
+
 	                event.data.fd = socket;
         	        event.events = EPOLLIN | EPOLLET;
                 	if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
 	                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
         	                pthread_exit(0);
                 	}
-
-			requests[slot]->Start();
 
                         // Clean up
                         delete url;

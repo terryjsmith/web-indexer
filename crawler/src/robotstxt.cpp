@@ -63,19 +63,25 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                 robots_url->Parse(url);
 
                 HttpRequest* req = new HttpRequest(robots_url);
-		if(!req->Initialize())
+		if(!req->Initialize()) {
 			printf("Unable to initialize connection.\n");
-		req->Start();
-		while(req->Read() != 0) ;
+			return;
+		}
+		if(!req->Start()) {
+			printf("Unable to fetch robots.txt for %s\n", url->url);
+			return;
+		}
+		while(req->Read() != 0) usleep(1);
 		req->Process();
 
 		int code = req->GetCode();
 
-		printf("HTTP code: %d\n", code);
-
 		// Get the output filename
-		char* tmpname = (char*)malloc(strlen(req->GetFilename()) + 1);
-		strcpy(tmpname, req->GetFilename());
+		char* tmpname = 0;
+		if(code == 200) {
+			tmpname = (char*)malloc(strlen(req->GetFilename()) + 1);
+			strcpy(tmpname, req->GetFilename());
+		}
 
 		delete req;
 
@@ -166,8 +172,9 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
         	        mysql_query(conn, query);
 	                free(query);
                 }
-		
-		free(tmpname);
+	
+		if(tmpname)	
+			free(tmpname);
                 delete robots_url;
         }
 

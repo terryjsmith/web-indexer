@@ -119,7 +119,8 @@ bool URL::Parse(URL* base) {
 	unsigned int url_length = strlen(url);
 
 	char* temp = (char*)malloc(url_length + copy_length);
-	strncpy(temp, base->parts[URL_PATH] + 1, copy_length);
+	if(copy_length)
+		strncpy(temp, base->parts[URL_PATH] + 1, copy_length);
 	strcpy(temp + copy_length, url);
 
 	free(url);

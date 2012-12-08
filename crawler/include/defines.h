@@ -2,8 +2,8 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-#define NUM_THREADS			10
-#define CONNECTIONS_PER_THREAD		10
+#define NUM_THREADS			5
+#define CONNECTIONS_PER_THREAD		50
 #define SOCKET_BUFFER_SIZE		1024
 
 #define BASE_PATH       		"/mnt/indexer/"
