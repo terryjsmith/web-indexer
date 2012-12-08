@@ -11,7 +11,8 @@ public:
 	int Initialize();
 
 	// Run this request
-	bool Start();
+	bool Connect();
+	bool Send();
 
 	// Read data from socket (returns number of bytes read)
 	int Read();

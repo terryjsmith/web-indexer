@@ -67,7 +67,7 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 			printf("Unable to initialize connection.\n");
 			return;
 		}
-		if(!req->Start()) {
+		if(!req->Connect()) {
 			printf("Unable to fetch robots.txt for %s\n", url->url);
 			return;
 		}

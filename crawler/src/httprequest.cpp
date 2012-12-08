@@ -55,10 +55,23 @@ int HttpRequest::Initialize() {
 		return(0);
 	}
 
+	// Make our socket non-blocking
+        int flags;
+        if((flags = fcntl(m_socket, F_GETFL, 0)) < 0) {
+                printf("Unable to read socket for non-blocking I/O on %s.\n", m_url->url);
+                return(false);
+        }
+
+        flags |= O_NONBLOCK;
+        if((fcntl(m_socket, F_SETFL, flags)) < 0) {
+                printf("Unable to set up socket for non-blocking I/O on %s.\n", m_url->url);
+                return(false);
+        }
+
 	return(m_socket);
 }
 
-bool HttpRequest::Start() {
+bool HttpRequest::Connect() {
 	struct sockaddr_in server;
         struct hostent* host;
 
@@ -74,48 +87,35 @@ bool HttpRequest::Start() {
         server.sin_port = htons(80);
 
 	// Connect!
-	if(connect(m_socket,(struct sockaddr *) &server, sizeof(server)) < 0) {
-		printf("Unable to connect to %s.\n", m_url->url);
-		return(false);
-	}
+	connect(m_socket,(struct sockaddr *) &server, sizeof(server));
+	return(true);
+}
 
-	// Make our socket non-blocking
-	int flags;
-  	if((flags = fcntl(m_socket, F_GETFL, 0)) < 0) {
-		printf("Unable to read socket for non-blocking I/O on %s.\n", m_url->url);
-                return(false);
-	}
-
-  	flags |= O_NONBLOCK;
-  	if((fcntl(m_socket, F_SETFL, flags)) < 0) {
-		printf("Unable to set up socket for non-blocking I/O on %s.\n", m_url->url);
-                return(false);
-    	}
-
+bool HttpRequest::Send() {
 	// Construct our HTTP request
-	char* request = (char*)malloc(strlen(m_url->parts[URL_PATH]) + strlen(m_url->parts[URL_QUERY]) + strlen(m_url->parts[URL_DOMAIN]) + 200);
-	unsigned int length = 0;
-	if(strlen(m_url->parts[URL_QUERY]))
-		length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\nAccept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\n\r\n", m_url->parts[URL_PATH], m_url->parts[URL_QUERY], m_url->parts[URL_DOMAIN]);
-	else
-		length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\nAccept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\n\r\n", m_url->parts[URL_PATH], m_url->parts[URL_DOMAIN]);
+        char* request = (char*)malloc(strlen(m_url->parts[URL_PATH]) + strlen(m_url->parts[URL_QUERY]) + strlen(m_url->parts[URL_DOMAIN]) + 200);
+        unsigned int length = 0;
+        if(strlen(m_url->parts[URL_QUERY]))
+                length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\nAccept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\n\r\n", m_url->parts[URL_PATH], m_url->parts[URL_QUERY], m_url->parts[URL_DOMAIN]);
+        else
+                length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\nAccept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\n\r\n", m_url->parts[URL_PATH], m_url->parts[URL_DOMAIN]);
 
-	// Send the request
-	unsigned int sent = 0;
-	while(sent != length) {
-		int status = send(m_socket, request, length, 0);
-		if(status > 0)
-			sent += status;
-		else {
-			if(errno != EAGAIN) {
-				printf("Error sending HTTP request on %s.\n", m_url->url);
-				free(request);
-				return(false);
-			}
-		}
-	}
+        // Send the request
+        unsigned int sent = 0;
+        while(sent != length) {
+                int status = send(m_socket, request, length, 0);
+                if(status > 0)
+                        sent += status;
+                else {
+                        if(errno != EAGAIN) {
+                                printf("Error sending HTTP request on %s.\n", m_url->url);
+                                free(request);
+                                return(false);
+                        }
+                }
+        }
 
-	free(request);
+        free(request);
 	return(true);
 }
 
