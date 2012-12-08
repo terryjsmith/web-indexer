@@ -9,7 +9,8 @@ enum {
 	HTTPREQUESTSTATE_SEND,
 	HTTPREQUESTSTATE_RECV,
 	HTTPREQUESTSTATE_WRITE,
-	HTTPREQUESTSTATE_COMPLETE
+	HTTPREQUESTSTATE_COMPLETE,
+	HTTPREQUESTSTATE_ERROR
 };
 
 class HttpRequest {
@@ -17,16 +18,26 @@ public:
 	HttpRequest(URL* url);
 	~HttpRequest();
 
-	// The generic handler function to be called from the main loop
-	void process();
+	// Initialize our request and kick things off
+	bool initialize();
+
+	// The generic handler function to be called from the main loop; returns false on error
+	bool process(void* arg);
+
+	// Force out request to error out
+	void error(char* error);
 
 	 // Set the output file for this (if applicable)
 	void set_output_filename(char* filename);
 
 	// Getter functions
-	int get_socket() { return m_socket; }
+	int   get_socket() { return m_socket; }
 	char* get_content() { return m_content; }
 	char* get_filename() { return m_filename; }
+	char* get_error() { return m_error; }
+
+	// Our static DNS lookup functions
+	static void _dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent);
 
 protected:
 	// A pointer to our internal URL
@@ -46,6 +57,12 @@ protected:
 
 	// Our internal socket
 	int m_socket;
+
+	// A string description of an error that occured
+	char* m_error;
+
+	// The DNS channel we use to do look ups through c-ares
+	ares_channel m_channel;
 };
 
 #endif
