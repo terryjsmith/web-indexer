@@ -18,10 +18,10 @@
 
 #include <httprequest.h>
 
-HttpRequest::HttpRequest() {
+HttpRequest::HttpRequest(Url* url) {
 	m_socket = 0;
 	m_state = 0;
-	m_url = 0;
+	m_url = url;
 	m_content = 0;
 	m_fp = 0;
 	m_filename = 0;
