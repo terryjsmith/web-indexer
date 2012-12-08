@@ -184,6 +184,9 @@ void Worker::fill_list() {
                         continue;
                 }
 
+		// TODO: Set the output filename
+		
+
                 // Set the last access time to now
                 char* query = (char*)malloc(1000);
 		sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", now, info->domain_id);
@@ -272,15 +275,18 @@ void Worker::run() {
 			}
 
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+				// Get the URL we were working on
+				Url* url = m_requests[position]->get_url();
+
 				// Mark as done and all that
-				char* query = (char*)malloc(1000);
+				char* query = (char*)malloc(1000 + strlen(url->get_url()));
                                 time_t now = time(NULL);
-                                sprintf(query, "UPDATE url SET last_code = %d, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
+                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_hash(), code, now);
                                 mysql_query(m_conn, query);
                                 free(query);
 
                                 if(code == 200) {
-                                        char* filename = requests[position]->GetFilename();
+                                        char* filename = requests[position]->get_filename();
 
                                         // Add it to the parse_queue in redis
                                         redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
@@ -288,6 +294,9 @@ void Worker::run() {
                                 }
 
                                 if((code == 302) || (code == 301)) {
+					// Add the URL back into the queue
+					redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[position]->get_effective_url());
+                                        freeReplyObject(reply);
                                 }
 
 				delete m_requests[position];

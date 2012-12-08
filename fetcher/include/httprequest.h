@@ -38,6 +38,7 @@ public:
 	int   get_code() { return (int)m_code; }
 	char* get_effective_url() { return m_effective; }
 	int   get_state() { return m_state; }
+	Url*  get_url() { return m_url; }
 
 	// Our static DNS lookup functions
 	static void _dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent);

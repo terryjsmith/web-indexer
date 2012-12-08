@@ -19,12 +19,12 @@ public:
 	Url* clone();
 
 	// Getters
-	char* get_url();
-	char* get_scheme();
-	char* get_host();
-	char* get_path();
-	char* get_path_hash();
-	char* get_query();
+	char* get_url() { return m_url; }
+	char* get_scheme() { return m_parts[URL_SCHEME]; }
+	char* get_host() { return m_parts[URL_DOMAIN]; }
+	char* get_path() { return m_parts[URL_PATH]; }
+	char* get_path_hash() { return m_hash; }
+	char* get_query() { return m_parts[URL_QUERY]; }
 
 	unsigned int long get_domain_id();
 	unsigned int long get_url_id();
