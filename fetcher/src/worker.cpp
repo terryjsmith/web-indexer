@@ -23,9 +23,20 @@ Worker::Worker() {
 	m_threadid = 0;
 	m_conn = 0;
 	m_context = 0;
+	m_epoll = 0;
+	m_requests = 0;
 }
 
 Worker::~Worker() {
+	if(m_requests) {
+		for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+			if(m_requests[i]) continue;
+			delete m_requests[i];
+			m_requests[i] = 0;
+		}
+
+		free(m_requests);
+	}
 }
 
 void Worker::Start(int pos) {
@@ -107,6 +118,103 @@ bool Worker::url_exists(Url* url, domain* info) {
 	return(exists);
 }
 
+void Worker::fill_list() {
+	// Set up to start doing transfers
+        unsigned int max_tries = 100;
+
+        redisReply* reply = (redisReply*)redisCommand(m_context, "LLEN url_queue");
+        max_tries = min(max_tries, reply->integer);
+        freeReplyObject(reply);
+
+	unsigned int counter = 0;
+        for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+		if(m_requests[i]) continue;
+
+                if(counter >= max_tries) break;
+                counter++;
+
+                // Fetch a URL from redis
+                redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
+
+                // Split the URL info it's parts; no base URL
+                URL* url = new URL(reply->str);
+                url->Parse(0);
+
+                freeReplyObject(reply);
+
+                // Verify the scheme is one we want (just http for now)
+                if(strcmp(url->get_scheme(), "http") != 0) {
+                        delete url;
+                        i--;
+                        continue;
+                }
+
+                // Load the site info from the database
+                domain* info = load_domain_info(url->get_host());
+                url->domain_id = info->domain_id;
+
+                // Check whether this domain is on a timeout
+                time_t now = time(NULL);
+                if((now - info->last_access) < MIN_ACCESS_TIME) {
+                        reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->url);
+                        freeReplyObject(reply);
+
+                        delete info;
+                        delete url;
+                        i--;
+                        continue;
+                }
+
+                // Next check if we've already parsed this URL
+                if(url_exists(url, info)) {
+                        delete info;
+                        delete url;
+                        i--;
+                        continue;
+                }
+
+                // Finally, make sure the URL isn't disallowed by robots.txt
+                RobotsTxt* robots = new RobotsTxt();
+                robots->Load(url, m_conn);
+                if(robots->Check(url) == true) {
+                        delete robots;
+                        delete site;
+                        delete url;
+                        i--;
+                        continue;
+                }
+
+                // Set the last access time to now
+                char* query = (char*)malloc(1000);
+		sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", now, info->domain_id);
+		mysql_query(m_conn, query);
+		free(query);
+
+		free(info);
+                delete site;
+                delete robots;
+
+                // Otherwise, we're good
+                requests[i] = new HttpRequest(url);
+                int socket = requests[i]->initialize();
+                if(!socket) {
+                        printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->url);
+                        pthread_exit(0);
+                }
+
+                // Add the socket to epoll
+                struct epoll_event event;
+                memset(&event, 0, sizeof(epoll_event));
+
+                event.data.fd = socket;
+                event.events = EPOLLIN | EPOLLET | EPOLLOUT;
+                if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
+                        pthread_exit(0);
+                }
+        }
+}
+
 void Worker::run() {
 	// Get a connection to redis to grab URLs
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
@@ -130,13 +238,6 @@ void Worker::run() {
 		printf("Thread #%d unable to create epoll interface.\n", m_threadid);
                 pthread_exit(0);
 	}
-
-	// Set up to start doing transfers
-        unsigned int max_tries = 100;
-
-        redisReply* reply = (redisReply*)redisCommand(m_context, "LLEN url_queue");
-        max_tries = min(max_tries, reply->integer);
-        freeReplyObject(reply);
 
 	// Initialize our stack of HttpRequests
 	m_requests = (HttpRequest**)malloc(CONNECTIONS_PER_THREAD * sizeof(HttpRequest*));
@@ -174,8 +275,7 @@ void Worker::run() {
 				// Mark as done and all that
 				char* query = (char*)malloc(1000);
                                 time_t now = time(NULL);
-                                int length = sprintf(query, "UPDATE url SET last_code = %d, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
-                                query[length] = '\0';
+                                sprintf(query, "UPDATE url SET last_code = %d, last_update = %ld  WHERE url_id = %ld", code, now, url->url_id);
                                 mysql_query(m_conn, query);
                                 free(query);
 

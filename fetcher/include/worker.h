@@ -37,6 +37,9 @@ protected:
 
 	// Our list of requests we are currently processing
 	HttpRequest** m_requests;
+
+	// Our instance of epoll
+	int m_epoll;
 };
 
 #endif
