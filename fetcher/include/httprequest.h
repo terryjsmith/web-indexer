@@ -35,6 +35,9 @@ public:
 	char* get_content() { return m_content; }
 	char* get_filename() { return m_filename; }
 	char* get_error() { return m_error; }
+	int   get_code() { return (int)m_code; }
+	char* get_effective_url() { return m_effective; }
+	int   get_state() { return m_state; }
 
 	// Our static DNS lookup functions
 	static void _dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent);
@@ -43,11 +46,14 @@ protected:
 	// A pointer to our internal URL
 	URL* m_url;
 
+	// An effective final URL if there was supposed to be a redirect
+	char* m_effective;
+
 	// The actual HTML content we've received so far
 	char* m_content;
 
-	// The file handle we are writing out to (if applicable)
-	FILE* m_fp;
+	// The size of the HTML content
+	int m_size;
 
 	// The string filename we're outputting to
 	char* m_filename;
@@ -63,6 +69,9 @@ protected:
 
 	// The DNS channel we use to do look ups through c-ares
 	ares_channel m_channel;
+
+	// Our HTTP code
+	long int m_code;
 };
 
 #endif
