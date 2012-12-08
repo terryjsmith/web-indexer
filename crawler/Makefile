@@ -16,13 +16,16 @@ fetchtest: test/fetchtest.o src/url.o src/httprequest.o
 robotstest: test/robotstest.o src/url.o src/httprequest.o src/robotstxt.o src/site.o
 	$(CC) $^ -o test/$@ $(LDFLAGS)
 
+sockettest: test/sockettest.o
+	$(CC) $^ -o test/$@ $(LDFLAGS)
+
 # Individual files
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build both
 all: crawler test
-test: urltest fetchtest
+test: urltest fetchtest robotstest sockettest
 
 clean:
 	rm src/*.o test/*.o
