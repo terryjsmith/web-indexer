@@ -41,6 +41,9 @@ protected:
 
 	// The returned HTTP code
 	long int m_code;
+
+	// Is the transfer complete?
+	bool m_complete;
 };
 
 #endif

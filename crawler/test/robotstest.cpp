@@ -40,7 +40,6 @@ int main(int argc, char** argv) {
 	printf("Loading robots.txt...\n");
 
 	RobotsTxt* robots = new RobotsTxt();
-	printf("HERE\n");
 	robots->Load(url, conn);
 
 	printf("done.\n");
@@ -94,6 +93,12 @@ int main(int argc, char** argv) {
         else
                 printf("PASS\n");
         delete test;
+
+	delete robots;
+	delete site;
+	delete url;
+
+	mysql_close(conn);
 
 	return(0);
 }

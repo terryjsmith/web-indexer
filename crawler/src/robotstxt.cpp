@@ -63,17 +63,15 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
                 robots_url->Parse(url);
 
                 HttpRequest* req = new HttpRequest(robots_url);
-		printf("init\n");
 		if(!req->Initialize())
-			printf("fail\n");
-		printf("start\n");
+			printf("Unable to initialize connection.\n");
 		req->Start();
-		printf("read\n");
 		while(req->Read() != 0) ;
-		printf("process\n");
 		req->Process();
 
 		int code = req->GetCode();
+
+		printf("HTTP code: %d\n", code);
 
 		// Get the output filename
 		char* tmpname = (char*)malloc(strlen(req->GetFilename()) + 1);
@@ -93,10 +91,14 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 				FILE* fp = fopen(tmpname, "r");
 				if(!fp) {
 					printf("Unable to open robots.txt file %s for URL %s.\n", tmpname, url->url);
+					free(tmpname);
+					return;
 				}
 
 				if(fseek(fp, 0, SEEK_SET)) {
 					printf("Unable to seek in robots.txt file %s for URL %s.\n", tmpname, url->url);
+					free(tmpname);
+					return;
 				}
 
                         	// We successfully got a robots.txt file back, parse it
@@ -165,6 +167,7 @@ void RobotsTxt::Load(URL* url, MYSQL* conn) {
 	                free(query);
                 }
 		
+		free(tmpname);
                 delete robots_url;
         }
 
