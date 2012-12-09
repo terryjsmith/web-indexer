@@ -8,13 +8,12 @@
 #include <pthread.h>
 #include <url.h>
 
-regex_t* Url::m_regex = 0;
-
 Url::Url(char* url) {
 	// Initialize
 	m_parts[0] = m_parts[1] = m_parts[2] = m_parts[3] = 0;
 	m_hash = 0;
 	m_domain_id = 0;
+	m_regex = 0;
 
 	// Save a copy of our URL
         m_url = (char*)malloc(strlen(url) + 1);
@@ -30,6 +29,11 @@ Url::~Url() {
 	if(m_hash) {
 		free(m_hash);
 		m_hash = 0;
+	}
+
+	if(m_regex) {
+		regfree(m_regex);
+		m_regex = 0;
 	}
 
 	for(int i = 0; i < 4; i++) {
@@ -190,7 +194,7 @@ bool Url::parse(Url* base) {
 
 bool Url::_split() {
         // Get our regular expression
-        regex_t* regex = Url::_get_regex();
+        regex_t* regex = _get_regex();
 	if(!regex) {
 		printf("REGEX COMPILE ERROR\n");
 		return(false);
@@ -201,7 +205,7 @@ bool Url::_split() {
 
         // Execute our regex
 	int error = 0;
-        if((error = regexec(regex, m_url, regex->re_nsub, re_matches + 1, 0)) != 0) {
+        if((error = regexec(regex, m_url, regex->re_nsub + 1, re_matches, 0)) != 0) {
 		char* errstr = (char*)malloc(1000);
 		unsigned int length = regerror(error, regex, errstr, 1000);
 		errstr[length] = '\0';
@@ -214,7 +218,6 @@ bool Url::_split() {
 
 	// Loop through the expected number of matches
         for(unsigned int i = 1; i <= m_regex->re_nsub; i++) {
-		printf("%d: %d - %d\n", i, re_matches[i].rm_so, re_matches[i].rm_eo);
 		unsigned int index = i - 1;
 		m_parts[index] = (char*)malloc(re_matches[i].rm_eo - re_matches[i].rm_so + 1);
 		memcpy(m_parts[index], m_url + re_matches[i].rm_so, re_matches[i].rm_eo - re_matches[i].rm_so);

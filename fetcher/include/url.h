@@ -30,7 +30,7 @@ public:
 	unsigned int long get_domain_id() { return m_domain_id; }
 
 	// Get the regular expression we use to parse URLs
-        static regex_t* _get_regex();
+        regex_t* _get_regex();
 
 protected:
 	// The URL parts, in order of the defines above
@@ -49,7 +49,7 @@ protected:
 	bool _split();
 
 	// The global URL parsing regex
-	static regex_t* m_regex;
+	regex_t* m_regex;
 };
 
 #endif

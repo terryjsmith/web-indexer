@@ -21,7 +21,10 @@ public:
 	~HttpRequest();
 
 	// Initialize our request and kick things off
-	bool initialize(Url* url);
+	int initialize(Url* url);
+
+	// Start the connection once we have DNS back
+	void connect(struct hostent* host);
 
 	// The generic handler function to be called from the main loop; returns false on error
 	bool process(void* arg);
@@ -47,9 +50,10 @@ public:
 	char* get_effective_url() { return m_effective; }
 	int   get_state() { return m_state; }
 	Url*  get_url() { return m_url; }
+	void* get_sockaddr() { return &m_sockaddr; }
 
 	// Our static DNS lookup functions
-	static void _dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent);
+	static void _dns_lookup(void *arg, int status, int timeouts, hostent* host);
 
 protected:
 	// A pointer to our internal URL

@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 	Url* url = new Url("http://www.icedteapowered.com/");
 	url->parse(NULL);
 
-	printf("Scheme: %s\nHost: %s\nPath: %s\n", url->get_scheme(), url->get_host(), url->get_path());
+	printf("Scheme: %s\nHost: %s\nPath: %s\nQuery: %s\n", url->get_scheme(), url->get_host(), url->get_path(), url->get_query());
 
 	/*Site* site = new Site();
 	site->Load(url->parts[URL_DOMAIN], conn);

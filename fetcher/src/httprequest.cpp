@@ -85,7 +85,7 @@ void HttpRequest::set_output_filename(char* filename) {
 	strcpy(m_filename, filename);
 }
 
-bool HttpRequest::initialize(Url* url) {
+int HttpRequest::initialize(Url* url) {
 	// Save a copy of the URL
 	m_url = url;
 
@@ -93,7 +93,7 @@ bool HttpRequest::initialize(Url* url) {
 	if((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 		m_error = (char*)malloc(1000);
 		sprintf(m_error, "Unable to create socket.");
-                return(false);
+                return(0);
         }
 
         // Make our socket non-blocking
@@ -101,13 +101,13 @@ bool HttpRequest::initialize(Url* url) {
         if((flags = fcntl(m_socket, F_GETFL, 0)) < 0) {
                 m_error = (char*)malloc(1000);
 		sprintf(m_error, "Unable to read socket for non-blocking I/O on %s.", m_url->get_url());
-                return(false);
+                return(0);
         }
 
         flags |= O_NONBLOCK;
         if((fcntl(m_socket, F_SETFL, flags)) < 0) {
                 sprintf(m_error, "Unable to set up socket for non-blocking I/O on %s.\n", m_url->get_url());
-                return(false);
+                return(0);
         }
 
 	// Start our DNS request
@@ -115,24 +115,39 @@ bool HttpRequest::initialize(Url* url) {
 	ares_gethostbyname(m_channel, m_url->get_host(), AF_INET, _dns_lookup, this);
 	m_state = HTTPREQUESTSTATE_DNS;
 
-        return(true);
+        return(m_socket);
 }
 
 void HttpRequest::fetch_robots(Url* url) {
+	printf("Fetching robots.txt for %s\n", url->get_url());
+
 	// Compute the robots.txt URL
         char* path = "/robots.txt";
         m_robots = new Url(path);
         m_robots->parse(url);
 }
 
-void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent) {
+void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host) {
 	HttpRequest* req = (HttpRequest*)arg;
 	if(status == ARES_SUCCESS) {
-		req->process(hostent);
+		printf("Got DNS back for %s\n", req->get_url()->get_url());
+		req->connect(host);
 	}
 	else {
 		req->error("Unable to do DNS lookup");
 	}
+}
+
+void HttpRequest::connect(struct hostent* host) {
+	printf("Attempting to connect for %s\n", m_url->get_url());
+	if(host) {
+		m_sockaddr.sin_family = AF_INET;
+		bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
+		m_sockaddr.sin_port = htons(80);
+	}
+
+	::connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
+        m_state = HTTPREQUESTSTATE_CONNECTING;
 }
 
 void HttpRequest::error(char* error) {
@@ -144,49 +159,34 @@ void HttpRequest::error(char* error) {
 bool HttpRequest::resend() {
 	// If we weren't able to keep the connection alive, re-open it
 	if(!m_keepalive) 
-		m_state = HTTPREQUESTSTATE_CONNECT;
-	else
+		connect(NULL);
+	else {
 		m_state = HTTPREQUESTSTATE_SEND;
+		return(process(NULL));
+	}
 
-	return(process(NULL));
+	return(true);
 }
 
 bool HttpRequest::process(void* arg) {
 	// we use if statements here so that we can execute multiple code blocks in a row where necessary
 	if(m_state == HTTPREQUESTSTATE_DNS) {
-		if(arg) {
-			// Process a lookup being passed along by the c-ares callback function
-		        struct hostent* host = (hostent*)arg;
+		// Otherwise, poll to see if the data we need is available yet
+		int nfds, count;
+		fd_set read, write;
+		struct timeval tv, *tvp;
 
-		        m_sockaddr.sin_family = AF_INET;
-		        bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
-		        m_sockaddr.sin_port = htons(80);
+		FD_ZERO(&read);
+ 		FD_ZERO(&write);
+		nfds = ares_fds(m_channel, &read, &write);
 
-			m_state = HTTPREQUESTSTATE_CONNECT;
-		}
-		else {
-			// Otherwise, poll to see if the data we need is available yet
-			int nfds, count;
-			fd_set read, write;
-			struct timeval tv, *tvp;
+		if(nfds == 0) return(true);
 
-			FD_ZERO(&read);
- 			FD_ZERO(&write);
-			nfds = ares_fds(m_channel, &read, &write);
+		tvp = ares_timeout(m_channel, NULL, &tv);
+		count = select(nfds, &read, &write, NULL, tvp);
 
-			if(nfds == 0) return(true);
-
-			tvp = ares_timeout(m_channel, NULL, &tv);
-			count = select(nfds, &read, &write, NULL, tvp);
-
-			// This will automatically fire off our callback if it finds something so nothing to do after this
-			ares_process(m_channel, &read, &write);
-		}
-	}
-
-	if(m_state == HTTPREQUESTSTATE_CONNECT) {
-		connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
-		m_state = HTTPREQUESTSTATE_CONNECTING;
+		// This will automatically fire off our callback if it finds something so nothing to do after this
+		ares_process(m_channel, &read, &write);
 	}
 
 	if(m_state == HTTPREQUESTSTATE_CONNECTING) {
@@ -205,6 +205,7 @@ bool HttpRequest::process(void* arg) {
 
 	if(m_state == HTTPREQUESTSTATE_SEND) {
 		Url* use = (m_robots == 0) ? m_url : m_robots;
+		printf("Connected, sending request to %s\n", use->get_url());
 
 		// Connect should have been successful, send data
 		char* request = (char*)malloc(strlen(use->get_path()) + strlen(use->get_query()) + strlen(use->get_host()) + 250);
@@ -212,10 +213,10 @@ bool HttpRequest::process(void* arg) {
 		unsigned int length = 0;
 
 		if(strlen(use->get_query())) {
-			length = sprintf("GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_query(), use->get_host(), always);
+			length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_query(), use->get_host(), always);
 		}
 		else {
-			length = sprintf("GET %s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_host(), always);
+			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_host(), always);
 		}
 
      		// Send the request
@@ -238,6 +239,7 @@ bool HttpRequest::process(void* arg) {
 	}
 
 	if(m_state == HTTPREQUESTSTATE_RECV) {
+		printf("Receiving data for %s.\n", m_url->get_url());
 		while(true) {
                		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
                		memset(buffer, 0, SOCKET_BUFFER_SIZE);
@@ -281,6 +283,7 @@ bool HttpRequest::process(void* arg) {
 	}
 
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
+		printf("Processing data for %s\n", m_url->get_url());
 		// First process the HTTP response headers
 		unsigned int pos = 0;
 

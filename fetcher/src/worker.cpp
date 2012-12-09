@@ -105,10 +105,11 @@ domain* Worker::load_domain_info(char* strdomain) {
 bool Worker::url_exists(Url* url, domain* info) {
 	// See if we have an existing domain
         char* query = (char*)malloc(100 + strlen(url->get_path_hash()));
-        sprintf(query, "SELECT url_id FROM url WHERE domain_id = %d AND path_hash = '%s'", info->domain_id, url->get_path_hash());
+        sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND url_hash = '%s'", info->domain_id, url->get_path_hash());
 
         mysql_query(m_conn, query);
         MYSQL_RES* result = mysql_store_result(m_conn);
+	free(query);
 
 	bool exists = false;
 	if(mysql_num_rows(result)) {
@@ -285,7 +286,7 @@ void Worker::fill_list() {
                 event.data.fd = socket;
                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->get_url());
+                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
                         pthread_exit(0);
                 }
         }
@@ -309,8 +310,8 @@ void Worker::run() {
 	mysql_set_character_set(m_conn, "utf8");
 
 	// Set up our libevent notification base
-	int epoll = epoll_create(CONNECTIONS_PER_THREAD);
-	if(epoll < 0) {
+	m_epoll = epoll_create(CONNECTIONS_PER_THREAD);
+	if(m_epoll < 0) {
 		printf("Thread #%d unable to create epoll interface.\n", m_threadid);
                 pthread_exit(0);
 	}
@@ -325,7 +326,7 @@ void Worker::run() {
 		epoll_event* events = (epoll_event*)malloc(CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 		memset(events, 0, CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 
-		int msgs = epoll_wait(epoll, events, CONNECTIONS_PER_THREAD, -1);
+		int msgs = epoll_wait(m_epoll, events, CONNECTIONS_PER_THREAD, -1);
 		for(unsigned int i = 0; i < msgs; i++) {
 			// Find the applicable HttpRequest object
                         int pos = 0;
@@ -345,12 +346,15 @@ void Worker::run() {
 
 			if(!m_requests[pos]->process((void*)&events[i])) {
 				// TODO: something went wrong, figure that out
+				printf("ERROR: %s\n", m_requests[pos]->get_error());
 			}
 
 			// If we need to process robots.txt rules, do so
 			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_ROBOTS) {
 				// Get the URL we were working on
                                 Url* url = m_requests[pos]->get_url();
+
+				printf("Got robots for %s (code %d), processing.\n", url->get_url(), m_requests[pos]->get_code());
 
 				if(m_requests[pos]->get_code() == 200) {
 					// Get and parse the rules
@@ -452,6 +456,15 @@ void Worker::run() {
 		}
 
 		free(events);
+
+		// Process any waiting DNS requests
+		for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+			if(!m_requests[i]) continue;
+			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_DNS)
+				m_requests[i]->process(NULL);
+		}
+
+		// Re-fill the list
 		fill_list();
 
                 sleep(1);
