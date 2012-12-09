@@ -26,8 +26,11 @@ public:
 	char* get_path_hash() { return m_hash; }
 	char* get_query() { return m_parts[URL_QUERY]; }
 
-	unsigned int long get_domain_id();
-	unsigned int long get_url_id();
+	void set_domain_id(unsigned int long domain_id) { m_domain_id = domain_id; }
+	unsigned int long get_domain_id() { return m_domain_id; }
+
+	// Get the regular expression we use to parse URLs
+        static regex_t* _get_regex();
 
 protected:
 	// The URL parts, in order of the defines above
@@ -42,14 +45,8 @@ protected:
 	// The domain ID of the URL if it's known
 	unsigned int long m_domain_id;
 
-	// The URL id of the URL if it's known
-	unsigned int long m_url_id;
-
 	// Split this URL into it's parts
 	bool _split();
-
-	// Get the regular expression we use to parse URLs
-        static regex_t* _get_regex();
 
 	// The global URL parsing regex
 	static regex_t* m_regex;

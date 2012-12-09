@@ -22,6 +22,9 @@ public:
 	// Check if a URL already exists in our database
 	bool url_exists(Url* url, domain* info);
 
+	// Check the robots rules in the database
+	bool check_robots_rules(Url* url);
+
 protected:
 	// Our internal thread processing function
 	static void* _thread_function(void* ptr);

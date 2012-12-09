@@ -1,1 +1,4 @@
 *.o
+fetcher/bin
+fetcher/test/robotstest
+fetcher/test/urltest

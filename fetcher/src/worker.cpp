@@ -40,7 +40,7 @@ Worker::~Worker() {
 	}
 }
 
-void Worker::Start(int pos) {
+void Worker::start(int pos) {
 	m_threadid = pos;
 
 	int rc = pthread_create(&m_thread, NULL, Worker::_thread_function, this);
@@ -57,21 +57,21 @@ void* Worker::_thread_function(void* ptr) {
 	return(0);
 }
 
-domain* Worker::load_domain_info(char* domain) {
+domain* Worker::load_domain_info(char* strdomain) {
 	// Our return domain
 	domain* ret = (domain*)malloc(sizeof(domain));
-	memset(domain, 0, sizeof(domain));
+	memset(ret, 0, sizeof(domain));
 
 	// Copy the domain in
-	ret->domain = (char*)malloc(strlen(domain) + 1);
-        strcpy(ret->domain, domain);
+	ret->domain = (char*)malloc(strlen(strdomain) + 1);
+        strcpy(ret->domain, strdomain);
 
         // See if we have an existing domain
-        char* query = (char*)malloc(100 + strlen(domain));
-        unsigned int length = sprintf(query, "SELECT domain_id, domain, last_access, last_robots_access FROM domain WHERE domain = '%s'", domain);
+        char* query = (char*)malloc(100 + strlen(strdomain));
+        unsigned int length = sprintf(query, "SELECT domain_id, domain, last_access, robots_last_access FROM domain WHERE domain = '%s'", strdomain);
 
-        mysql_query(conn, query);
-        MYSQL_RES* result = mysql_store_result(conn);
+        mysql_query(m_conn, query);
+        MYSQL_RES* result = mysql_store_result(m_conn);
 
 	free(query);
 
@@ -81,20 +81,20 @@ domain* Worker::load_domain_info(char* domain) {
 		// Save the data
                 ret->domain_id = atol(row[0]);
 		ret->last_access = atol(row[2]);
-		ret->last_robots_access = atol(row[3]);
+		ret->robots_last_access = atol(row[3]);
         }
 	else {
 		// Insert a new row
 		query = (char*)malloc(1000);
-                length = sprintf(query, "INSERT INTO domain VALUES(NULL, '%s', 0, 0)", domain);
+                length = sprintf(query, "INSERT INTO domain VALUES(NULL, '%s', 0, 0)", strdomain);
                 query[length] = '\0';
 
-                mysql_query(conn, query);
+                mysql_query(m_conn, query);
                 free(query);
 
-                ret->domain_id = (unsigned long int)mysql_insert_id(conn);
+                ret->domain_id = (unsigned long int)mysql_insert_id(m_conn);
 		ret->last_access = 0;
-		ret->last_robots_access = 0;
+		ret->robots_last_access = 0;
 	}
 
 	mysql_free_result(result);
@@ -104,11 +104,11 @@ domain* Worker::load_domain_info(char* domain) {
 
 bool Worker::url_exists(Url* url, domain* info) {
 	// See if we have an existing domain
-        char* query = (char*)malloc(100 + strlen(url->get_hash()));
-        unsigned int length = sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND path_hash = '%s'", info->domain_id, url->get_hash());
+        char* query = (char*)malloc(100 + strlen(url->get_path_hash()));
+        sprintf(query, "SELECT url_id FROM url WHERE domain_id = %d AND path_hash = '%s'", info->domain_id, url->get_path_hash());
 
-        mysql_query(conn, query);
-        MYSQL_RES* result = mysql_store_result(conn);
+        mysql_query(m_conn, query);
+        MYSQL_RES* result = mysql_store_result(m_conn);
 
 	bool exists = false;
 	if(mysql_num_rows(result)) {
@@ -125,11 +125,11 @@ bool Worker::check_robots_rules(Url* url) {
 	bool retval = true;
 
 	// Okay, once we're here, we can load the rules and compare the URL
-        query = (char*)malloc(1000);
-        length = sprintf(query, "SELECT rule FROM robotstxt WHERE domain_id = %ld", url->get_domain_id());
+        char* query = (char*)malloc(1000);
+        sprintf(query, "SELECT rule FROM robotstxt WHERE domain_id = %ld", url->get_domain_id());
 
         mysql_query(m_conn, query);
-        result = mysql_store_result(m_conn);
+        MYSQL_RES* result = mysql_store_result(m_conn);
 
         if(mysql_num_rows(result)) {
 		num_rules = mysql_num_rows(result);
@@ -182,14 +182,17 @@ void Worker::fill_list() {
                 // Fetch a URL from redis
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
 
+		printf("Trying %s... ", reply->str);
+
                 // Split the URL info it's parts; no base URL
-                URL* url = new URL(reply->str);
-                url->Parse(0);
+                Url* url = new Url(reply->str);
+                url->parse(NULL);
 
                 freeReplyObject(reply);
 
                 // Verify the scheme is one we want (just http for now)
                 if(strcmp(url->get_scheme(), "http") != 0) {
+			printf("invalid scheme\n");
                         delete url;
                         i--;
                         continue;
@@ -197,12 +200,13 @@ void Worker::fill_list() {
 
                 // Load the site info from the database
                 domain* info = load_domain_info(url->get_host());
-                url->domain_id = info->domain_id;
+                url->set_domain_id(info->domain_id);
 
                 // Check whether this domain is on a timeout
                 time_t now = time(NULL);
                 if((now - info->last_access) < MIN_ACCESS_TIME) {
-                        reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->url);
+			printf("too soon\n");
+                        reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->get_url());
                         freeReplyObject(reply);
 
                         delete info;
@@ -213,6 +217,7 @@ void Worker::fill_list() {
 
                 // Next check if we've already parsed this URL
                 if(url_exists(url, info)) {
+			printf("exists in db\n");
                         delete info;
                         delete url;
                         i--;
@@ -220,17 +225,18 @@ void Worker::fill_list() {
                 }
 
 		// Create our HTTP request
-		requests[i] = new HttpRequest(url);
+		m_requests[i] = new HttpRequest();
 
 		// Check if our robots.txt file is valid for this domain
 		if(abs(now - info->robots_last_access) > ROBOTS_MIN_ACCESS_TIME) {
-			requests[i]->fetch_robots();
+			m_requests[i]->fetch_robots(url);
 		}
 		else {
 			// Check our existing robots.txt rules (if any)
 			if(!(check_robots_rules(url))) {
-				delete requests[i];
-				requests[i] = 0;
+				printf("robots rule\n");
+				delete m_requests[i];
+				m_requests[i] = 0;
 
 				free(info);
 				delete url;
@@ -243,18 +249,18 @@ void Worker::fill_list() {
 		free(info);
 
 		// Set the output filename
-                unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->get_host());
+                unsigned int dir_length = strlen(BASE_PATH) + strlen(url->get_host());
                 char* dir = (char*)malloc(dir_length + 1);
-                sprintf(dir, "%s%s", BASE_PATH, m_url->get_host());
+                sprintf(dir, "%s%s", BASE_PATH, url->get_host());
 
                 mkdir(dir, 0644);
                 free(dir);
 
-                unsigned int length = strlen(BASE_PATH) + strlen(m_url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
+                unsigned int length = strlen(BASE_PATH) + strlen(url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
                 char* filename = (char*)malloc(length + 1);
-                sprintf(filename, "%s%s/%s.html", BASE_PATH, m_url->get_host(), m_url->get_hash());
+                sprintf(filename, "%s%s/%s.html", BASE_PATH, url->get_host(), url->get_path_hash());
 	
-		requests[i]->set_output_filename(filename);
+		m_requests[i]->set_output_filename(filename);
 		free(filename);	
 
                 // Set the last access time to now
@@ -263,10 +269,12 @@ void Worker::fill_list() {
 		mysql_query(m_conn, query);
 		free(query);
 
+		printf("added!\n");
+
                 // Otherwise, we're good
-                int socket = requests[i]->initialize(url);
+                int socket = m_requests[i]->initialize(url);
                 if(!socket) {
-                        printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->url);
+                        printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->get_url());
                         pthread_exit(0);
                 }
 
@@ -276,8 +284,8 @@ void Worker::fill_list() {
 
                 event.data.fd = socket;
                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
-                if((epoll_ctl(epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->url);
+                if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+                        printf("Thread #%d unable to setup epoll for %s.\n", m_threadid, url->get_url());
                         pthread_exit(0);
                 }
         }
@@ -324,8 +332,8 @@ void Worker::run() {
                         for(unsigned int j = 0; j < CONNECTIONS_PER_THREAD; j++) {
                                 if(!m_requests[j]) continue;
 
-                                if(m_requests[j]->GetFD() == events[i].data.fd) {
-                                        position = j;
+                                if(m_requests[j]->get_socket() == events[i].data.fd) {
+                                        pos = j;
                                         break;
                                 }
                         }
@@ -335,19 +343,20 @@ void Worker::run() {
                                 pthread_exit(0);
                         }
 
-			if(!m_requests[pos]->process(events[i])) {
+			if(!m_requests[pos]->process((void*)&events[i])) {
 				// TODO: something went wrong, figure that out
 			}
 
 			// If we need to process robots.txt rules, do so
 			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_ROBOTS) {
 				// Get the URL we were working on
-                                Url* url = m_requests[pos]>get_url();
+                                Url* url = m_requests[pos]->get_url();
 
 				if(m_requests[pos]->get_code() == 200) {
 					// Get and parse the rules
 					char* content = m_requests[pos]->get_content();
 					char* line = strtok(content, "\r\n");
+					bool applicable = false;
 					while(line != NULL) {
 						if(strlen(line) <= 2) {
 							line = strtok(NULL, "\r\n");
@@ -386,10 +395,9 @@ void Worker::run() {
                                                 	        strncpy(disallowed, line + 10, copy_length);
                                                         	disallowed[copy_length] = '\0';
 
-	                                                        query = (char*)malloc(5000);
-        	                                                length = sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->domain_id, disallowed);
-                	                                        query[length] = '\0';
-                        	                                mysql_query(conn, query);
+	                                                        char* query = (char*)malloc(5000);
+        	                                                sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->get_domain_id(), disallowed);
+                        	                                mysql_query(m_conn, query);
 
                                 	                        free(disallowed);
                                         	                free(query);
@@ -414,17 +422,18 @@ void Worker::run() {
 
 			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
 				// Get the URL we were working on
-				Url* url = m_requests[pos]>get_url();
+				Url* url = m_requests[pos]->get_url();
+				int code = m_requests[pos]->get_code();
 
 				// Mark as done and all that
 				char* query = (char*)malloc(1000 + strlen(url->get_url()));
                                 time_t now = time(NULL);
-                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_hash(), code, now);
+                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_path_hash(), code, now);
                                 mysql_query(m_conn, query);
                                 free(query);
 
                                 if(code == 200) {
-                                        char* filename = requests[pos]->get_filename();
+                                        char* filename = m_requests[pos]->get_filename();
 
                                         // Add it to the parse_queue in redis
                                         redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);

@@ -1,8 +1,11 @@
 
+#include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/epoll.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>
 #include <netinet/in.h>
@@ -12,6 +15,7 @@
 #include <string.h>
 #include <regex.h>
 #include <ares.h>
+#include <errno.h>
 
 #include <defines.h>
 #include <url.h>
@@ -23,7 +27,6 @@ HttpRequest::HttpRequest() {
 	m_state = 0;
 	m_url = 0;
 	m_content = 0;
-	m_fp = 0;
 	m_filename = 0;
 	m_error = 0;
 	m_channel = 0;
@@ -138,6 +141,16 @@ void HttpRequest::error(char* error) {
 	m_state = HTTPREQUESTSTATE_ERROR;
 }
 
+bool HttpRequest::resend() {
+	// If we weren't able to keep the connection alive, re-open it
+	if(!m_keepalive) 
+		m_state = HTTPREQUESTSTATE_CONNECT;
+	else
+		m_state = HTTPREQUESTSTATE_SEND;
+
+	return(process(NULL));
+}
+
 bool HttpRequest::process(void* arg) {
 	// we use if statements here so that we can execute multiple code blocks in a row where necessary
 	if(m_state == HTTPREQUESTSTATE_DNS) {
@@ -154,14 +167,14 @@ bool HttpRequest::process(void* arg) {
 		else {
 			// Otherwise, poll to see if the data we need is available yet
 			int nfds, count;
-			fd_set readers, writers;
+			fd_set read, write;
 			struct timeval tv, *tvp;
 
 			FD_ZERO(&read);
  			FD_ZERO(&write);
 			nfds = ares_fds(m_channel, &read, &write);
 
-			if(nfds == 0) break;
+			if(nfds == 0) return(true);
 
 			tvp = ares_timeout(m_channel, NULL, &tv);
 			count = select(nfds, &read, &write, NULL, tvp);
@@ -179,7 +192,7 @@ bool HttpRequest::process(void* arg) {
 	if(m_state == HTTPREQUESTSTATE_CONNECTING) {
 		// Find out if we've connected to errored out
 		epoll_event* event = (epoll_event*)arg;
-		if(event.events & EPOLLERR) {
+		if(event->events & EPOLLERR) {
 			m_error = (char*)malloc(1000 + strlen(m_url->get_url()));
 			sprintf(m_error, "Unable to connect to %s: %s", m_url->get_url(), strerror(errno));
 			m_state = HTTPREQUESTSTATE_ERROR;
@@ -213,7 +226,7 @@ bool HttpRequest::process(void* arg) {
 		                sent += status;
 		        else {
 		                if(errno != EAGAIN) {
-                       			printf("Error sending HTTP request on %s.\n", m_url->url);
+                       			printf("Error sending HTTP request on %s.\n", m_url->get_url());
 		                        free(request);
                        			return(false);
 		                }

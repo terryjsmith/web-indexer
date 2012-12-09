@@ -4,6 +4,8 @@
 #include <string.h>
 #include <regex.h>
 #include <openssl/md5.h>
+#include <ctype.h>
+#include <pthread.h>
 #include <url.h>
 
 regex_t* Url::m_regex = 0;
@@ -12,7 +14,7 @@ Url::Url(char* url) {
 	// Initialize
 	m_parts[0] = m_parts[1] = m_parts[2] = m_parts[3] = 0;
 	m_hash = 0;
-	m_domain_id = m_url_id = 0;
+	m_domain_id = 0;
 
 	// Save a copy of our URL
         m_url = (char*)malloc(strlen(url) + 1);
@@ -39,14 +41,16 @@ Url::~Url() {
 }
 
 regex_t* Url::_get_regex() {
-	// See if our regex is set up; if not, set it up
-        if(m_regex == 0) {
-                // Create a new compiled regex
-                m_regex = new regex_t;
+	if(!m_regex) {
+		// Create a new compiled regex
+         	m_regex = new regex_t;
 
-                // Compile our regular expression
-                regcomp(m_regex, "([A-Z]+)://([A-Z0-9\\.-]+)(/*[^\\?]*)\\?*([^#]*)#*.*", REG_EXTENDED | REG_ICASE);
-        }
+         	// Compile our regular expression
+         	if(regcomp(m_regex, "([a-z]+)://([a-z0-9\\.-]+)(/*[^\\?]*)\\?*([^#]*)#*.*", REG_EXTENDED | REG_ICASE) != 0) {
+         		printf("Cannot compile URL regex.\n");
+                	return(NULL);
+        	}
+	}
 
 	return(m_regex);
 }
@@ -61,7 +65,7 @@ bool Url::parse(Url* base) {
 	if(strncmp(m_url, "/", 1) == 0) {
 		// Initialize a temporary URL to put it all together
 		unsigned int copy_length = strlen(base->get_scheme()) + 3 + strlen(base->get_host());
-		unsigned int length = copy_length + strlen(url);
+		unsigned int length = copy_length + strlen(m_url);
 		char* complete = (char*)malloc(length + 1);
 
 		memcpy(complete, base->get_url(), copy_length);
@@ -175,7 +179,7 @@ bool Url::parse(Url* base) {
 	free(m_url);
 
 	m_url = (char*)malloc(base_copy_length + final_path_length + 1);
-	strncpy(m_url, base->url, base_copy_length);
+	strncpy(m_url, base->get_url(), base_copy_length);
 	strcpy(m_url + base_copy_length, final_path + offset);
 
 	// Free the final path temp
@@ -186,17 +190,31 @@ bool Url::parse(Url* base) {
 
 bool Url::_split() {
         // Get our regular expression
-        regex_t* regex = Url::GetRegex();
+        regex_t* regex = Url::_get_regex();
+	if(!regex) {
+		printf("REGEX COMPILE ERROR\n");
+		return(false);
+	}
 
         // Parse the URL
         regmatch_t re_matches[regex->re_nsub + 1];
 
         // Execute our regex
-        if(regexec(regex, m_url, regex->re_nsub + 1, re_matches, 0) == REG_NOMATCH)
+	int error = 0;
+        if((error = regexec(regex, m_url, regex->re_nsub, re_matches + 1, 0)) != 0) {
+		char* errstr = (char*)malloc(1000);
+		unsigned int length = regerror(error, regex, errstr, 1000);
+		errstr[length] = '\0';
+
+		printf("%s: %s (%d)\n", m_url, errstr, error);
+		free(errstr);
+
                 return(false);
+	}
 
 	// Loop through the expected number of matches
         for(unsigned int i = 1; i <= m_regex->re_nsub; i++) {
+		printf("%d: %d - %d\n", i, re_matches[i].rm_so, re_matches[i].rm_eo);
 		unsigned int index = i - 1;
 		m_parts[index] = (char*)malloc(re_matches[i].rm_eo - re_matches[i].rm_so + 1);
 		memcpy(m_parts[index], m_url + re_matches[i].rm_so, re_matches[i].rm_eo - re_matches[i].rm_so);

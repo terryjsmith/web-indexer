@@ -35,6 +35,9 @@ public:
 	// Set a flag to fetch the robots.txt file first and return the content
 	void fetch_robots(Url* url);
 
+	// Resend a request, possibly once robots.txt are done
+	bool resend();
+
 	// Getter functions
 	int   get_socket() { return m_socket; }
 	char* get_content() { return m_content; }
@@ -79,11 +82,8 @@ protected:
 	// Our HTTP code
 	long int m_code;
 
-	// Wehther we are currently fetching our robots.txt file or not
-	bool m_robots;
-
 	// Our robots.txt URL if we need to fetch it
-	Url* m_robots_url;
+	Url* m_robots;
 
 	// A saved cop of the server info so we can make multiple requests
 	sockaddr_in m_sockaddr;

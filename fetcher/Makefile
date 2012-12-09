@@ -7,13 +7,16 @@ LDFLAGS=-lmysqlclient -lhiredis -lcrypto -lssl -pthread -lcares
 fetcher: src/main.o src/url.o src/httprequest.o src/worker.o
 	$(CC) $^ -o bin/$@ $(LDFLAGS)
 
+robots: src/url.o src/httprequest.o test/robotstest.o
+	$(CC) $^ -o bin/$@ $(LDFLAGS)
+
 # Individual files
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build both
 all: fetcher
-test: urltest fetchtest robotstest sockettest
+test: urls robots
 
 clean:
 	rm src/*.o test/*.o
