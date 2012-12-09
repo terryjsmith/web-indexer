@@ -13,6 +13,7 @@
 #include <my_global.h>
 #include <mysql.h>
 #include <sys/epoll.h>
+#include <ares.h>
 
 #include <defines.h>
 #include <url.h>
@@ -118,6 +119,51 @@ bool Worker::url_exists(Url* url, domain* info) {
 	return(exists);
 }
 
+bool Worker::check_robots_rules(Url* url) {
+	char** rules = 0;
+	unsigned int num_rules = 0;
+	bool retval = true;
+
+	// Okay, once we're here, we can load the rules and compare the URL
+        query = (char*)malloc(1000);
+        length = sprintf(query, "SELECT rule FROM robotstxt WHERE domain_id = %ld", url->get_domain_id());
+
+        mysql_query(m_conn, query);
+        result = mysql_store_result(m_conn);
+
+        if(mysql_num_rows(result)) {
+		num_rules = mysql_num_rows(result);
+                rules = (char**)malloc(num_rules * sizeof(char*));
+
+                for(unsigned int i = 0; i < num_rules; i++) {
+                        MYSQL_ROW row = mysql_fetch_row(result);
+                        rules[i] = (char*)malloc(strlen(row[0]) + 1);
+                        strcpy(rules[i], row[0]);
+                }
+        }
+
+        free(query);
+        mysql_free_result(result);
+
+        // Make a lowercase copy of the URL to use for comparison
+        char* lowercase = (char*)malloc(strlen(url->get_path()) + 1);
+        strcpy(lowercase, url->get_path());
+
+        for(unsigned int i = 0; i < strlen(url->get_path()); i++)
+                lowercase[i] = tolower(lowercase[i]);
+
+        for(unsigned int i = 0; i < num_rules; i++) {
+                if(strncmp(lowercase, rules[i], strlen(rules[i])) == 0) {
+                        retval = false;
+                }
+		free(rules[i]);
+        }
+
+	free(rules);
+        free(lowercase);
+	return(retval);
+}
+
 void Worker::fill_list() {
 	// Set up to start doing transfers
         unsigned int max_tries = 100;
@@ -173,33 +219,52 @@ void Worker::fill_list() {
                         continue;
                 }
 
-                // Finally, make sure the URL isn't disallowed by robots.txt
-                RobotsTxt* robots = new RobotsTxt();
-                robots->Load(url, m_conn);
-                if(robots->Check(url) == true) {
-                        delete robots;
-                        delete site;
-                        delete url;
-                        i--;
-                        continue;
-                }
+		// Create our HTTP request
+		requests[i] = new HttpRequest(url);
 
-		// TODO: Set the output filename
-		
+		// Check if our robots.txt file is valid for this domain
+		if(abs(now - info->robots_last_access) > ROBOTS_MIN_ACCESS_TIME) {
+			requests[i]->fetch_robots();
+		}
+		else {
+			// Check our existing robots.txt rules (if any)
+			if(!(check_robots_rules(url))) {
+				delete requests[i];
+				requests[i] = 0;
+
+				free(info);
+				delete url;
+				i--;
+				continue;
+			}
+		}
+
+		// Don't need this anymore
+		free(info);
+
+		// Set the output filename
+                unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->get_host());
+                char* dir = (char*)malloc(dir_length + 1);
+                sprintf(dir, "%s%s", BASE_PATH, m_url->get_host());
+
+                mkdir(dir, 0644);
+                free(dir);
+
+                unsigned int length = strlen(BASE_PATH) + strlen(m_url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
+                char* filename = (char*)malloc(length + 1);
+                sprintf(filename, "%s%s/%s.html", BASE_PATH, m_url->get_host(), m_url->get_hash());
+	
+		requests[i]->set_output_filename(filename);
+		free(filename);	
 
                 // Set the last access time to now
                 char* query = (char*)malloc(1000);
-		sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", now, info->domain_id);
+		sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", now, url->get_domain_id());
 		mysql_query(m_conn, query);
 		free(query);
 
-		free(info);
-                delete site;
-                delete robots;
-
                 // Otherwise, we're good
-                requests[i] = new HttpRequest(url);
-                int socket = requests[i]->initialize();
+                int socket = requests[i]->initialize(url);
                 if(!socket) {
                         printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->url);
                         pthread_exit(0);
@@ -255,7 +320,7 @@ void Worker::run() {
 		int msgs = epoll_wait(epoll, events, CONNECTIONS_PER_THREAD, -1);
 		for(unsigned int i = 0; i < msgs; i++) {
 			// Find the applicable HttpRequest object
-                        int position = 0;
+                        int pos = 0;
                         for(unsigned int j = 0; j < CONNECTIONS_PER_THREAD; j++) {
                                 if(!m_requests[j]) continue;
 
@@ -265,18 +330,91 @@ void Worker::run() {
                                 }
                         }
 
-                        if(!m_requests[position]) {
+                        if(!m_requests[pos]) {
                                 printf("Thread #%d unable to look up request for socket.\n", m_threadid);
                                 pthread_exit(0);
                         }
 
-			if(!m_requests[i]->process(events[i])) {
+			if(!m_requests[pos]->process(events[i])) {
 				// TODO: something went wrong, figure that out
 			}
 
-			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+			// If we need to process robots.txt rules, do so
+			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_ROBOTS) {
 				// Get the URL we were working on
-				Url* url = m_requests[position]->get_url();
+                                Url* url = m_requests[pos]>get_url();
+
+				if(m_requests[pos]->get_code() == 200) {
+					// Get and parse the rules
+					char* content = m_requests[pos]->get_content();
+					char* line = strtok(content, "\r\n");
+					while(line != NULL) {
+						if(strlen(line) <= 2) {
+							line = strtok(NULL, "\r\n");
+							continue;
+						}
+
+						// Check to see if this is a user agent line, start by making it all lowercase
+	                                        for(unsigned int i = 0; i < strlen(line); i++) {
+        	                                        line[i] = tolower(line[i]);
+                	                        }
+
+                        	                // If it is a user-agent line, make sure it's aimed at us
+                                	        if(strstr(line, "user-agent") != NULL) {
+                                        	        if(strstr(line, "user-agent: *") != NULL) {
+                                                	        applicable = true;
+	                                                }
+        	                                        else
+                	                                        applicable = false;
+                        	                }
+
+	                                        if(applicable) {
+        	                                        // Record the rule in the database
+                	                                char* part = strstr(line, "disallow: ");
+                        	                        if(part) {
+                                	                        char* position = strchr(line, '\n');
+                                        	                unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
+                                                	        copy_length -= 10;
+
+                                                        	// If copy length is 1, it's just a newline, "Disallow: " means you can index everything
+	                                                        if(copy_length <= 1) {
+									line = strtok(NULL, "\r\n");
+                        	                                        continue;
+                                	                        }
+
+                                        	                char* disallowed = (char*)malloc(copy_length + 1);
+                                                	        strncpy(disallowed, line + 10, copy_length);
+                                                        	disallowed[copy_length] = '\0';
+
+	                                                        query = (char*)malloc(5000);
+        	                                                length = sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->domain_id, disallowed);
+                	                                        query[length] = '\0';
+                        	                                mysql_query(conn, query);
+
+                                	                        free(disallowed);
+                                        	                free(query);
+                                                	}
+	                                        }
+
+						line = strtok(NULL, "\r\n");
+					}
+				}
+
+				// Now that we have the robots.txt back, check it again
+				if(!check_robots_rules(url)) {
+					// If it's against the rules, get rid of it and move on
+					delete m_requests[pos];
+	                                m_requests[pos] = 0;
+					continue;
+				}
+
+				// Re-send the request for the actual page
+				m_requests[pos]->resend();
+			}
+
+			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+				// Get the URL we were working on
+				Url* url = m_requests[pos]>get_url();
 
 				// Mark as done and all that
 				char* query = (char*)malloc(1000 + strlen(url->get_url()));
@@ -286,7 +424,7 @@ void Worker::run() {
                                 free(query);
 
                                 if(code == 200) {
-                                        char* filename = requests[position]->get_filename();
+                                        char* filename = requests[pos]->get_filename();
 
                                         // Add it to the parse_queue in redis
                                         redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
@@ -295,12 +433,12 @@ void Worker::run() {
 
                                 if((code == 302) || (code == 301)) {
 					// Add the URL back into the queue
-					redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[position]->get_effective_url());
+					redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[pos]->get_effective_url());
                                         freeReplyObject(reply);
                                 }
 
-				delete m_requests[position];
-				m_requests[position] = 0;
+				delete m_requests[pos];
+				m_requests[pos] = 0;
 			}
 		}
 

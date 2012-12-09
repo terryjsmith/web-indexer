@@ -13,7 +13,7 @@ public:
 	~Url();
 
 	// Parse the URL, relative to the base URL
-	bool parse(URL* base);
+	bool parse(Url* base);
 
 	// Clone this URL into a new one
 	Url* clone();

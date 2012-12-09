@@ -18,10 +18,10 @@
 
 #include <httprequest.h>
 
-HttpRequest::HttpRequest(Url* url) {
+HttpRequest::HttpRequest() {
 	m_socket = 0;
 	m_state = 0;
-	m_url = url;
+	m_url = 0;
 	m_content = 0;
 	m_fp = 0;
 	m_filename = 0;
@@ -30,6 +30,9 @@ HttpRequest::HttpRequest(Url* url) {
 	m_size = 0;
 	m_code = 0;
 	m_effective = 0;
+	m_robots = 0;
+	m_keepalive = false;
+	memset(&m_sockaddr, 0, sizeof(sockaddr_in));
 }
 
 HttpRequest::~HttpRequest() {
@@ -66,6 +69,11 @@ HttpRequest::~HttpRequest() {
 		free(m_effective);
 		m_effective = 0;
 	}
+
+	if(m_robots) {
+		delete m_robots;
+		m_robots = 0;
+	}
 }
 
 void HttpRequest::set_output_filename(char* filename) {
@@ -74,7 +82,11 @@ void HttpRequest::set_output_filename(char* filename) {
 	strcpy(m_filename, filename);
 }
 
-bool HttpRequest::initialize() {
+bool HttpRequest::initialize(Url* url) {
+	// Save a copy of the URL
+	m_url = url;
+
+	// Initialize the socket for TCP
 	if((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 		m_error = (char*)malloc(1000);
 		sprintf(m_error, "Unable to create socket.");
@@ -103,6 +115,13 @@ bool HttpRequest::initialize() {
         return(true);
 }
 
+void HttpRequest::fetch_robots(Url* url) {
+	// Compute the robots.txt URL
+        char* path = "/robots.txt";
+        m_robots = new Url(path);
+        m_robots->parse(url);
+}
+
 void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, struct hostent *hostent) {
 	HttpRequest* req = (HttpRequest*)arg;
 	if(status == ARES_SUCCESS) {
@@ -124,15 +143,12 @@ bool HttpRequest::process(void* arg) {
 	if(m_state == HTTPREQUESTSTATE_DNS) {
 		if(arg) {
 			// Process a lookup being passed along by the c-ares callback function
-			struct sockaddr_in server;
 		        struct hostent* host = (hostent*)arg;
 
-       			memset(&server, 0, sizeof(server));
-		        server.sin_family = AF_INET;
-		        bcopy((char*)host->h_addr, (char*)&server.sin_addr.s_addr, host->h_length);
-		        server.sin_port = htons(80);
+		        m_sockaddr.sin_family = AF_INET;
+		        bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
+		        m_sockaddr.sin_port = htons(80);
 
-			connect(m_socket,(struct sockaddr *) &server, sizeof(server));
 			m_state = HTTPREQUESTSTATE_CONNECT;
 		}
 		else {
@@ -156,6 +172,11 @@ bool HttpRequest::process(void* arg) {
 	}
 
 	if(m_state == HTTPREQUESTSTATE_CONNECT) {
+		connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
+		m_state = HTTPREQUESTSTATE_CONNECTING;
+	}
+
+	if(m_state == HTTPREQUESTSTATE_CONNECTING) {
 		// Find out if we've connected to errored out
 		epoll_event* event = (epoll_event*)arg;
 		if(event.events & EPOLLERR) {
@@ -165,36 +186,42 @@ bool HttpRequest::process(void* arg) {
 			return(false);
 		}
 		else {
-			// Connect should have been successful, send data
-			char* request = (char*)malloc(strlen(m_url->get_path()) + strlen(m_url->get_query()) + strlen(m_url->get_host()) + 200);
-			char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\n\r\n";
-			unsigned int length = 0;
-
-			if(strlen(m_url->get_query())) {
-				length = sprintf("GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s", m_url->get_path(), m_url->get_query(), m_url->get_host(), always);
-			}
-			else {
-				length = sprintf("GET %s HTTP/1.1\r\nHost: %s\r\n%s", m_url->get_path(), m_url->get_host(), always);
-			}
-
-       			// Send the request
-		        unsigned int sent = 0;
-			while(sent != length) {
-			        int status = send(m_socket, request, length, 0);
-			        if(status > 0)
-			                sent += status;
-			        else {
-			                if(errno != EAGAIN) {
-                        			printf("Error sending HTTP request on %s.\n", m_url->url);
-			                        free(request);
-                        			return(false);
-			                }
-                		}
-        		}
-
-			free(request);
-			m_state = HTTPREQUESTSTATE_RECV;
+			m_state = HTTPREQUESTSTATE_SEND;
 		}
+	}
+
+	if(m_state == HTTPREQUESTSTATE_SEND) {
+		Url* use = (m_robots == 0) ? m_url : m_robots;
+
+		// Connect should have been successful, send data
+		char* request = (char*)malloc(strlen(use->get_path()) + strlen(use->get_query()) + strlen(use->get_host()) + 250);
+		char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\nConnection: keep-alive\r\n";
+		unsigned int length = 0;
+
+		if(strlen(use->get_query())) {
+			length = sprintf("GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_query(), use->get_host(), always);
+		}
+		else {
+			length = sprintf("GET %s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_host(), always);
+		}
+
+     		// Send the request
+	        unsigned int sent = 0;
+		while(sent != length) {
+		        int status = send(m_socket, request, length, 0);
+		        if(status > 0)
+		                sent += status;
+		        else {
+		                if(errno != EAGAIN) {
+                       			printf("Error sending HTTP request on %s.\n", m_url->url);
+		                        free(request);
+                       			return(false);
+		                }
+               		}
+       		}
+
+		free(request);
+		m_state = HTTPREQUESTSTATE_RECV;
 	}
 
 	if(m_state == HTTPREQUESTSTATE_RECV) {
@@ -274,9 +301,22 @@ bool HttpRequest::process(void* arg) {
 		                m_effective[length] = '\0';
                		}
 
+			// If we have a keep-alive header, mark that too
+			if((strstr(line, "Connection: keep-alive")) == line) {
+				m_keepalive = true;
+			}
+
 	                pos += strlen(line) + 1;
                		line = strtok(NULL, "\n");
        		}
+
+		// If this is a robots.txt request, mark it as "to be processed"
+		if(m_robots != 0) {
+			m_state = HTTPREQUESTSTATE_ROBOTS;
+			delete m_robots;
+			m_robots = 0;
+			return(true);
+		}
 
 		// If we get here, it means we need to (optionally) dump it out to a file if there's on set, otherwise, complete
                 if(!m_filename) {

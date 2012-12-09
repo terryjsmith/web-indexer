@@ -6,20 +6,22 @@ enum {
 	HTTPREQUESTSTATE_NEW = 0,
 	HTTPREQUESTSTATE_DNS,
 	HTTPREQUESTSTATE_CONNECT,
+	HTTPREQUESTSTATE_CONNECTING,
 	HTTPREQUESTSTATE_SEND,
 	HTTPREQUESTSTATE_RECV,
 	HTTPREQUESTSTATE_WRITE,
 	HTTPREQUESTSTATE_COMPLETE,
+	HTTPREQUESTSTATE_ROBOTS,
 	HTTPREQUESTSTATE_ERROR
 };
 
 class HttpRequest {
 public:
-	HttpRequest(URL* url);
+	HttpRequest();
 	~HttpRequest();
 
 	// Initialize our request and kick things off
-	bool initialize();
+	bool initialize(Url* url);
 
 	// The generic handler function to be called from the main loop; returns false on error
 	bool process(void* arg);
@@ -29,6 +31,9 @@ public:
 
 	 // Set the output file for this (if applicable)
 	void set_output_filename(char* filename);
+
+	// Set a flag to fetch the robots.txt file first and return the content
+	void fetch_robots(Url* url);
 
 	// Getter functions
 	int   get_socket() { return m_socket; }
@@ -45,7 +50,7 @@ public:
 
 protected:
 	// A pointer to our internal URL
-	URL* m_url;
+	Url* m_url;
 
 	// An effective final URL if there was supposed to be a redirect
 	char* m_effective;
@@ -73,6 +78,18 @@ protected:
 
 	// Our HTTP code
 	long int m_code;
+
+	// Wehther we are currently fetching our robots.txt file or not
+	bool m_robots;
+
+	// Our robots.txt URL if we need to fetch it
+	Url* m_robots_url;
+
+	// A saved cop of the server info so we can make multiple requests
+	sockaddr_in m_sockaddr;
+
+	// Whether keep-alive connections have been enabled for multiple requests
+	bool m_keepalive;
 };
 
 #endif

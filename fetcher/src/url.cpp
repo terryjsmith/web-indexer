@@ -51,7 +51,7 @@ regex_t* Url::_get_regex() {
 	return(m_regex);
 }
 
-bool Url::parse(URL* base) {
+bool Url::parse(Url* base) {
 	// Check if this URL is already absolute
 	if(strncmp(m_url, "http", 4) == 0) {
 		return(_split());
