@@ -157,6 +157,11 @@ void HttpRequest::error(char* error) {
 }
 
 bool HttpRequest::resend() {
+	// Get rid of old content
+	free(m_content);
+	m_content = 0;
+	m_size = 0;
+
 	// If we weren't able to keep the connection alive, re-open it
 	if(!m_keepalive) 
 		connect(NULL);
@@ -209,20 +214,20 @@ bool HttpRequest::process(void* arg) {
 
 		// Connect should have been successful, send data
 		char* request = (char*)malloc(strlen(use->get_path()) + strlen(use->get_query()) + strlen(use->get_host()) + 250);
-		char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\nConnection: keep-alive\r\n";
+		char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\nConnection: keep-alive";
 		unsigned int length = 0;
 
 		if(strlen(use->get_query())) {
-			length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_query(), use->get_host(), always);
+			length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_query(), use->get_host(), always);
 		}
 		else {
-			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s", use->get_path(), use->get_host(), always);
+			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
 		}
 
      		// Send the request
 	        unsigned int sent = 0;
 		while(sent != length) {
-		        int status = send(m_socket, request, length, 0);
+		        int status = send(m_socket, request + sent, length - sent, 0);
 		        if(status > 0)
 		                sent += status;
 		        else {
@@ -285,13 +290,27 @@ bool HttpRequest::process(void* arg) {
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
 		printf("Processing data for %s\n", m_url->get_url());
 		// First process the HTTP response headers
-		unsigned int pos = 0;
+		unsigned int offset = 0;
 
        		// Make sure we have something to process
-	        char* line = strtok(m_content, "\n");
-	        pos += strlen(line) + 1;
-	        if(line == NULL)
-               		return(false); // TODO: maybe handle this better
+		if(!m_content) {
+			// Nothing too do here, mark as complete and move on
+			m_state = HTTPREQUESTSTATE_COMPLETE;
+			printf("No content for %s\n", m_url->get_url());
+			return(false);
+		}
+
+		int content_length = strlen(m_content);
+		int line_length = strcspn(m_content, "\n");
+		if(line_length == content_length) {
+			printf("No newlines found for %s\n", m_url->get_url());
+			return(false);
+		}
+
+		char* line = (char*)malloc(line_length + 1);
+		strncpy(line, m_content, line_length);
+		line[line_length] = '\0';
+		offset += line_length + 1;
 
 	        // Parse the first line as the HTTP code
 	        if(strlen(line) >= 13) {
@@ -303,11 +322,8 @@ bool HttpRequest::process(void* arg) {
 	        }
 
 		// Process the rest of the header
-       		while(line != NULL) {
-	                if(strlen(line) <= 2) {
-               		        pos += strlen(line) + 1;
-	                        break;
-                	}
+       		while(line_length != (content_length - offset)) {
+			if(line_length <= 1) break;
 
 			// If we get a location header, record it
 	                if((strstr(line, "Location: ")) == line) {
@@ -322,47 +338,72 @@ bool HttpRequest::process(void* arg) {
 				m_keepalive = true;
 			}
 
-	                pos += strlen(line) + 1;
-               		line = strtok(NULL, "\n");
+			free(line);
+
+			offset += line_length + 1;
+			line_length = strcspn(m_content + offset, "\n");
+			line = (char*)malloc(line_length + 1);
+			strncpy(line, m_content + offset, line_length);
+			line[line_length] = '\0';
        		}
+
+		free(line);
 
 		// If this is a robots.txt request, mark it as "to be processed"
 		if(m_robots != 0) {
 			m_state = HTTPREQUESTSTATE_ROBOTS;
+
+			// Move the rest to the content
+			char* new_content = (char*)malloc(m_size - offset + 1);
+			strcpy(new_content, m_content + offset);
+			free(m_content);
+			m_content = new_content;
+
 			delete m_robots;
 			m_robots = 0;
 			return(true);
 		}
 
+		if(m_code != 200) {
+                        // Nothing too do here, mark as complete and move on
+                        m_state = HTTPREQUESTSTATE_COMPLETE;
+			printf("Invalid code %d for %s\n", m_code, m_url->get_url());
+                        return(true);
+                }
+
 		// If we get here, it means we need to (optionally) dump it out to a file if there's on set, otherwise, complete
                 if(!m_filename) {
+			printf("No file name specified for %s, returning.\n", m_url->get_url());
                         m_state = HTTPREQUESTSTATE_COMPLETE;
                         return(true);
                 }
 
-		// Finally, if we've got a 200 status code, write it out
-		if(m_code == 200) {
-	                // Save the rest to a file
-	                unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->get_host());
-               		char* dir = (char*)malloc(dir_length + 1);
-	                sprintf(dir, "%s%s", BASE_PATH, m_url->get_host());
-               		dir[dir_length] = '\0';
+		printf("Writing %s to %s\n", m_url->get_url(), m_filename);
 
-	                mkdir(dir, 0644);
-               		free(dir);
+		// Set the output filename
+       	        unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->get_host());
+                char* dir = (char*)malloc(dir_length + 1);
+               	sprintf(dir, "%s%s", BASE_PATH, m_url->get_host());
 
-	                FILE* fp = fopen(m_filename, "w");
-               		if(!fp) {
-				m_error = (char*)malloc(100 + strlen(m_filename));
-	                        sprintf(m_error, "Unable to open file %s.", m_filename);
+       	        mkdir(dir, 0644);
+                free(dir);
 
-				m_state = HTTPREQUESTSTATE_ERROR;
-	                        return(false);
-               		}
+                // Save the rest to a file
+                FILE* fp = fopen(m_filename, "w");
+      		if(!fp) {
+			m_error = (char*)malloc(100 + strlen(m_filename));
+	                printf("Unable to open file %s.", m_filename);
 
-	                fwrite(m_content + pos, m_size - pos, 1, fp);
-               		fclose(fp);
-	        }
+			m_state = HTTPREQUESTSTATE_ERROR;
+	                return(false);
+      		}
+
+                int written = fwrite(m_content + offset, 1, m_size - offset, fp);
+		if(written != (m_size - offset))
+			printf("WRITE ERROR: %d v. %d\n", m_size - offset, written);
+          	fclose(fp);
+
+		m_state = HTTPREQUESTSTATE_COMPLETE;
 	}
 
 	if(m_state == HTTPREQUESTSTATE_ERROR) {

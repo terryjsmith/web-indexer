@@ -12,8 +12,10 @@
 #include <openssl/md5.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <sys/epoll.h>
 #include <ares.h>
 
+#include <defines.h>
 #include <url.h>
 #include <httprequest.h>
 
@@ -29,74 +31,161 @@ int main(int argc, char** argv) {
 	Url* url = new Url("http://www.icedteapowered.com/");
 	url->parse(NULL);
 
-	printf("Scheme: %s\nHost: %s\nPath: %s\nQuery: %s\n", url->get_scheme(), url->get_host(), url->get_path(), url->get_query());
+	HttpRequest* request = new HttpRequest();
+	request->fetch_robots(url);
 
-	/*Site* site = new Site();
-	site->Load(url->parts[URL_DOMAIN], conn);
-	url->domain_id = site->domain_id;
+	int socket = request->initialize(url);
 
-	site->SetLastAccess(time(NULL));
+	// Set the output filename
+        unsigned int dir_length = strlen(BASE_PATH) + strlen(url->get_host());
+        char* dir = (char*)malloc(dir_length + 1);
+        sprintf(dir, "%s%s", BASE_PATH, url->get_host());
 
-	printf("Loading robots.txt...\n");
+        mkdir(dir, 0644);
+        free(dir);
 
-	RobotsTxt* robots = new RobotsTxt();
-	robots->Load(url, conn);
+        unsigned int length = strlen(BASE_PATH) + strlen(url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
+        char* filename = (char*)malloc(length + 1);
+        sprintf(filename, "%s%s/%s.html", BASE_PATH, url->get_host(), url->get_path_hash());
 
-	printf("done.\n");
+        request->set_output_filename(filename);
+        free(filename);
 
-	URL* test = new URL("http://www.icedteapowered.com/");
-	test->Parse(NULL);
+	// Set up our libevent notification base
+        int m_epoll = epoll_create(1);
+        if(m_epoll < 0) {
+                printf("Unable to create epoll interface.\n");
+                return(0);
+        }
 
-	printf("Testing %s... ", test->url);
-	if(robots->Check(test))
-		printf("FAIL\n");
-	else
-		printf("PASS\n");
-	delete test;
+	// Add the socket to epoll
+        struct epoll_event event;
+        memset(&event, 0, sizeof(epoll_event));
 
-	test = new URL("http://www.icedteapowered.com/wp-admin/index.php");
-	test->Parse(NULL);
+        event.data.fd = socket;
+        event.events = EPOLLIN | EPOLLET | EPOLLOUT;
+        if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+                printf("Unable to setup epoll for %s: %s.\n", url->get_url(), strerror(errno));
+                return(0);
+        }
 
-        printf("Testing %s... ", test->url);
-        if(robots->Check(test))
-                printf("FAIL\n");
-        else
-                printf("PASS\n");
-        delete test;
+        while(true) {
+                epoll_event* events = (epoll_event*)malloc(sizeof(epoll_event));
+                memset(events, 0, sizeof(epoll_event));
 
-	test = new URL("http://www.icedteapowered.com/wp-admin/");
-	test->Parse(NULL);
+                int msgs = epoll_wait(m_epoll, events, 1, -1);
+                for(unsigned int i = 0; i < msgs; i++) {
+                        if(!request->process((void*)&events[i])) {
+                                // TODO: something went wrong, figure that out
+                                printf("ERROR: %s\n", request->get_error());
+                        }
 
-        printf("Testing %s... ", test->url);
-        if(robots->Check(test))
-                printf("FAIL\n");
-        else
-                printf("PASS\n");
-        delete test;
+			printf("State: %d\n", request->get_state());
 
-	test = new URL("http://www.icedteapowered.com/a-test-post");
-	test->Parse(NULL);
+                        // If we need to process robots.txt rules, do so
+                        if(request->get_state() == HTTPREQUESTSTATE_ROBOTS) {
+				// Get the URL we were working on
+                                Url* url = request->get_url();
 
-        printf("Testing %s... ", test->url);
-        if(robots->Check(test))
-                printf("FAIL\n");
-        else
-                printf("PASS\n");
-        delete test;
+                                printf("Got robots for %s (code %d), processing.\n", url->get_url(), request->get_code());
 
-	test = new URL("http://www.icedteapowered.com/WP-ADMIN/admin-ajax.php");
-	test->Parse(NULL);
+                                if(request->get_code() == 200) {
+                                        // Get and parse the rules
+                                        char* content = request->get_content();
+					printf("%s\n", content);
+                                        char* line = strtok(content, "\r\n");
+                                        bool applicable = false;
+                                        while(line != NULL) {
+                                                if(strlen(line) <= 2) {
+                                                        line = strtok(NULL, "\r\n");
+                                                        continue;
+                                                }
 
-        printf("Testing %s... ", test->url);
-        if(robots->Check(test))
-                printf("FAIL\n");
-        else
-                printf("PASS\n");
-        delete test;
+                                                // Check to see if this is a user agent line, start by making it all lowercase
+                                                for(unsigned int i = 0; i < strlen(line); i++) {
+                                                        line[i] = tolower(line[i]);
+                                                }
 
-	delete robots;
-	delete site;*/
-	delete url;
+                                                // If it is a user-agent line, make sure it's aimed at us
+                                                if(strstr(line, "user-agent") != NULL) {
+                                                        if(strstr(line, "user-agent: *") != NULL) {
+                                                                applicable = true;
+                                                        }
+                                                        else
+                                                                applicable = false;
+                                                }
+
+                                                if(applicable) {
+                                                        // Record the rule in the database
+                                                        char* part = strstr(line, "disallow: ");
+                                                        if(part) {
+                                                                char* position = strchr(line, '\n');
+                                                                unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
+                                                                copy_length -= 10;
+
+                                                                // If copy length is 1, it's just a newline, "Disallow: " means you can index everything
+                                                                if(copy_length <= 1) {
+                                                                        line = strtok(NULL, "\r\n");
+                                                                        continue;
+                                                                }
+
+                                                                char* disallowed = (char*)malloc(copy_length + 1);
+                                                                strncpy(disallowed, line + 10, copy_length);
+                                                                disallowed[copy_length] = '\0';
+
+                                                                char* query = (char*)malloc(5000);
+                                                                sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->get_domain_id(), disallowed);
+                                                                mysql_query(conn, query);
+
+                                                                free(disallowed);
+                                                                free(query);
+                                                        }
+                                                }
+
+                                                line = strtok(NULL, "\r\n");
+                                        }
+                                }
+
+                                // Re-send the request for the actual page
+                                request->resend();
+                        }
+
+                        if(request->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+                                // Get the URL we were working on
+                                Url* url = request->get_url();
+                                int code = request->get_code();
+
+                                // Mark as done and all that
+                                char* query = (char*)malloc(1000 + strlen(url->get_url()));
+                                time_t now = time(NULL);
+                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_path_hash(), code, now);
+                                mysql_query(conn, query);
+                                free(query);
+
+                                if(code == 200) {
+                                        char* filename = request->get_filename();
+
+                                        // Add it to the parse_queue in redis
+					printf("Adding %s to parse queue.\n", filename);
+                                }
+
+                                if((code == 302) || (code == 301)) {
+                                        // Add the URL back into the queue
+					printf("Redirect on URL %s.\n", url->get_url());
+                                }
+                        }
+                }
+
+                free(events);
+
+                // Process any waiting DNS requests
+                for(unsigned int i = 0; i < 1; i++) {
+                        if(request->get_state() == HTTPREQUESTSTATE_DNS)
+                                request->process(NULL);
+                }
+
+		sleep(1);
+	}
 
 	mysql_close(conn);
 

@@ -249,14 +249,6 @@ void Worker::fill_list() {
 		// Don't need this anymore
 		free(info);
 
-		// Set the output filename
-                unsigned int dir_length = strlen(BASE_PATH) + strlen(url->get_host());
-                char* dir = (char*)malloc(dir_length + 1);
-                sprintf(dir, "%s%s", BASE_PATH, url->get_host());
-
-                mkdir(dir, 0644);
-                free(dir);
-
                 unsigned int length = strlen(BASE_PATH) + strlen(url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
                 char* filename = (char*)malloc(length + 1);
                 sprintf(filename, "%s%s/%s.html", BASE_PATH, url->get_host(), url->get_path_hash());
@@ -423,36 +415,6 @@ void Worker::run() {
 				// Re-send the request for the actual page
 				m_requests[pos]->resend();
 			}
-
-			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
-				// Get the URL we were working on
-				Url* url = m_requests[pos]->get_url();
-				int code = m_requests[pos]->get_code();
-
-				// Mark as done and all that
-				char* query = (char*)malloc(1000 + strlen(url->get_url()));
-                                time_t now = time(NULL);
-                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_path_hash(), code, now);
-                                mysql_query(m_conn, query);
-                                free(query);
-
-                                if(code == 200) {
-                                        char* filename = m_requests[pos]->get_filename();
-
-                                        // Add it to the parse_queue in redis
-                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
-                                        freeReplyObject(reply);
-                                }
-
-                                if((code == 302) || (code == 301)) {
-					// Add the URL back into the queue
-					redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[pos]->get_effective_url());
-                                        freeReplyObject(reply);
-                                }
-
-				delete m_requests[pos];
-				m_requests[pos] = 0;
-			}
 		}
 
 		free(events);
@@ -462,6 +424,36 @@ void Worker::run() {
 			if(!m_requests[i]) continue;
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_DNS)
 				m_requests[i]->process(NULL);
+
+			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+                                // Get the URL we were working on
+                                Url* url = m_requests[i]->get_url();
+                                int code = m_requests[i]->get_code();
+
+                                // Mark as done and all that
+                                char* query = (char*)malloc(1000 + strlen(url->get_url()));
+                                time_t now = time(NULL);
+                                sprintf(query, "INSERT INTO url VALUES(NULL, %ld, '%s', '%s', '', %d, %ld)", url->get_domain_id(), url->get_url(), url->get_path_hash(), code, now);
+                                mysql_query(m_conn, query);
+                                free(query);
+
+                                if(code == 200) {
+                                        char* filename = m_requests[i]->get_filename();
+
+                                        // Add it to the parse_queue in redis
+                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
+                                        freeReplyObject(reply);
+                                }
+
+                                if((code == 302) || (code == 301)) {
+                                        // Add the URL back into the queue
+                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[i]->get_effective_url());
+                                        freeReplyObject(reply);
+                                }
+
+                                delete m_requests[i];
+                                m_requests[i] = 0;
+                        }
 		}
 
 		// Re-fill the list
