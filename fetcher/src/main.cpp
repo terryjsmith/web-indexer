@@ -19,6 +19,7 @@ using namespace std;
 #include <ares.h>
 
 #include <defines.h>
+#include <domain.h>
 #include <url.h>
 #include <httprequest.h>
 #include <worker.h>

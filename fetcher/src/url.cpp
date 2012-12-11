@@ -33,6 +33,7 @@ Url::~Url() {
 
 	if(m_regex) {
 		regfree(m_regex);
+		delete m_regex;
 		m_regex = 0;
 	}
 

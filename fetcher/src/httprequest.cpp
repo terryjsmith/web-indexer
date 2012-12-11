@@ -285,6 +285,11 @@ bool HttpRequest::process(void* arg) {
 		// First process the HTTP response headers
 		unsigned int offset = 0;
 
+		if(!m_content) {
+			printf("No content returned for %s\n", m_url->get_url());
+			return(false);
+		}
+
 		int content_length = strlen(m_content);
 		int line_length = strcspn(m_content, "\n");
 		if(line_length == content_length) {

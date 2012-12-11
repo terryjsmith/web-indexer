@@ -17,10 +17,10 @@ public:
 	void fill_list();
 
 	// Get the domain ID for a string domain
-	domain* load_domain_info(char* domain);
+	Domain* load_domain_info(char* strdomain);
 
 	// Check if a URL already exists in our database
-	bool url_exists(Url* url, domain* info);
+	bool url_exists(Url* url, Domain* info);
 
 	// Check the robots rules in the database
 	bool check_robots_rules(Url* url);

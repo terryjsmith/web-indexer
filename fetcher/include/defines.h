@@ -2,8 +2,8 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-#define NUM_THREADS			1
-#define CONNECTIONS_PER_THREAD		5
+#define NUM_THREADS			5
+#define CONNECTIONS_PER_THREAD		50
 #define SOCKET_BUFFER_SIZE		2048
 
 #define BASE_PATH       		"/mnt/indexer/"
@@ -18,12 +18,5 @@
 
 #define REDIS_HOST			"localhost"
 #define REDIS_PORT			6379
-
-struct domain {
-	int domain_id;
-	char* domain;
-	unsigned long int last_access;
-	unsigned long int robots_last_access;
-};
 
 #endif

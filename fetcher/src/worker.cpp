@@ -16,6 +16,7 @@
 #include <ares.h>
 
 #include <defines.h>
+#include <domain.h>
 #include <url.h>
 #include <httprequest.h>
 #include <worker.h>
@@ -57,10 +58,9 @@ void* Worker::_thread_function(void* ptr) {
 	return(0);
 }
 
-domain* Worker::load_domain_info(char* strdomain) {
+Domain* Worker::load_domain_info(char* strdomain) {
 	// Our return domain
-	domain* ret = (domain*)malloc(sizeof(domain));
-	memset(ret, 0, sizeof(domain));
+	Domain* ret = new Domain;
 
 	// Copy the domain in
 	ret->domain = (char*)malloc(strlen(strdomain) + 1);
@@ -102,7 +102,7 @@ domain* Worker::load_domain_info(char* strdomain) {
 	return(ret);
 }
 
-bool Worker::url_exists(Url* url, domain* info) {
+bool Worker::url_exists(Url* url, Domain* info) {
 	// See if we have an existing domain
         char* query = (char*)malloc(100 + strlen(url->get_path_hash()));
         sprintf(query, "SELECT url_id FROM url WHERE domain_id = %ld AND url_hash = '%s'", info->domain_id, url->get_path_hash());
@@ -183,13 +183,28 @@ void Worker::fill_list() {
                 // Fetch a URL from redis
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
 
-		printf("Trying %s... ", reply->str);
+		// Make sure the URL doesn't have quotes around it
+		char* urlstr = reply->str;
+		if(urlstr[0] == '"') {
+			unsigned int length = strlen(reply->str) - 2;
+			urlstr = (char*)malloc(length + 1);
+			strncpy(urlstr, reply->str + 1, length);
+			urlstr[length] = '\0';
+		}
+		else {
+			unsigned int length = strlen(reply->str);
+			urlstr = (char*)malloc(length + 1);
+			strcpy(urlstr, reply->str);
+		}
+		freeReplyObject(reply);
+
+		printf("Trying %s... ", urlstr);
 
                 // Split the URL info it's parts; no base URL
-                Url* url = new Url(reply->str);
+                Url* url = new Url(urlstr);
                 url->parse(NULL);
 
-                freeReplyObject(reply);
+		free(urlstr);
 
                 // Verify the scheme is one we want (just http for now)
                 if(strcmp(url->get_scheme(), "http") != 0) {
@@ -200,7 +215,7 @@ void Worker::fill_list() {
                 }
 
                 // Load the site info from the database
-                domain* info = load_domain_info(url->get_host());
+                Domain* info = load_domain_info(url->get_host());
                 url->set_domain_id(info->domain_id);
 
                 // Check whether this domain is on a timeout
@@ -239,7 +254,7 @@ void Worker::fill_list() {
 				delete m_requests[i];
 				m_requests[i] = 0;
 
-				free(info);
+				delete info;
 				delete url;
 				i--;
 				continue;
@@ -247,7 +262,7 @@ void Worker::fill_list() {
 		}
 
 		// Don't need this anymore
-		free(info);
+		delete info;
 
                 unsigned int length = strlen(BASE_PATH) + strlen(url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
                 char* filename = (char*)malloc(length + 1);
@@ -456,14 +471,16 @@ void Worker::run() {
                                         char* filename = m_requests[i]->get_filename();
 
                                         // Add it to the parse_queue in redis
-                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue %s", filename);
+                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
                                         freeReplyObject(reply);
                                 }
 
                                 if((code == 302) || (code == 301)) {
-                                        // Add the URL back into the queue
-                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue %s", m_requests[i]->get_effective_url());
-                                        freeReplyObject(reply);
+					if(m_requests[i]->get_effective_url()) {
+	                                        // Add the URL back into the queue
+        	                                redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[i]->get_effective_url());
+                	                        freeReplyObject(reply);
+					}
                                 }
 
                                 delete m_requests[i];
