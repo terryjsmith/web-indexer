@@ -413,7 +413,19 @@ void Worker::run() {
 				}
 
 				// Re-send the request for the actual page
-				m_requests[pos]->resend();
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
+				int socket = m_requests[pos]->resend();
+
+				// Add the new socket to epoll
+		                struct epoll_event event;
+        		        memset(&event, 0, sizeof(epoll_event));
+
+                		event.data.fd = socket;
+	                	event.events = EPOLLIN | EPOLLET | EPOLLOUT;
+	        	        if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+        	        	        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
+                	        	pthread_exit(0);
+	                	}
 			}
 		}
 
@@ -424,6 +436,9 @@ void Worker::run() {
 			if(!m_requests[i]) continue;
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_DNS)
 				m_requests[i]->process(NULL);
+
+			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_WRITE)
+                                m_requests[i]->process(NULL);
 
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
                                 // Get the URL we were working on
@@ -441,13 +456,13 @@ void Worker::run() {
                                         char* filename = m_requests[i]->get_filename();
 
                                         // Add it to the parse_queue in redis
-                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
+                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue %s", filename);
                                         freeReplyObject(reply);
                                 }
 
                                 if((code == 302) || (code == 301)) {
                                         // Add the URL back into the queue
-                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[i]->get_effective_url());
+                                        redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue %s", m_requests[i]->get_effective_url());
                                         freeReplyObject(reply);
                                 }
 
@@ -459,7 +474,7 @@ void Worker::run() {
 		// Re-fill the list
 		fill_list();
 
-                sleep(1);
+                usleep(1);
         }
 
         // Clean up

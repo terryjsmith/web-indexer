@@ -39,7 +39,7 @@ public:
 	void fetch_robots(Url* url);
 
 	// Resend a request, possibly once robots.txt are done
-	bool resend();
+	int resend();
 
 	// Getter functions
 	int   get_socket() { return m_socket; }

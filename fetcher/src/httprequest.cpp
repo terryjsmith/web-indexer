@@ -96,20 +96,6 @@ int HttpRequest::initialize(Url* url) {
                 return(0);
         }
 
-        // Make our socket non-blocking
-        int flags;
-        if((flags = fcntl(m_socket, F_GETFL, 0)) < 0) {
-                m_error = (char*)malloc(1000);
-		sprintf(m_error, "Unable to read socket for non-blocking I/O on %s.", m_url->get_url());
-                return(0);
-        }
-
-        flags |= O_NONBLOCK;
-        if((fcntl(m_socket, F_SETFL, flags)) < 0) {
-                sprintf(m_error, "Unable to set up socket for non-blocking I/O on %s.\n", m_url->get_url());
-                return(0);
-        }
-
 	// Start our DNS request
 	ares_init(&m_channel);
 	ares_gethostbyname(m_channel, m_url->get_host(), AF_INET, _dns_lookup, this);
@@ -140,11 +126,26 @@ void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host
 
 void HttpRequest::connect(struct hostent* host) {
 	printf("Attempting to connect for %s\n", m_url->get_url());
+
 	if(host) {
 		m_sockaddr.sin_family = AF_INET;
 		bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
 		m_sockaddr.sin_port = htons(80);
 	}
+
+	// Make our socket non-blocking
+        int flags;
+        if((flags = fcntl(m_socket, F_GETFL, 0)) < 0) {
+                m_error = (char*)malloc(1000);
+                printf("Unable to read socket for non-blocking I/O on %s.", m_url->get_url());
+                return;
+        }
+
+        flags |= O_NONBLOCK;
+        if((fcntl(m_socket, F_SETFL, flags)) < 0) {
+                printf("Unable to set up socket for non-blocking I/O on %s.\n", m_url->get_url());
+                return;
+        }
 
 	::connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
         m_state = HTTPREQUESTSTATE_CONNECTING;
@@ -156,21 +157,24 @@ void HttpRequest::error(char* error) {
 	m_state = HTTPREQUESTSTATE_ERROR;
 }
 
-bool HttpRequest::resend() {
+int HttpRequest::resend() {
 	// Get rid of old content
 	free(m_content);
 	m_content = 0;
 	m_size = 0;
 
-	// If we weren't able to keep the connection alive, re-open it
-	if(!m_keepalive) 
-		connect(NULL);
-	else {
-		m_state = HTTPREQUESTSTATE_SEND;
-		return(process(NULL));
-	}
+	close(m_socket);
 
-	return(true);
+	// Initialize the socket for TCP
+        if((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+                m_error = (char*)malloc(1000);
+                sprintf(m_error, "Unable to create socket.");
+                return(0);
+        }
+
+	// If we weren't able to keep the connection alive, re-open it
+	connect(NULL);
+	return(m_socket);
 }
 
 bool HttpRequest::process(void* arg) {
@@ -192,6 +196,7 @@ bool HttpRequest::process(void* arg) {
 
 		// This will automatically fire off our callback if it finds something so nothing to do after this
 		ares_process(m_channel, &read, &write);
+		return(true);
 	}
 
 	if(m_state == HTTPREQUESTSTATE_CONNECTING) {
@@ -224,23 +229,10 @@ bool HttpRequest::process(void* arg) {
 			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
 		}
 
-     		// Send the request
-	        unsigned int sent = 0;
-		while(sent != length) {
-		        int status = send(m_socket, request + sent, length - sent, 0);
-		        if(status > 0)
-		                sent += status;
-		        else {
-		                if(errno != EAGAIN) {
-                       			printf("Error sending HTTP request on %s.\n", m_url->get_url());
-		                        free(request);
-                       			return(false);
-		                }
-               		}
-       		}
-
+		send(m_socket, request, length, 0);
 		free(request);
 		m_state = HTTPREQUESTSTATE_RECV;
+		return(true);
 	}
 
 	if(m_state == HTTPREQUESTSTATE_RECV) {
@@ -285,20 +277,13 @@ bool HttpRequest::process(void* arg) {
 
 	                free(buffer);
 	        }
+		printf("Received %d bytes for %s\n", m_size, m_url->get_url());
 	}
 
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
 		printf("Processing data for %s\n", m_url->get_url());
 		// First process the HTTP response headers
 		unsigned int offset = 0;
-
-       		// Make sure we have something to process
-		if(!m_content) {
-			// Nothing too do here, mark as complete and move on
-			m_state = HTTPREQUESTSTATE_COMPLETE;
-			printf("No content for %s\n", m_url->get_url());
-			return(false);
-		}
 
 		int content_length = strlen(m_content);
 		int line_length = strcspn(m_content, "\n");
@@ -323,7 +308,10 @@ bool HttpRequest::process(void* arg) {
 
 		// Process the rest of the header
        		while(line_length != (content_length - offset)) {
-			if(line_length <= 1) break;
+			if(line_length <= 1) {
+				offset++;
+				break;
+			}
 
 			// If we get a location header, record it
 	                if((strstr(line, "Location: ")) == line) {
@@ -404,6 +392,7 @@ bool HttpRequest::process(void* arg) {
           	fclose(fp);
 
 		m_state = HTTPREQUESTSTATE_COMPLETE;
+		return(true);
 	}
 
 	if(m_state == HTTPREQUESTSTATE_ERROR) {

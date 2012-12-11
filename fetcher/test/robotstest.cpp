@@ -184,7 +184,7 @@ int main(int argc, char** argv) {
                                 request->process(NULL);
                 }
 
-		sleep(1);
+		usleep(1);
 	}
 
 	mysql_close(conn);
