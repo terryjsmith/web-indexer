@@ -116,7 +116,6 @@ void HttpRequest::fetch_robots(Url* url) {
 void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host) {
 	HttpRequest* req = (HttpRequest*)arg;
 	if(status == ARES_SUCCESS) {
-		printf("Got DNS back for %s\n", req->get_url()->get_url());
 		req->connect(host);
 	}
 	else {
@@ -125,7 +124,6 @@ void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host
 }
 
 void HttpRequest::connect(struct hostent* host) {
-	printf("Attempting to connect for %s\n", m_url->get_url());
 
 	if(host) {
 		m_sockaddr.sin_family = AF_INET;
@@ -215,7 +213,6 @@ bool HttpRequest::process(void* arg) {
 
 	if(m_state == HTTPREQUESTSTATE_SEND) {
 		Url* use = (m_robots == 0) ? m_url : m_robots;
-		printf("Connected, sending request to %s\n", use->get_url());
 
 		// Connect should have been successful, send data
 		char* request = (char*)malloc(strlen(use->get_path()) + strlen(use->get_query()) + strlen(use->get_host()) + 250);
@@ -236,7 +233,6 @@ bool HttpRequest::process(void* arg) {
 	}
 
 	if(m_state == HTTPREQUESTSTATE_RECV) {
-		printf("Receiving data for %s.\n", m_url->get_url());
 		while(true) {
                		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
                		memset(buffer, 0, SOCKET_BUFFER_SIZE);
@@ -277,11 +273,9 @@ bool HttpRequest::process(void* arg) {
 
 	                free(buffer);
 	        }
-		printf("Received %d bytes for %s\n", m_size, m_url->get_url());
 	}
 
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
-		printf("Processing data for %s\n", m_url->get_url());
 		// First process the HTTP response headers
 		unsigned int offset = 0;
 

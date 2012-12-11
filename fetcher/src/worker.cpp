@@ -421,6 +421,8 @@ void Worker::run() {
 
 				// Now that we have the robots.txt back, check it again
 				if(!check_robots_rules(url)) {
+					printf("After fetching robots.txt, %s is disallow.\n", url->get_url());
+
 					// If it's against the rules, get rid of it and move on
 					delete m_requests[pos];
 	                                m_requests[pos] = 0;
