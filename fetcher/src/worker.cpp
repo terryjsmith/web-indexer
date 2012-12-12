@@ -14,6 +14,7 @@
 #include <mysql.h>
 #include <sys/epoll.h>
 #include <ares.h>
+#include <time.h>
 
 #include <defines.h>
 #include <domain.h>
@@ -225,6 +226,8 @@ void Worker::fill_list() {
                         continue;
 		}
 
+		printf("Valid URL: %s\n", url->get_url());
+
 		free(urlstr);
 
                 // Verify the scheme is one we want (just http for now)
@@ -238,6 +241,8 @@ void Worker::fill_list() {
                 // Load the site info from the database
                 Domain* info = load_domain_info(url->get_host());
                 url->set_domain_id(info->domain_id);
+
+		printf("Loaded domain info: %s\n", url->get_url());
 
                 // Check whether this domain is on a timeout
                 time_t now = time(NULL);
@@ -256,6 +261,8 @@ void Worker::fill_list() {
                         continue;
                 }
 
+		printf("Valid access time: %s\n", url->get_url());
+
                 // Next check if we've already parsed this URL
                 if(url_exists(url, info)) {
 			printf("exists in db\n");
@@ -264,6 +271,8 @@ void Worker::fill_list() {
                         i--;
                         continue;
                 }
+
+		printf("URL does no exist in DB: %s\n", url->get_url());
 
 		// Create our HTTP request
 		m_requests[i] = new HttpRequest();
@@ -286,6 +295,8 @@ void Worker::fill_list() {
 			}
 		}
 
+		printf("Cleared robots rules: %s\n", url->get_url());
+
 		// Don't need this anymore
 		delete info;
 
@@ -302,12 +313,16 @@ void Worker::fill_list() {
 		mysql_query(m_conn, query);
 		free(query);
 
+		printf("Updated last access for URL: %s\n", url->get_url());
+
                 // Otherwise, we're good
                 int socket = m_requests[i]->initialize(url);
                 if(!socket) {
                         printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->get_url());
                         pthread_exit(0);
                 }
+
+		printf("Initialized socket: %s\n", url->get_url());
 
                 // Add the socket to epoll
                 struct epoll_event event;
@@ -320,7 +335,11 @@ void Worker::fill_list() {
                         pthread_exit(0);
                 }
 
+		printf("Added to epoll: %s\n", url->get_url());
+
 		m_active++;
+
+		printf("Active count: %d\n", m_active);
         }
 }
 
@@ -387,7 +406,7 @@ void Worker::run() {
 			}
 
 			if(!m_requests[pos]->process((void*)&events[i])) {
-				// TODO: something went wrong, figure that out
+				// Something went wrong, figure that out
 				printf("ERROR: Processing error.\n");
 
 				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
@@ -509,6 +528,18 @@ void Worker::run() {
 
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_WRITE)
                                 m_requests[i]->process(NULL);
+
+			// Check for any timeouts
+			if((m_requests[i]->get_state() == HTTPREQUESTSTATE_RECV) || (m_requests[i]->get_state() == HTTPREQUESTSTATE_CONNECTING)) {
+				if(!m_requests[i]->process(NULL)) {
+					printf("ERROR: Processing error: %s\n", m_requests[i]->get_error());
+
+					delete m_requests[i];
+					m_requests[i] = 0;
+					m_active--;
+					continue;
+				}
+			}
 
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
                                 // Get the URL we were working on

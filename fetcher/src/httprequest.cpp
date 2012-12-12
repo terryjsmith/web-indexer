@@ -15,6 +15,7 @@
 #include <string.h>
 #include <regex.h>
 #include <ares.h>
+#include <time.h>
 #include <errno.h>
 
 #include <defines.h>
@@ -35,6 +36,7 @@ HttpRequest::HttpRequest() {
 	m_effective = 0;
 	m_robots = 0;
 	m_keepalive = false;
+	m_lasttime = 0;
 	memset(&m_sockaddr, 0, sizeof(sockaddr_in));
 }
 
@@ -117,7 +119,7 @@ void HttpRequest::fetch_robots(Url* url) {
 
 void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host) {
 	HttpRequest* req = (HttpRequest*)arg;
-	if(status == ARES_SUCCESS) {
+	if((status == ARES_SUCCESS) && (host)) {
 		req->connect(host);
 	}
 	else {
@@ -127,9 +129,11 @@ void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host
 
 void HttpRequest::connect(struct hostent* host) {
 	if(host) {
-		m_sockaddr.sin_family = AF_INET;
-		bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
-		m_sockaddr.sin_port = htons(80);
+		if(host->h_addr && host->h_length) {
+			m_sockaddr.sin_family = AF_INET;
+			bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
+			m_sockaddr.sin_port = htons(80);
+		}
 	}
 
 	// Make our socket non-blocking
@@ -145,6 +149,8 @@ void HttpRequest::connect(struct hostent* host) {
                 printf("Unable to set up socket for non-blocking I/O on %s.\n", m_url->get_url());
                 return;
         }
+
+	m_lasttime = time(NULL);
 
 	::connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
         m_state = HTTPREQUESTSTATE_CONNECTING;
@@ -204,15 +210,25 @@ bool HttpRequest::process(void* arg) {
 
 	if(m_state == HTTPREQUESTSTATE_CONNECTING) {
 		// Find out if we've connected to errored out
-		epoll_event* event = (epoll_event*)arg;
-		if(event->events & EPOLLERR) {
-			m_error = (char*)malloc(1000 + strlen(m_url->get_url()));
-			sprintf(m_error, "Unable to connect to %s: %s", m_url->get_url(), strerror(errno));
-			m_state = HTTPREQUESTSTATE_ERROR;
-			return(false);
+		if(arg) {
+			epoll_event* event = (epoll_event*)arg;
+			if(event->events & EPOLLERR) {
+				m_error = (char*)malloc(1000 + strlen(m_url->get_url()));
+				sprintf(m_error, "Unable to connect to %s: %s", m_url->get_url(), strerror(errno));
+				m_state = HTTPREQUESTSTATE_ERROR;
+				return(false);
+			}
+			else {
+				m_lasttime = time(NULL);
+				m_state = HTTPREQUESTSTATE_SEND;
+			}
 		}
 		else {
-			m_state = HTTPREQUESTSTATE_SEND;
+			time_t now = time(NULL);
+			if(abs(now - m_lasttime) > HTTPTIMEOUT_CONNECT) {
+				this->error("Timeout on connect.");
+				return(false);
+			}
 		}
 	}
 
@@ -233,52 +249,63 @@ bool HttpRequest::process(void* arg) {
 
 		send(m_socket, request, length, 0);
 		free(request);
+		m_lasttime = time(NULL);
 		m_state = HTTPREQUESTSTATE_RECV;
 		return(true);
 	}
 
 	if(m_state == HTTPREQUESTSTATE_RECV) {
-		while(true) {
-               		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
-               		memset(buffer, 0, SOCKET_BUFFER_SIZE);
+		if(arg) {
+			while(true) {
+        	       		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
+               			memset(buffer, 0, SOCKET_BUFFER_SIZE);
 
-	                int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
-               		if((count < 0) && (errno == EAGAIN)) {
-	                        free(buffer);
-               		        break;
-	                }
+	                	int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
+				m_lasttime = time(NULL);
+	               		if((count < 0) && (errno == EAGAIN)) {
+		                        free(buffer);
+               			        break;
+	                	}
 
-               		if(count == 0) {
-               		        free(buffer);
-				if(m_size)
+	               		if(count == 0) {
+        	       		        free(buffer);
+					if(m_size)
+						m_state = HTTPREQUESTSTATE_WRITE;
+	                        	break;
+	               		}
+
+		                if(count > 0) {
+               			        unsigned int length = m_size + count;
+	                	        char* new_content = (char*)malloc(length + 1);
+
+               		        	if(m_content)
+                               			strncpy(new_content, m_content, m_size);
+		                        strncpy(new_content + m_size, buffer, count);
+        	       		        new_content[length] = '\0';
+	
+		                        if(m_content)
+               			                free(m_content);
+	                	        m_content = new_content;
+	
+        	       		        m_size += count;
+	        	        }
+
+               			if(count < SOCKET_BUFFER_SIZE) {
+               		        	free(buffer);
 					m_state = HTTPREQUESTSTATE_WRITE;
-	                        break;
-               		}
+		                        break;
+               			}
 
-	                if(count > 0) {
-               		        unsigned int length = m_size + count;
-	                        char* new_content = (char*)malloc(length + 1);
-
-               		        if(m_content)
-                               		strncpy(new_content, m_content, m_size);
-	                        strncpy(new_content + m_size, buffer, count);
-               		        new_content[length] = '\0';
-
-	                        if(m_content)
-               		                free(m_content);
-	                        m_content = new_content;
-
-               		        m_size += count;
-	                }
-
-               		if(count < SOCKET_BUFFER_SIZE) {
-               		        free(buffer);
-				m_state = HTTPREQUESTSTATE_WRITE;
-	                        break;
-               		}
-
-	                free(buffer);
+	                	free(buffer);
+			}
 	        }
+		else {
+			time_t now = time(NULL);
+                        if(abs(now - m_lasttime) > HTTPTIMEOUT_CONNECT) {
+                                this->error("Timeout on recv.");
+                                return(false);
+                        }
+		}
 	}
 
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
@@ -313,7 +340,7 @@ bool HttpRequest::process(void* arg) {
 	        }
 
 		// Process the rest of the header
-       		while(line_length != (content_length - offset)) {
+       		while(line_length > (content_length - offset - 1)) {
 			if(line_length <= 1) {
 				offset++;
 				break;
@@ -384,8 +411,8 @@ bool HttpRequest::process(void* arg) {
 	                return(false);
       		}
 
-                int written = fwrite(m_content + offset, 1, m_size - offset, fp);
-		if(written != (m_size - offset))
+                int written = fwrite(m_content, 1, strlen(m_content), fp);
+		if(written != strlen(m_content))
 			printf("WRITE ERROR: %d v. %d\n", m_size - offset, written);
           	fclose(fp);
 

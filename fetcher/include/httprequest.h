@@ -15,6 +15,11 @@ enum {
 	HTTPREQUESTSTATE_ERROR
 };
 
+enum {
+	HTTPTIMEOUT_CONNECT = 30,
+	HTTPTIMEOUT_RECV = 60
+};
+
 class HttpRequest {
 public:
 	HttpRequest();
@@ -94,6 +99,9 @@ protected:
 
 	// Whether keep-alive connections have been enabled for multiple requests
 	bool m_keepalive;
+
+	// The last timestamp we did something
+	time_t m_lasttime;
 };
 
 #endif
