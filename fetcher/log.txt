@@ -1,0 +1,545 @@
+Trying http://www.grange85.co.uk/galaxie/...Trying http://www.artistdirect.com/artist/galaxie-500/433766...Trying http://www.allmusic.com/artist/galaxie-500-p4331...Trying http://music.yahoo.com/galaxie-500/...Trying http://www.lenniegallant.com/...Trying http://www.gamine.net/...Trying http://www.emdac.demon.co.uk/phil/gof/gof_indx.html...Trying http://www.gillmusic.com/...Trying http://www.rollingstone.com/music/artists/gang-of-four...Trying http://www.vh1.com/artists/az/id_98/artist.jhtml...Trying http://www.allmusic.com/artist/gang-starr-p41...too soon
+Trying http://www.garbage.com/...Trying http://www.garbage-discography.co.uk/...Trying http://www.mtv.com/bands/az/garbage/artist.jhtml...Trying http://www.adambielawski.com/Bands/Garbage.cfm...Trying http://www.entertainmentavenue.com/concert_hall/reviews/q/q101/jamboree_1996/garbage.htm...Trying http://www.garbagebase.com/...Trying http://www.allmusic.com/artist/garbage-p165362...too soon
+Trying http://www.midialternative.com/garbage/...Trying http://www.absolutedivas.com/shirley/...Trying http://www.angelfire.com/ri/ShirleyManson/...Trying http://fan-sites.org/shirley-manson/...Trying http://www.facebook.com/pages/Shirley-Manson/27037696386...Trying http://www.askmen.com/celebs/women/singer_60/62_shirley_manson.html...Trying http://www.afn.org/~afn01455/...Trying http://www.users.globalnet.co.uk/~terese/garbage/...Trying http://www.musicfanclubs.org/garbage/index.html...Trying http://www.angelfire.com/journal/takingoutthetrash/index.html...too soon
+Trying http://www.mattsmusicpage.com/ngarbage.htm...Trying http://www.angelfire.com/fl2/garbage/...too soon
+Trying http://www.garbage.0catch.com/...Trying http://www.garbage-online.com/...Trying http://www.garbagediscobox.com/...Trying http://betaversion.tripod.com/...Trying http://www.artgarfunkel.com/...Trying http://www.topix.com/who/art-garfunkel...Trying http://www.rollingstone.com/music/artists/art-garfunkel...too soon
+Trying http://www.visionmusic.com/garland.html...Trying http://www.classicjazzguitar.com/artists/artists_page.jsp?artist=15...Trying http://www.thecelebritycafe.com/interviews/garmarna.html...Trying http://www.garmarna.se/...Trying http://www.allmusic.com/artist/p141941...too soon
+Trying http://hearful.com/index.php?contentID=2740&id=14...Trying http://www.laurentgarnier.com/...Trying http://www.metacritic.com/music/artists/garnierlaurent/unreasonablebehavior...Trying http://www.wiseup.org/twang/...Got robots for http://www.entertainmentavenue.com/concert_hall/reviews/q/q101/jamboree_1996/garbage.htm (code 200), processing.
+Writing http://www.entertainmentavenue.com/concert_hall/reviews/q/q101/jamboree_1996/garbage.htm to /mnt/indexer/www.entertainmentavenue.com/91a6cfff16903e27f05ccbcc8e3ffc32.html
+Trying http://www.davidgarza.com/...Got robots for http://www.mtv.com/bands/az/garbage/artist.jhtml (code 200), processing.
+Got robots for http://www.rollingstone.com/music/artists/gang-of-four (code 200), processing.
+Got robots for http://www.lenniegallant.com/ (code 404), processing.
+Got robots for http://www.musicfanclubs.org/garbage/index.html (code 200), processing.
+Got robots for http://fan-sites.org/shirley-manson/ (code 200), processing.
+Got robots for http://www.absolutedivas.com/shirley/ (code 404), processing.
+Got robots for http://www.garbage-online.com/ (code 404), processing.
+Got robots for http://www.allmusic.com/artist/galaxie-500-p4331 (code 200), processing.
+Writing http://www.lenniegallant.com/ to /mnt/indexer/www.lenniegallant.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.allmusic.com/artist/davd-garza-p302851...too soon
+Trying http://centerstage.net/music/whoswho/GastrdelSol.html...Got robots for http://www.grange85.co.uk/galaxie/ (code 200), processing.
+Got robots for http://www.garbage.com/ (code 301), processing.
+Got robots for http://www.garbage.0catch.com/ (code 404), processing.
+Got robots for http://hearful.com/index.php?contentID=2740&id=14 (code 404), processing.
+Got robots for http://www.emdac.demon.co.uk/phil/gof/gof_indx.html (code 404), processing.
+Got robots for http://www.thecelebritycafe.com/interviews/garmarna.html (code 200), processing.
+Got robots for http://www.visionmusic.com/garland.html (code 404), processing.
+Writing http://www.musicfanclubs.org/garbage/index.html to /mnt/indexer/www.musicfanclubs.org/23311ee3905265054606447234c030a7.html
+Trying http://www.angelfire.com/nh/jaredspick/gastr.html...too soon
+Trying http://www.angelfire.com/az2/gasgiants/start.html...too soon
+Trying http://news.bbc.co.uk/1/hi/entertainment/music/1891053.stm...Got robots for http://www.users.globalnet.co.uk/~terese/garbage/ (code 404), processing.
+Writing http://fan-sites.org/shirley-manson/ to /mnt/indexer/fan-sites.org/6e00ee9d656c6ba62f8248ed364a43e8.html
+Got robots for http://www.vh1.com/artists/az/id_98/artist.jhtml (code 200), processing.
+Got robots for http://www.mattsmusicpage.com/ngarbage.htm (code 200), processing.
+Got robots for http://www.midialternative.com/garbage/ (code 200), processing.
+Got robots for http://www.angelfire.com/ri/ShirleyManson/ (code 200), processing.
+Got robots for http://music.yahoo.com/galaxie-500/ (code 200), processing.
+Got robots for http://www.adambielawski.com/Bands/Garbage.cfm (code 406), processing.
+Got robots for http://www.gamine.net/ (code 404), processing.
+Got robots for http://www.afn.org/~afn01455/ (code 200), processing.
+Writing http://www.mattsmusicpage.com/ngarbage.htm to /mnt/indexer/www.mattsmusicpage.com/3e94b3453d4d07cf9657b229e763fbc0.html
+Trying http://www.garethgates.com/...Trying http://members.multimania.co.uk/sarahcozuk...Invalid code 301 for http://www.garbage.com/
+Invalid code 301 for http://www.mtv.com/bands/az/garbage/artist.jhtml
+Got robots for http://www.artgarfunkel.com/ (code 406), processing.
+Got robots for http://www.askmen.com/celebs/women/singer_60/62_shirley_manson.html (code 200), processing.
+Writing http://www.garbage-online.com/ to /mnt/indexer/www.garbage-online.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.absolutedivas.com/shirley/ to /mnt/indexer/www.absolutedivas.com/f283476b9dd4010281015a6e92f45703.html
+Got robots for http://www.garbagediscobox.com/ (code 200), processing.
+Writing http://www.midialternative.com/garbage/ to /mnt/indexer/www.midialternative.com/8a508347e347a14d55f8d2b9192c49d9.html
+Trying http://www.freewebs.com/planetgareth/...Invalid code 301 for http://www.allmusic.com/artist/galaxie-500-p4331
+Invalid code 301 for http://www.grange85.co.uk/galaxie/
+Got robots for http://www.artistdirect.com/artist/galaxie-500/433766 (code 200), processing.
+Got robots for http://www.wiseup.org/twang/ (code 200), processing.
+Got robots for http://betaversion.tripod.com/ (code 200), processing.
+Got robots for http://www.topix.com/who/art-garfunkel (code 200), processing.
+Trying http://www.marygauthier.com/...Trying http://www.ink19.com/issues/august2002/interviews/maryGauthier.html...Trying http://www.signaturesounds.com/onlinestore/category.cfm?Category=39...Trying http://jam.canoe.ca/Music/Artists/G/Gauthier_Mary/2003/07/11/745316.html...Trying http://www.allmusic.com/artist/mary-gauthier-p366516...too soon
+Trying http://www.srv.net/~roxtar/gaye_marvin.html...Trying http://www.oldielyrics.com/m/marvin_gaye.html...Got robots for http://www.davidgarza.com/ (code 200), processing.
+Invalid code 302 for http://www.thecelebritycafe.com/interviews/garmarna.html
+Got robots for http://www.gillmusic.com/ (code 404), processing.
+Writing http://www.gamine.net/ to /mnt/indexer/www.gamine.net/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.metacritic.com/music/artists/garnierlaurent/unreasonablebehavior (code 200), processing.
+Trying http://www.marvingayepage.net/...Writing http://www.visionmusic.com/garland.html to /mnt/indexer/www.visionmusic.com/21c2d91044e3dcc2ebb0ed774a30adad.html
+Trying http://www.topix.com/who/marvin-gaye...too soon
+Trying http://rockhall.com/inductees/marvin-gaye/...Trying http://www.rollingstone.com/music/artists/marvin-gaye...too soon
+Trying http://www.2-4-7-music.com/newsitems/oct01/geggytah.asp...Got robots for http://centerstage.net/music/whoswho/GastrdelSol.html (code 406), processing.
+Writing http://www.emdac.demon.co.uk/phil/gof/gof_indx.html to /mnt/indexer/www.emdac.demon.co.uk/9ef9fd067aced405dcac1dde40a2bc6d.html
+Writing http://hearful.com/index.php?contentID=2740&id=14 to /mnt/indexer/hearful.com/4b290fa7aaddc6132886440842071e2a.html
+Writing http://www.users.globalnet.co.uk/~terese/garbage/ to /mnt/indexer/www.users.globalnet.co.uk/5db45d7edfc80b4e467869cf3ffa3dd7.html
+Writing http://www.artgarfunkel.com/ to /mnt/indexer/www.artgarfunkel.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.garbage.0catch.com/ to /mnt/indexer/www.garbage.0catch.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.rollingstone.com/music/artists/gang-of-four to /mnt/indexer/www.rollingstone.com/f222482dcf40ef966b3a6a9b148a3493.html
+Invalid code 301 for http://www.metacritic.com/music/artists/garnierlaurent/unreasonablebehavior
+Writing http://www.adambielawski.com/Bands/Garbage.cfm to /mnt/indexer/www.adambielawski.com/7f9de18b9e6d58ad2bd45f3c656eb625.html
+Got robots for http://www.freewebs.com/planetgareth/ (code 200), processing.
+Writing http://betaversion.tripod.com/ to /mnt/indexer/betaversion.tripod.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.angelfire.com/ri/ShirleyManson/ to /mnt/indexer/www.angelfire.com/bd36da53779366080a6ea633bd4e08ff.html
+Got robots for http://www.laurentgarnier.com/ (code 200), processing.
+Invalid code 301 for http://www.vh1.com/artists/az/id_98/artist.jhtml
+Got robots for http://www.classicjazzguitar.com/artists/artists_page.jsp?artist=15 (code 404), processing.
+Writing http://www.wiseup.org/twang/ to /mnt/indexer/www.wiseup.org/4f48ab16a995f1cda9d54df88a051f3f.html
+Got robots for http://www.facebook.com/pages/Shirley-Manson/27037696386 (code 200), processing.
+Trying http://www.davewakeling.com/...Got robots for http://www.garmarna.se/ (code 404), processing.
+Got robots for http://www.garethgates.com/ (code 200), processing.
+Trying http://www.allmusic.com/artist/general-public-p4350...too soon
+Trying http://groups.yahoo.com/group/bobbiegentry/...Trying http://www.allmusic.com/artist/bobbie-gentry-p79507...too soon
+Trying http://www.smh.com.au/articles/2002/03/28/1017206135188.html...Trying http://www.theharbouragency.com/artist-profile/george...Trying http://www.george.net.au/...Trying http://www.vh1.com/artists/az/georgia_satellites/artist.jhtml...too soon
+Trying http://www.allmusic.com/artist/the-georgia-satellites-p4355...too soon
+Trying http://quimby.gnus.org/html/group/germanolisa.html...Trying http://www.guillotinelove.com/...Got robots for http://www.ink19.com/issues/august2002/interviews/maryGauthier.html (code 200), processing.
+Trying http://www.lisagermano.com/...Trying http://smoe.org/lists/sycophant.info...Trying http://www.4ad.com/artists/lisagermano...Trying http://ian.speers.angelfire.com/...Trying http://www.allmusic.com/artist/gerry--the-pacemakers-p4359...too soon
+Trying http://www.allmusic.com/artist/the-getaway-people-p291421...too soon
+Trying http://groups.yahoo.com/group/amandaghostE-streetteam/...too soon
+Trying http://www.allmusic.com/artist/amanda-ghost-p341709...too soon
+Trying http://www.melodicrock.com/interviews/dannhuff.html...Writing http://www.artistdirect.com/artist/galaxie-500/433766 to /mnt/indexer/www.artistdirect.com/912e67454e80a6b7a1e6fee64e2da54a.html
+Got robots for http://news.bbc.co.uk/1/hi/entertainment/music/1891053.stm (code 200), processing.
+Invalid code 301 for http://www.topix.com/who/art-garfunkel
+Invalid code 301 for http://www.gillmusic.com/
+Trying http://www.allmusic.com/artist/giant-p4361...too soon
+Got robots for http://www.srv.net/~roxtar/gaye_marvin.html (code 404), processing.
+Trying http://www.hotshotdigital.com/tribute/AndyGibb.html...Got robots for http://members.multimania.co.uk/sarahcozuk (code 302), processing.
+Got robots for http://jam.canoe.ca/Music/Artists/G/Gauthier_Mary/2003/07/11/745316.html (code 200), processing.
+Writing http://www.davidgarza.com/ to /mnt/indexer/www.davidgarza.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.garbagediscobox.com/ to /mnt/indexer/www.garbagediscobox.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.eddy.mv.ru/andy.html...Trying http://www.brothersgibb.org/andygibb.html...Trying http://www.deb-ski.com/...Writing http://www.freewebs.com/planetgareth/ to /mnt/indexer/www.freewebs.com/2185ee9da9b2e90f9da11fe08d6f1c11.html
+Got robots for http://www.marvingayepage.net/ (code 200), processing.
+Invalid code 301 for http://www.facebook.com/pages/Shirley-Manson/27037696386
+Writing http://www.garethgates.com/ to /mnt/indexer/www.garethgates.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.popentertainment.com/gibson.htm...Got robots for http://www.smh.com.au/articles/2002/03/28/1017206135188.html (code 200), processing.
+Trying http://homepages.iol.ie/~mjbyrne/debpage.htm...Trying http://www.imdb.com/name/nm0316933/...Trying http://deborahgibson.wordpress.com/...Got robots for http://ian.speers.angelfire.com/ (code 200), processing.
+Writing http://www.laurentgarnier.com/ to /mnt/indexer/www.laurentgarnier.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.allmusic.com/artist/debbie-gibson-p4363...too soon
+Trying http://www.askmen.com/celebs/women/singer_100/113_deborah_gibson.html...too soon
+Trying http://www.gigoloaunts.net/...Writing http://www.classicjazzguitar.com/artists/artists_page.jsp?artist=15 to /mnt/indexer/www.classicjazzguitar.com/bd30f08f70336a9853b1d1513bab1359.html
+Got robots for http://www.melodicrock.com/interviews/dannhuff.html (code 404), processing.
+Got robots for http://smoe.org/lists/sycophant.info (code 200), processing.
+Got robots for http://www.lisagermano.com/ (code 404), processing.
+Writing http://www.garmarna.se/ to /mnt/indexer/www.garmarna.se/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.afn.org/~afn01455/ to /mnt/indexer/www.afn.org/1985665f407e08a472e682f7ad63820b.html
+Got robots for http://rockhall.com/inductees/marvin-gaye/ (code 404), processing.
+Got robots for http://www.oldielyrics.com/m/marvin_gaye.html (code 404), processing.
+Writing http://www.ink19.com/issues/august2002/interviews/maryGauthier.html to /mnt/indexer/www.ink19.com/a76b33ef100d4bba47a749cd08fb338d.html
+Writing http://centerstage.net/music/whoswho/GastrdelSol.html to /mnt/indexer/centerstage.net/eb54e8fb57f90090fc429051a4480fc2.html
+Got robots for http://groups.yahoo.com/group/bobbiegentry/ (code 200), processing.
+Got robots for http://www.2-4-7-music.com/newsitems/oct01/geggytah.asp (code 406), processing.
+Writing http://www.srv.net/~roxtar/gaye_marvin.html to /mnt/indexer/www.srv.net/d8a5eb15690260febbef0996bb316283.html
+Trying http://www.trouserpress.com/entry.php?a=gigolo_aunts...Trying http://www.kevingilbert.com/...Trying http://www.angelfire.com/ca/bewtifulfreak/kevin.html...too soon
+Trying http://www.blazemonger.com/GT/suit.canon.html...Trying http://zimmer.csufresno.edu/~robb/KevinGilbert.html...Trying http://www.mothersea.com/kg/...Trying http://zimmer.csufresno.edu/~robb/Frontline2.html...too soon
+Trying http://www.metroactive.com/papers/metro/08.01.96/gilbert-obit-9631.html...Got robots for http://www.imdb.com/name/nm0316933/ (code 200), processing.
+Got robots for http://www.davewakeling.com/ (code 200), processing.
+Invalid code 301 for http://news.bbc.co.uk/1/hi/entertainment/music/1891053.stm
+Writing http://jam.canoe.ca/Music/Artists/G/Gauthier_Mary/2003/07/11/745316.html to /mnt/indexer/jam.canoe.ca/87fbcab417e5e05c072fe4d4d36aa508.html
+Got robots for http://quimby.gnus.org/html/group/germanolisa.html (code 200), processing.
+Got robots for http://www.theharbouragency.com/artist-profile/george (code 404), processing.
+Trying http://www.thenightowl.com/reviews/thudlive.htm...Trying http://www.progressiveworld.net/html/modules.php?name=Reviews&rop=showcontent&id=3235...Got robots for http://www.hotshotdigital.com/tribute/AndyGibb.html (code 200), processing.
+Got robots for http://www.guillotinelove.com/ (code 200), processing.
+Got robots for http://www.brothersgibb.org/andygibb.html (code 200), processing.
+Got robots for http://www.4ad.com/artists/lisagermano (code 404), processing.
+Writing http://www.marvingayepage.net/ to /mnt/indexer/www.marvingayepage.net/6666cd76f96956469e7be39d750cc7d9.html
+EPOLL ERROR FLAG on http://homepages.iol.ie/~mjbyrne/debpage.htm at stage 3: Operation now in progress
+ERROR: Unable to connect to http://homepages.iol.ie/~mjbyrne/debpage.htm: Operation now in progress
+Trying http://www.sfgate.com/music/article/Kevin-Gilbert-Triumphs-With-Posthumous-Shaming-2803378.php...Writing http://music.yahoo.com/galaxie-500/ to /mnt/indexer/music.yahoo.com/6c60daaaaee88f2bae6bbbcb57c24e79.html
+Writing http://ian.speers.angelfire.com/ to /mnt/indexer/ian.speers.angelfire.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.george.net.au/ (code 200), processing.
+Trying http://www.sfgate.com/bayarea/article/More-Than-The-Piano-Player-Dumped-by-Sheryl-2966770.php...too soon
+Trying http://www.bebelgilberto.com/...Trying http://www.vh1.com/artists/az/gilberto_bebel/artist.jhtml...too soon
+Trying http://www.avrev.com/music-disc-reviews/audio-cd/bebel-gilberto-tanto-tempo.html...Got robots for http://www.garbagebase.com/ (code 200), processing.
+Writing http://www.melodicrock.com/interviews/dannhuff.html to /mnt/indexer/www.melodicrock.com/9e75896648d988f2cd8efe92ca6a769d.html
+Got robots for http://deborahgibson.wordpress.com/ (code 200), processing.
+Got robots for http://www.popentertainment.com/gibson.htm (code 404), processing.
+Writing http://www.oldielyrics.com/m/marvin_gaye.html to /mnt/indexer/www.oldielyrics.com/c6de1667671306ee15cc9517aa0f6577.html
+Got robots for http://www.trouserpress.com/entry.php?a=gigolo_aunts (code 200), processing.
+Got robots for http://www.deb-ski.com/ (code 200), processing.
+Writing http://smoe.org/lists/sycophant.info to /mnt/indexer/smoe.org/0f46fe5d2c6f372d7a7ae3f4e645de62.html
+Writing http://www.lisagermano.com/ to /mnt/indexer/www.lisagermano.com/6666cd76f96956469e7be39d750cc7d9.html
+Invalid code 302 for http://groups.yahoo.com/group/bobbiegentry/
+Writing http://www.smh.com.au/articles/2002/03/28/1017206135188.html to /mnt/indexer/www.smh.com.au/fad70528a1fd5e7879cdb0f0abebf392.html
+Trying http://www.askmen.com/celebs/women/singer_60/88_bebel_gilberto.html...too soon
+Trying http://members.shaw.ca/llcb/nickgilder/...Trying http://www.canadianbands.com/Nick%20Gilder.html...Trying http://jam.canoe.ca/Music/Pop_Encyclopedia/G/Gilder_Nick.html...too soon
+Trying http://www.allmusic.com/artist/p17858...too soon
+Trying http://www.gillan.com/...Trying http://www.melodicrock.com/interviews/iangillan.html...too soon
+Got robots for http://www.blazemonger.com/GT/suit.canon.html (code 200), processing.
+Trying http://www.jimmiegilmore.com/...Writing http://www.2-4-7-music.com/newsitems/oct01/geggytah.asp to /mnt/indexer/www.2-4-7-music.com/c5dbc0ad0bade9dc60cd54bee84787cc.html
+Trying http://ectoguide.org/genre/alternative/gilmore.thea...Trying http://www.theagilmore.net/...Got robots for http://www.mothersea.com/kg/ (code 404), processing.
+Got robots for http://www.gigoloaunts.net/ (code 302), processing.
+Got robots for http://www.eddy.mv.ru/andy.html (code 404), processing.
+Got robots for http://www.metroactive.com/papers/metro/08.01.96/gilbert-obit-9631.html (code 302), processing.
+Writing http://www.guillotinelove.com/ to /mnt/indexer/www.guillotinelove.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.hotshotdigital.com/tribute/AndyGibb.html to /mnt/indexer/www.hotshotdigital.com/198525443405ffdb77fac792cfa1dd6e.html
+Got robots for http://zimmer.csufresno.edu/~robb/KevinGilbert.html (code 404), processing.
+Got robots for http://www.bebelgilberto.com/ (code 200), processing.
+Writing http://www.brothersgibb.org/andygibb.html to /mnt/indexer/www.brothersgibb.org/3f99c59352b018180e272b587f7a1ebd.html
+Trying http://dir.salon.com/story/ent/music/feature/2003/09/29/gilmore/index.html...Trying http://www.guardian.co.uk/music/2003/oct/23/popandrock.shopping...Trying http://www.allmusic.com/artist/thea-gilmore-p512776...too soon
+Trying http://lyrics.rockmagic.net/lyrics/gilmour_david/...Got robots for http://ectoguide.org/genre/alternative/gilmore.thea (code 404), processing.
+Writing http://www.metroactive.com/papers/metro/08.01.96/gilbert-obit-9631.html to /mnt/indexer/www.metroactive.com/16f5a3a3a5a11e0026974ec21d45353a.html
+Trying http://www.davemcnally.com/Lyrics/DavidGilmour/...Got robots for http://www.theagilmore.net/ (code 200), processing.
+Got robots for http://www.garbage-discography.co.uk/ (code 200), processing.
+Got robots for http://www.avrev.com/music-disc-reviews/audio-cd/bebel-gilberto-tanto-tempo.html (code 200), processing.
+Got robots for http://www.jimmiegilmore.com/ (code 404), processing.
+Invalid code 302 for http://www.gigoloaunts.net/
+Trying http://www.gilmourontour.com/...Got robots for http://www.thenightowl.com/reviews/thudlive.htm (code 404), processing.
+Trying http://davidgilmour.com/...Writing http://rockhall.com/inductees/marvin-gaye/ to /mnt/indexer/rockhall.com/cf415d570d20206ea717324e540297e8.html
+Writing http://quimby.gnus.org/html/group/germanolisa.html to /mnt/indexer/quimby.gnus.org/3332b7f46caab26d9abbb784cab4ebe8.html
+Invalid code 301 for http://members.multimania.co.uk/sarahcozuk
+Got robots for http://www.kevingilbert.com/ (code 404), processing.
+Writing http://www.trouserpress.com/entry.php?a=gigolo_aunts to /mnt/indexer/www.trouserpress.com/2705c56effe4e192bd48026a9c1cb579.html
+Trying http://www.mtv.com/bands/az/ginuwine/artist.jhtml...too soon
+Trying http://www.vh1.com/artists/az/ginuwine/artist.jhtml...too soon
+Trying http://en.wikipedia.org/wiki/Ginuwine...Trying http://www.myspace.com/ginuwine...Trying http://www.ginuwine.com/...Trying http://www.angelfire.com/ga/annette/ginuwine.html...too soon
+Trying http://www.angelfire.com/az2/ginblossoms/...too soon
+Trying http://www.allmusic.com/artist/gin-blossoms-p57420...too soon
+Trying http://www.gipsykings.com/...Writing http://www.blazemonger.com/GT/suit.canon.html to /mnt/indexer/www.blazemonger.com/cf76f18a26200e0bab8191f5cc18e9dd.html
+Writing http://www.popentertainment.com/gibson.htm to /mnt/indexer/www.popentertainment.com/3c9d2b29aa6cc9a8bd1dd5dce276a079.html
+Writing http://www.4ad.com/artists/lisagermano to /mnt/indexer/www.4ad.com/b1f1cf4ea22883a6d8319e848f471ac9.html
+Got robots for http://dir.salon.com/story/ent/music/feature/2003/09/29/gilmore/index.html (code 301), processing.
+Got robots for http://www.sfgate.com/music/article/Kevin-Gilbert-Triumphs-With-Posthumous-Shaming-2803378.php (code 200), processing.
+Trying http://www.gipsykings.net/...Trying http://www.netwave.or.jp/~tierra/Gipsy_Kings/Bamboleo.html...Writing http://zimmer.csufresno.edu/~robb/KevinGilbert.html to /mnt/indexer/zimmer.csufresno.edu/a0910316dbd6fde91a368192f632da5d.html
+Got robots for http://www.guardian.co.uk/music/2003/oct/23/popandrock.shopping (code 200), processing.
+Got robots for http://members.shaw.ca/llcb/nickgilder/ (code 404), processing.
+Got robots for http://www.progressiveworld.net/html/modules.php?name=Reviews&rop=showcontent&id=3235 (code 200), processing.
+Writing http://www.thenightowl.com/reviews/thudlive.htm to /mnt/indexer/www.thenightowl.com/2829376d602db8a13442829f1c83ac68.html
+Writing http://www.askmen.com/celebs/women/singer_60/62_shirley_manson.html to /mnt/indexer/www.askmen.com/634a876e48eae5784c86e9f62db59d9b.html
+Trying http://www.gypsymusique.com/...Trying http://www.gipsykings.net/tabs/...too soon
+Trying http://groups.yahoo.com/group/7Seas/...too soon
+Trying http://www.inmusicwetrust.com/articles/53r13.html...Writing http://www.imdb.com/name/nm0316933/ to /mnt/indexer/www.imdb.com/2b403823c08f5e3a3d2a84d55d8441fc.html
+Writing http://www.mothersea.com/kg/ to /mnt/indexer/www.mothersea.com/fc3c158f38d4dacd862e0649e6ba809d.html
+Writing http://ectoguide.org/genre/alternative/gilmore.thea to /mnt/indexer/ectoguide.org/97d669d4c62eb5326678835dc38d43b5.html
+Invalid code 302 for http://www.theagilmore.net/
+Trying http://www.popmatters.com/music/concerts/g/girls-against-boys-020319.html...Trying http://www.entertainmentavenue.com/concert_hall/reviews/q/q101/jamboree_1996/gvsb.htm...too soon
+Trying http://www.allmusic.com/artist/girls-against-boys-p39051...too soon
+Trying http://pitchfork.com/reviews/albums/3457-you-cant-fight-what-you-cant-see/...Trying http://www.dailynexus.com/2002-05-08/girls-against-boys-you-cant-fight-what-you-cant-see-jade-tree/...Trying http://www.girlsaloud.co.uk/...Writing http://www.jimmiegilmore.com/ to /mnt/indexer/www.jimmiegilmore.com/6666cd76f96956469e7be39d750cc7d9.html
+Invalid code 301 for http://dir.salon.com/story/ent/music/feature/2003/09/29/gilmore/index.html
+Got robots for http://lyrics.rockmagic.net/lyrics/gilmour_david/ (code 200), processing.
+Writing http://www.garbagebase.com/ to /mnt/indexer/www.garbagebase.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.davemcnally.com/Lyrics/DavidGilmour/ (code 406), processing.
+Trying http://en.wikipedia.org/wiki/Girls_Aloud...too soon
+Trying http://www.askmen.com/celebs/women/singer_150/186_girls_aloud.html...too soon
+Trying http://www.myspace.com/girlymanband...too soon
+Trying http://www.thecelebritycafe.com/interviews/glass_eden.html...too soon
+Trying http://artistdirect.com/music/artist/card/0,,436067,00.html...Trying http://www.apecamp.com/music/gh/...Trying http://www.tollbooth.org/2001/reviews/glassharp.html...Trying http://www.pkfans.com/features/hourglass.shtml...Writing http://www.sfgate.com/music/article/Kevin-Gilbert-Triumphs-With-Posthumous-Shaming-2803378.php to /mnt/indexer/www.sfgate.com/06e084a6a0025e645def5438930c4eb6.html
+Trying http://www.jambase.com/headsup.asp?storyID=2978...Got robots for http://en.wikipedia.org/wiki/Ginuwine (code 200), processing.
+Trying http://www.tollbooth.org/2003/reviews/glassharp.html...too soon
+Trying http://en.wikipedia.org/wiki/Glass_Harp...too soon
+Trying http://www.classicwebs.com/glasshrp.htm...Got robots for http://pitchfork.com/reviews/albums/3457-you-cant-fight-what-you-cant-see/ (code 200), processing.
+Got robots for http://www.dailynexus.com/2002-05-08/girls-against-boys-you-cant-fight-what-you-cant-see-jade-tree/ (code 200), processing.
+Writing http://www.eddy.mv.ru/andy.html to /mnt/indexer/www.eddy.mv.ru/42e4eeba46a6c73ad73289a46d234725.html
+Trying http://blogcritics.org/music/article/glass-harp-hourglass2/...Got robots for http://www.gypsymusique.com/ (code 404), processing.
+After fetching robots.txt, http://en.wikipedia.org/wiki/Ginuwine is disallow.
+Got robots for http://www.myspace.com/ginuwine (code 200), processing.
+Got robots for http://www.classicwebs.com/glasshrp.htm (code 404), processing.
+Got robots for http://www.apecamp.com/music/gh/ (code 404), processing.
+Got robots for http://www.inmusicwetrust.com/articles/53r13.html (code 200), processing.
+Got robots for http://www.girlsaloud.co.uk/ (code 302), processing.
+Writing http://deborahgibson.wordpress.com/ to /mnt/indexer/deborahgibson.wordpress.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.gilmourontour.com/ (code 404), processing.
+Trying http://www.facebook.com/event.php?eid=342530080963&ref=nf#!/pages/Glass-Harp/352097582191?ref=ts...too soon
+Trying http://rockhall.com/blog/post/4363_clevelands-glass-harp-band...too soon
+Trying http://www.buzzbinmagazine.com/home/2010/07/07/live-memory-reminiscing-with-glass-harp...Writing http://lyrics.rockmagic.net/lyrics/gilmour_david/ to /mnt/indexer/lyrics.rockmagic.net/88e22f19b248ca54bdd1bfa74fe99ae7.html
+Got robots for http://www.gipsykings.com/ (code 404), processing.
+Writing http://www.kevingilbert.com/ to /mnt/indexer/www.kevingilbert.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.davewakeling.com/ to /mnt/indexer/www.davewakeling.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.deb-ski.com/ to /mnt/indexer/www.deb-ski.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://davidgilmour.com/ (code 404), processing.
+Trying http://www.myspace.com/officialglassharp...too soon
+Trying http://blogcritics.org/music/article/cd-review-glass-harp/...too soon
+Trying http://pkfans.com/reviews/stringsattached.html...Trying http://twitter.com/glassharp...Trying http://www.reverbnation.com/glassharp...Trying http://www.allmusic.com/artist/p17884...too soon
+Trying http://www.wildoatsrecords.com/GlennPhotoLink.html...Trying http://www.theglitterband.co.uk/...Got robots for http://www.canadianbands.com/Nick%20Gilder.html (code 404), processing.
+Writing http://www.theharbouragency.com/artist-profile/george to /mnt/indexer/www.theharbouragency.com/51e21827709b50389e51ca465d0f18ba.html
+Got robots for http://www.marygauthier.com/ (code 200), processing.
+Invalid code 302 for http://www.gypsymusique.com/
+Got robots for http://artistdirect.com/music/artist/card/0,,436067,00.html (code 301), processing.
+Writing http://www.apecamp.com/music/gh/ to /mnt/indexer/www.apecamp.com/5b162a1e610f56cd66dc5b57ab986437.html
+Got robots for http://www.tollbooth.org/2001/reviews/glassharp.html (code 200), processing.
+Writing http://www.garbage-discography.co.uk/ to /mnt/indexer/www.garbage-discography.co.uk/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://imaginaryboys.altervista.org/english/cure/articles/glove.htm...Trying http://www.rogerglover.com/...Trying http://home.swipnet.se/rogerglover...Trying http://www.nstop.com/gbs/index.html...Got robots for http://www.pkfans.com/features/hourglass.shtml (code 200), processing.
+Got robots for http://www.gipsykings.net/ (code 200), processing.
+Writing http://www.gipsykings.com/ to /mnt/indexer/www.gipsykings.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://members.shaw.ca/llcb/nickgilder/ to /mnt/indexer/members.shaw.ca/f8de89796472fe8e2da78c9c97c9dd37.html
+Got robots for http://www.ginuwine.com/ (code 404), processing.
+Trying http://www.metacritic.com/music/artists/gobetweens/friendsofrachelworth...too soon
+Trying http://www.all-reviews.com/music/friends-rachel-worth.htm...Trying http://popmatters.com/music/reviews/g/gobetweens-friends.shtml...Writing http://www.canadianbands.com/Nick%20Gilder.html to /mnt/indexer/www.canadianbands.com/16a938770bc405381fe56b17be6827db.html
+Got robots for http://pkfans.com/reviews/stringsattached.html (code 200), processing.
+Writing http://www.progressiveworld.net/html/modules.php?name=Reviews&rop=showcontent&id=3235 to /mnt/indexer/www.progressiveworld.net/7b5c2cc7623c13942b9cf3276b4033ad.html
+Got robots for http://twitter.com/glassharp (code 200), processing.
+Writing http://davidgilmour.com/ to /mnt/indexer/davidgilmour.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.jambase.com/headsup.asp?storyID=2978 (code 406), processing.
+Trying http://go-betweens.org.uk/...Trying http://www.allmusic.com/artist/the-go-betweens-p4375...too soon
+Trying http://www.beggarsgroupusa.com/gobetweens/...Trying http://groups.yahoo.com/group/gogos/...too soon
+Trying http://www.artistdirect.com/artist/the-go-go-s/436276...too soon
+Trying http://www.rollingstone.com/music/artists/the-go-gos...too soon
+Trying http://www.allmusic.com/album/beauty-and-the-beat-r8312...too soon
+Trying http://www.popmatters.com/music/reviews/g/gogos-god.shtml...too soon
+Trying http://www.allmusic.com/album/god-bless-the-go-gos-r529368...too soon
+Trying http://www.allmusic.com/album/talk-show-r8314...too soon
+Trying http://www.allmusic.com/album/vacation-r8313...too soon
+Trying http://www.wegotthemeat.com/...Got robots for http://www.reverbnation.com/glassharp (code 200), processing.
+Writing http://www.gipsykings.net/ to /mnt/indexer/www.gipsykings.net/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.theglitterband.co.uk/ (code 200), processing.
+Got robots for http://www.nstop.com/gbs/index.html (code 200), processing.
+Trying http://www.godhead.com/...Writing http://www.ginuwine.com/ to /mnt/indexer/www.ginuwine.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.netwave.or.jp/~tierra/Gipsy_Kings/Bamboleo.html (code 200), processing.
+Got robots for http://www.buzzbinmagazine.com/home/2010/07/07/live-memory-reminiscing-with-glass-harp (code 404), processing.
+Got robots for http://www.wildoatsrecords.com/GlennPhotoLink.html (code 200), processing.
+Writing http://www.avrev.com/music-disc-reviews/audio-cd/bebel-gilberto-tanto-tempo.html to /mnt/indexer/www.avrev.com/0e6bbb3b38c941ce87e306e544452b24.html
+Invalid code 302 for http://www.girlsaloud.co.uk/
+Writing http://www.gilmourontour.com/ to /mnt/indexer/www.gilmourontour.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://pitchfork.com/reviews/albums/3457-you-cant-fight-what-you-cant-see/ to /mnt/indexer/pitchfork.com/d5874170b10144eb91874935d6a8489d.html
+Writing http://www.inmusicwetrust.com/articles/53r13.html to /mnt/indexer/www.inmusicwetrust.com/7efa62f1011b28696b33b1191dab5393.html
+Invalid code 500 for http://www.davemcnally.com/Lyrics/DavidGilmour/
+Got robots for http://www.popmatters.com/music/concerts/g/girls-against-boys-020319.html (code 200), processing.
+Got robots for http://blogcritics.org/music/article/glass-harp-hourglass2/ (code 404), processing.
+Writing http://www.guardian.co.uk/music/2003/oct/23/popandrock.shopping to /mnt/indexer/www.guardian.co.uk/6592553477668ae0c4425170140ebdff.html
+Trying http://www.angelfire.com/nm2/godhead016/...too soon
+Trying http://www.metacritic.com/music/2000-years-of-human-error...too soon
+Trying http://www.angelfire.com/rock/godsmacktimebomb/...too soon
+Trying http://members.tripod.com/~angie_godsmack/index.html...Trying http://www.mtv.com/bands/az/godsmack/artist.jhtml...too soon
+Trying http://www.afunk.com/godsmack/...Trying http://godsmack.4mg.com/...Trying http://www.askmen.com/toys/interview/19_godsmack_interview.html...too soon
+Trying http://www.angelfire.com/rock3/smackthespiral/index2.html...too soon
+Trying http://www.angelfire.com/rock3/allrockca/...too soon
+Trying http://www.vh1.com/artists/az/godsmack/artist.jhtml...too soon
+Trying http://www.users.qwest.net/~marktuft/godsmack.html...Trying http://www.thegauntlet.com/band.php?id=174...Trying http://www.unratedmagazine.com/Document.cfm?Page=photos/Photo_Details.cfm&Photo_ID=724&Band_ID=101...Trying http://www.allmusic.com/artist/godsmack-p308309...too soon
+Trying http://www.metacritic.com/music/artists/godspeedyoublackemperor/liftyourskinnyfists...too soon
+Trying http://www.brainwashed.com/godspeed/...Writing http://www.wildoatsrecords.com/GlennPhotoLink.html to /mnt/indexer/www.wildoatsrecords.com/e7eeea5ee526c4c37a797fec4d2daca7.html
+Got robots for http://imaginaryboys.altervista.org/english/cure/articles/glove.htm (code 302), processing.
+Writing http://www.popmatters.com/music/concerts/g/girls-against-boys-020319.html to /mnt/indexer/www.popmatters.com/c519c46785bf51fe46349d1b42571f34.html
+Writing http://www.tollbooth.org/2001/reviews/glassharp.html to /mnt/indexer/www.tollbooth.org/f921cb9d481b8d13935e56d05bf60feb.html
+Trying http://pages.infinit.net/etrembla/cc/97.htm...Trying http://www.knology.net/~jwillis/sadmafioso/...Trying http://www.cstrecords.com/bands/godspeed-you-black-emperor...Trying http://www.allmusic.com/artist/godspeed-you-black-emperor-p321063...too soon
+Trying http://www.dooyoo.co.uk/music-records/godspeed-you-black-emperor/...Writing http://www.george.net.au/ to /mnt/indexer/www.george.net.au/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://popmatters.com/music/reviews/g/gobetweens-friends.shtml (code 301), processing.
+Invalid code 301 for http://artistdirect.com/music/artist/card/0,,436067,00.html
+Got robots for http://www.beggarsgroupusa.com/gobetweens/ (code 200), processing.
+Got robots for http://www.afunk.com/godsmack/ (code 404), processing.
+Got robots for http://www.all-reviews.com/music/friends-rachel-worth.htm (code 404), processing.
+Invalid code 302 for http://www.jambase.com/headsup.asp?storyID=2978
+Trying http://www.leonardslair.co.uk/godspeed.htm...Trying http://h2so4.net/reviews/gybe.html...Got robots for http://www.godhead.com/ (code 404), processing.
+Writing http://www.beggarsgroupusa.com/gobetweens/ to /mnt/indexer/www.beggarsgroupusa.com/dfbd66f8442daaaaa0c615c724fbdbcf.html
+Trying http://www.dustedmagazine.com/reviews/470...Invalid code 301 for http://popmatters.com/music/reviews/g/gobetweens-friends.shtml
+Trying http://www.guardian.co.uk/music/2002/dec/20/popandrock.artsfeatures...too soon
+Trying http://www.bbc.co.uk/music/reviews/z354...Got robots for http://h2so4.net/reviews/gybe.html (code 404), processing.
+Trying http://www.danielgoldmusic.com/...Got robots for http://www.wegotthemeat.com/ (code 200), processing.
+Got robots for http://go-betweens.org.uk/ (code 404), processing.
+Got robots for http://members.tripod.com/~angie_godsmack/index.html (code 200), processing.
+Writing http://www.nstop.com/gbs/index.html to /mnt/indexer/www.nstop.com/0eeadb1780bd123243985152feb10c16.html
+Got robots for http://www.thegauntlet.com/band.php?id=174 (code 200), processing.
+Trying http://www.goldenearring.nl/...Writing http://www.myspace.com/ginuwine to /mnt/indexer/www.myspace.com/f39fd1dee514cc186057f9e3030333a8.html
+Got robots for http://www.users.qwest.net/~marktuft/godsmack.html (code 404), processing.
+Got robots for http://home.swipnet.se/rogerglover (code 404), processing.
+Got robots for http://www.rogerglover.com/ (code 200), processing.
+Got robots for http://godsmack.4mg.com/ (code 200), processing.
+Writing http://www.classicwebs.com/glasshrp.htm to /mnt/indexer/www.classicwebs.com/f4ae88311644d2e0b98a28a64cb70eee.html
+Trying http://www.radar-love.net/...Got robots for http://pages.infinit.net/etrembla/cc/97.htm (code 404), processing.
+Got robots for http://www.unratedmagazine.com/Document.cfm?Page=photos/Photo_Details.cfm&Photo_ID=724&Band_ID=101 (code 406), processing.
+Got robots for http://www.knology.net/~jwillis/sadmafioso/ (code 302), processing.
+Trying http://www.golden-earring.nl/rinus/...Writing http://h2so4.net/reviews/gybe.html to /mnt/indexer/h2so4.net/ff31b899d2b6d4ba45c8700432bd0718.html
+Writing http://www.godhead.com/ to /mnt/indexer/www.godhead.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.theglitterband.co.uk/ to /mnt/indexer/www.theglitterband.co.uk/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://pkfans.com/reviews/stringsattached.html to /mnt/indexer/pkfans.com/3dd18d9fdcfe48d922048e0943ccb9e9.html
+Writing http://www.pkfans.com/features/hourglass.shtml to /mnt/indexer/www.pkfans.com/3c27efe9804e4a5cba89f625739ac83b.html
+Writing http://www.all-reviews.com/music/friends-rachel-worth.htm to /mnt/indexer/www.all-reviews.com/9d7be7e4128d53aefa32ea6391f799b4.html
+Writing http://www.netwave.or.jp/~tierra/Gipsy_Kings/Bamboleo.html to /mnt/indexer/www.netwave.or.jp/81e8e635f932b2df4a9bc25faa00219b.html
+Got robots for http://www.dooyoo.co.uk/music-records/godspeed-you-black-emperor/ (code 200), processing.
+Writing http://members.tripod.com/~angie_godsmack/index.html to /mnt/indexer/members.tripod.com/dc65bc1b317aeba682b64536cbbe86eb.html
+Writing http://www.afunk.com/godsmack/ to /mnt/indexer/www.afunk.com/c9dd6b46334504d5b4503dac4cd07e49.html
+Got robots for http://www.brainwashed.com/godspeed/ (code 200), processing.
+Trying http://golden-earring-museum.nl/...Trying http://www.allmusic.com/artist/golden-smog-p39087...too soon
+Trying http://www.angelfire.com/wi2/blacklabel/...too soon
+Trying http://www.vh1.com/artists/az/id_1079/artist.jhtml...too soon
+Trying http://www.mattsmusicpage.com/ngoldfin.htm...too soon
+Trying http://www.entertainmentavenue.com/concert_hall/reviews/q/q101/jamboree_2000/goldfinger.htm...too soon
+Trying http://www.goldfingermusic.com/...Writing http://www.thegauntlet.com/band.php?id=174 to /mnt/indexer/www.thegauntlet.com/3ef9d370665ac48bfd126bf72d4ec214.html
+Writing http://imaginaryboys.altervista.org/english/cure/articles/glove.htm to /mnt/indexer/imaginaryboys.altervista.org/814c194d11579d007ebe5b253b566647.html
+Invalid code 301 for http://www.buzzbinmagazine.com/home/2010/07/07/live-memory-reminiscing-with-glass-harp
+Writing http://blogcritics.org/music/article/glass-harp-hourglass2/ to /mnt/indexer/blogcritics.org/23f6d04f1e973c058ba9a463b54e4997.html
+Trying http://www.musicomh.com/albums/goldfrapp.htm...Trying http://www.2-4-7-music.com/newsitems/june01/goldfrapp.htm...too soon
+Trying http://www.musicomh.com/music/gigs/goldfrapp.htm...too soon
+Trying http://www.musicomh.com/music/gigs/goldfrapp-2.htm...too soon
+Trying http://www.goldfrappmania.com/...Trying http://www.matthewgood.net/...Trying http://www.nearfantastica.com/...Trying http://jam.canoe.ca/Music/Artists/G/Good_Matthew/...too soon
+Trying http://mattgood.imgarbage.com/...Trying http://www.mgtabarchive.com/...Trying http://www.deltagoodrem.com/...Trying http://www.allmusic.com/artist/delta-goodrem-p562295...too soon
+Trying http://www.askmen.com/celebs/women/singer_200/200_delta_goodrem.html...too soon
+Trying http://www.lindzi.com/interviews/goodcharlotte.htm...Trying http://www.coolbuddy.com/wallpapers/music_band/good_charlotte_home.htm...Trying http://www.answers.com/topic/good-charlotte/...Trying http://www.sputnikmusic.com/album.php?albumid=17234...Writing http://pages.infinit.net/etrembla/cc/97.htm to /mnt/indexer/pages.infinit.net/6652624bb081235522c7ea80a3122519.html
+Writing http://www.users.qwest.net/~marktuft/godsmack.html to /mnt/indexer/www.users.qwest.net/bb5aaf5f397c78c74c75ab8c22b97816.html
+Got robots for http://www.danielgoldmusic.com/ (code 404), processing.
+Got robots for http://www.cstrecords.com/bands/godspeed-you-black-emperor (code 200), processing.
+Writing http://www.knology.net/~jwillis/sadmafioso/ to /mnt/indexer/www.knology.net/8ee2872802972ab10aaa2c893401d473.html
+Got robots for http://www.dustedmagazine.com/reviews/470 (code 404), processing.
+Writing http://www.wegotthemeat.com/ to /mnt/indexer/www.wegotthemeat.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.bbc.co.uk/music/reviews/z354 (code 200), processing.
+Writing http://go-betweens.org.uk/ to /mnt/indexer/go-betweens.org.uk/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.leonardslair.co.uk/godspeed.htm (code 404), processing.
+Trying http://www.myspace.com/goodcharlotte/...too soon
+Trying http://www.allmusic.com/artist/p442724...too soon
+Trying http://www.peta2.com/heroes/interview-with-billy-from-good-charlotte/...Trying http://groups.yahoo.com/group/Good_Charlotte_Fans/...too soon
+Trying http://asil.proboards.com/...Got robots for http://www.sputnikmusic.com/album.php?albumid=17234 (code 404), processing.
+Trying http://gtothecguild.proboards.com/...Got robots for http://www.peta2.com/heroes/interview-with-billy-from-good-charlotte/ (code 200), processing.
+Trying http://divalola.tripod.com/goodcharlotte/...Trying http://www.angelfire.com/fl5/goodcharlotte/...too soon
+Trying http://www.angelfire.com/punk2/goodcharlottesweb/...too soon
+Trying http://www.btinternet.com/~paul.watty/gc/gchome.htm...Invalid code 301 for http://home.swipnet.se/rogerglover
+Writing http://godsmack.4mg.com/ to /mnt/indexer/godsmack.4mg.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.bebelgilberto.com/ to /mnt/indexer/www.bebelgilberto.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.radar-love.net/ (code 404), processing.
+Writing http://www.rogerglover.com/ to /mnt/indexer/www.rogerglover.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.unratedmagazine.com/Document.cfm?Page=photos/Photo_Details.cfm&Photo_ID=724&Band_ID=101 to /mnt/indexer/www.unratedmagazine.com/d7537ecda980cf372adc505ec1c4b5e5.html
+Got robots for http://www.goldenearring.nl/ (code 404), processing.
+Got robots for http://www.golden-earring.nl/rinus/ (code 404), processing.
+Invalid code 301 for http://www.sputnikmusic.com/album.php?albumid=17234
+Got robots for http://www.mgtabarchive.com/ (code 404), processing.
+Got robots for http://www.goldfingermusic.com/ (code 404), processing.
+Got robots for http://www.lindzi.com/interviews/goodcharlotte.htm (code 404), processing.
+Trying http://members.tripod.com/good_charlotte5150/...too soon
+Trying http://www.angelfire.com/punk4/amyf2005/enter.html...too soon
+Trying http://www.fivebucksforbenji.bravepages.com/...Got robots for http://asil.proboards.com/ (code 200), processing.
+Got robots for http://golden-earring-museum.nl/ (code 404), processing.
+Trying http://gc_roxx_89.tripod.com/...Got robots for http://www.musicomh.com/albums/goldfrapp.htm (code 200), processing.
+Trying http://www.freewebs.com/gcwallpapers/...too soon
+Trying http://goodcharlotteworld.8m.net/...Trying http://www.angelfire.com/ultra/good_charlotte/...too soon
+Trying http://www.freewebs.com/gcmdworldwide/...too soon
+Trying http://www.mattsmusicpage.com/ngoodcharlotte.htm...too soon
+Trying http://home.comcast.net/~4kidsfromnowhere/...Trying http://www.freewebs.com/chiccvicious/...too soon
+Trying http://www.myspace.com/teamjoelmadden...too soon
+Trying http://www.freewebs.com/theswinger/home.htm...too soon
+Trying http://www.lyricattack.com/g/goodcharlottelyrics/...Writing http://www.goldfingermusic.com/ to /mnt/indexer/www.goldfingermusic.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.mtv.com/bands/az/goo_goo_dolls/artist.jhtml...too soon
+Trying http://www.mattsmusicpage.com/ngoo.htm...Trying http://www.findmidis.com/G/Goo_Goo_Dolls...too soon
+Trying http://www.vh1.com/artists/az/goo_goo_dolls/artist.jhtml...too soon
+Trying http://new.music.yahoo.com/goo-goo-dolls/...Writing http://www.mgtabarchive.com/ to /mnt/indexer/www.mgtabarchive.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.danielgoldmusic.com/ to /mnt/indexer/www.danielgoldmusic.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.nearfantastica.com/ (code 200), processing.
+Trying http://www.angelfire.com/bc/dizzy/...too soon
+Trying http://www.angelfire.com/ga/gooJohnny/...too soon
+Trying http://www.angelfire.com/ga2/googoo1/new.html...too soon
+Trying http://dutb.tripod.com/...Writing http://www.lindzi.com/interviews/goodcharlotte.htm to /mnt/indexer/www.lindzi.com/311d63f0cdcaf0b5cb87406215e81bdf.html
+Trying http://www.boyleworks.com/fabfay/googoodolls.html...Got robots for http://www.findmidis.com/G/Goo_Goo_Dolls (code 404), processing.
+Writing http://asil.proboards.com/ to /mnt/indexer/asil.proboards.com/6666cd76f96956469e7be39d750cc7d9.html
+Invalid code 302 for http://www.goldenearring.nl/
+Writing http://www.dustedmagazine.com/reviews/470 to /mnt/indexer/www.dustedmagazine.com/fef0aaacfbc7b94bac21054aeda1277b.html
+Writing http://twitter.com/glassharp to /mnt/indexer/twitter.com/3aacbfc5f07c554c4b5b0559cece698a.html
+Writing http://www.leonardslair.co.uk/godspeed.htm to /mnt/indexer/www.leonardslair.co.uk/9a6e2607633571a6e6d5a76438e3a216.html
+Writing http://www.brainwashed.com/godspeed/ to /mnt/indexer/www.brainwashed.com/0872b61a85ea72d05b0ed1b0631f16ac.html
+Trying http://adrowningmermaid.tripod.com/hatethisplace/index.html...Trying http://www.angelfire.com/ga/devotedtogoogoodolls/...too soon
+Trying http://www.angelfire.com/band2/ggd/index.html...too soon
+Trying http://members.tripod.com/~bishun_j/index.html...too soon
+Trying http://malininwoman.tripod.com/...Got robots for http://divalola.tripod.com/goodcharlotte/ (code 200), processing.
+Got robots for http://gtothecguild.proboards.com/ (code 200), processing.
+Got robots for http://www.coolbuddy.com/wallpapers/music_band/good_charlotte_home.htm (code 404), processing.
+Got robots for http://www.answers.com/topic/good-charlotte/ (code 200), processing.
+Invalid code 301 for http://www.cstrecords.com/bands/godspeed-you-black-emperor
+Trying http://www.angelfire.com/hi2/googoodolls/...too soon
+Trying http://googoodolls.iwarp.com/...Trying http://eurogoo.itgo.com/...Trying http://www.goohive.orconhosting.net.nz/...Trying http://www.ninagordon.com/...Trying http://www.lesleygore.com/...Trying http://www.lesleygorefanclub.com/...Writing http://www.golden-earring.nl/rinus/ to /mnt/indexer/www.golden-earring.nl/918ba182a10445ca957dafc2bd40939d.html
+Got robots for http://dutb.tripod.com/ (code 200), processing.
+Got robots for http://www.fivebucksforbenji.bravepages.com/ (code 404), processing.
+Writing http://golden-earring-museum.nl/ to /mnt/indexer/golden-earring-museum.nl/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.gillan.com/ (code 404), processing.
+Writing http://www.musicomh.com/albums/goldfrapp.htm to /mnt/indexer/www.musicomh.com/85d70d10f74ea898d6aed293272c5aa8.html
+Writing http://www.reverbnation.com/glassharp to /mnt/indexer/www.reverbnation.com/3aacbfc5f07c554c4b5b0559cece698a.html
+Trying http://www.patswayne.com/lesley...Trying http://www.jimfitzpatrick.ie/gallery/scott.html...Trying http://www.allmusic.com/artist/scott-gorham-p81191...too soon
+Trying http://www.siebenberg.com.es/bob-siebenberg-more-info/bob-and-friends/61-scott-gorham.html...Writing http://www.radar-love.net/ to /mnt/indexer/www.radar-love.net/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://adrowningmermaid.tripod.com/hatethisplace/index.html (code 200), processing.
+Got robots for http://www.lyricattack.com/g/goodcharlottelyrics/ (code 404), processing.
+Got robots for http://home.comcast.net/~4kidsfromnowhere/ (code 302), processing.
+Writing http://divalola.tripod.com/goodcharlotte/ to /mnt/indexer/divalola.tripod.com/bef7af88bd882f6dfb4ee4314d9b0e69.html
+Got robots for http://www.btinternet.com/~paul.watty/gc/gchome.htm (code 200), processing.
+Trying http://www.musicomh.com/albums/gorillaz.htm...too soon
+Trying http://fans.gorillaz.com/...Got robots for http://www.goldfrappmania.com/ (code 200), processing.
+Writing http://gtothecguild.proboards.com/ to /mnt/indexer/gtothecguild.proboards.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://goodcharlotteworld.8m.net/ (code 200), processing.
+Writing http://www.marygauthier.com/ to /mnt/indexer/www.marygauthier.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.findmidis.com/G/Goo_Goo_Dolls to /mnt/indexer/www.findmidis.com/7bc7fdfa386516423b9c329ad519beda.html
+Got robots for http://www.deltagoodrem.com/ (code 200), processing.
+Got robots for http://www.boyleworks.com/fabfay/googoodolls.html (code 404), processing.
+Writing http://www.bbc.co.uk/music/reviews/z354 to /mnt/indexer/www.bbc.co.uk/411202a8d166ee9ccfe5190ad0514c46.html
+Got robots for http://www.matthewgood.net/ (code 200), processing.
+Trying http://www.metacritic.com/music/artists/gorillaz/gorillaz...too soon
+Trying http://www.gorillaz-geep.com/...Trying http://www.gorillaz-unofficial.com/...Trying http://utenti.multimania.it/onetwodthree/enter.htm...Got robots for http://malininwoman.tripod.com/ (code 200), processing.
+Got robots for http://new.music.yahoo.com/goo-goo-dolls/ (code 301), processing.
+Writing http://www.nearfantastica.com/ to /mnt/indexer/www.nearfantastica.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.angelfire.com/music3/noodle/...too soon
+Trying http://www.gorkys.freeserve.co.uk/gorkys/gorkys.htm...Trying http://www.musicomh.com/albums/gorkys-zygotic-mynci.htm...too soon
+Trying http://www.artistdirect.com/artist/gorky-park/437228...too soon
+Trying http://www.rocknworld.com/specials/yckrr/goudie/...Trying http://dragcity.fateback.com/...Got robots for http://www.ninagordon.com/ (code 404), processing.
+Writing http://dutb.tripod.com/ to /mnt/indexer/dutb.tripod.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.lesleygorefanclub.com/ (code 404), processing.
+Got robots for http://www.lesleygore.com/ (code 404), processing.
+Writing http://www.dooyoo.co.uk/music-records/godspeed-you-black-emperor/ to /mnt/indexer/www.dooyoo.co.uk/a88a1d5759eb8b85021cbb4edb2b4356.html
+Writing http://www.fivebucksforbenji.bravepages.com/ to /mnt/indexer/www.fivebucksforbenji.bravepages.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://eurogoo.itgo.com/ (code 200), processing.
+Got robots for http://www.goohive.orconhosting.net.nz/ (code 404), processing.
+Trying http://www.musicmoz.org/Bands_and_Artists/G/Goudie/...Writing http://adrowningmermaid.tripod.com/hatethisplace/index.html to /mnt/indexer/adrowningmermaid.tripod.com/a9caacbf67ab9c82b416844537100f55.html
+Writing http://www.coolbuddy.com/wallpapers/music_band/good_charlotte_home.htm to /mnt/indexer/www.coolbuddy.com/36a03460071d88dcc91a83bc9d3aecb8.html
+Got robots for http://googoodolls.iwarp.com/ (code 200), processing.
+Trying http://www.hiponline.com/music-artists/goudie/...Trying http://www.artistdirect.com/artist/goudie/1027178...too soon
+Trying http://www.allmusic.com/artist/goudie-p435319...too soon
+Trying http://groups.yahoo.com/group/iloveelke/...too soon
+Trying http://www.austinchronicle.com/gyrobase/Issue/review?oid=oid:83734...Got robots for http://mattgood.imgarbage.com/ (code 200), processing.
+Writing http://www.lyricattack.com/g/goodcharlottelyrics/ to /mnt/indexer/www.lyricattack.com/18f9b5c6f946e1ca3750adfe1cb50b1e.html
+Writing http://malininwoman.tripod.com/ to /mnt/indexer/malininwoman.tripod.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://groups.yahoo.com/group/Goudie...too soon
+Trying http://groups.yahoo.com/group/goudfans/...too soon
+Trying http://www.mulebase.com/...Trying http://www.angelfire.com/hi2/GowanFan/...too soon
+Trying http://groups.yahoo.com/group/gowan...too soon
+Trying http://groups.yahoo.com/group/LarryGowanFanClub/...too soon
+Trying http://www.canadianbands.com/Gowan.html...too soon
+Trying http://lgowan.tripod.com/...Trying http://www.gowanstrangeanimal.com/...Trying http://jam.canoe.ca/Music/Artists/G/Gowan_Lawrence/ConcertReviews/2004/10/19/676654.html...Trying http://www.metacritic.com/music/artists/grandaddy/sophtwareslump...too soon
+Trying http://jasonlytle.com/...too soon
+Trying http://timemachine.0catch.com/...Got robots for http://www.patswayne.com/lesley (code 404), processing.
+Got robots for http://www.jimfitzpatrick.ie/gallery/scott.html (code 404), processing.
+Writing http://home.comcast.net/~4kidsfromnowhere/ to /mnt/indexer/home.comcast.net/a3e5c48932e13eb531951019a913dbb0.html
+Trying http://www.angelfire.com/nt/omnivoid/gfr.html...too soon
+Trying http://www.theslant.com/music/articles/more/rail3.html...Invalid code 302 for http://www.btinternet.com/~paul.watty/gc/gchome.htm
+Invalid code 301 for http://new.music.yahoo.com/goo-goo-dolls/
+Got robots for http://www.gorillaz-geep.com/ (code 404), processing.
+Writing http://goodcharlotteworld.8m.net/ to /mnt/indexer/goodcharlotteworld.8m.net/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.ninagordon.com/ to /mnt/indexer/www.ninagordon.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.boyleworks.com/fabfay/googoodolls.html to /mnt/indexer/www.boyleworks.com/6b8221d8f2eeecee058eab0959df4019.html
+Writing http://www.lesleygorefanclub.com/ to /mnt/indexer/www.lesleygorefanclub.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.lesleygore.com/ to /mnt/indexer/www.lesleygore.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.siebenberg.com.es/bob-siebenberg-more-info/bob-and-friends/61-scott-gorham.html (code 200), processing.
+Trying http://www.classicbands.com/grandfunk.html...Trying http://www.ink19.com/issues_F/98_03/live/grand_funk_railroad_nf.html...too soon
+Trying http://www.theslant.com/music/articles/rail.html...too soon
+Trying http://www.pro-music-news.com/html/09/e10124gr.htm...Trying http://www.thenightowl.com/reviews/bosnia.htm...too soon
+Trying http://globalia.net/donlope/fz/related/Good_Singin'_Good_Playin'.html...Trying http://www.superseventies.com/spgrandfunk3.html...Got robots for http://fans.gorillaz.com/ (code 404), processing.
+Got robots for http://www.rocknworld.com/specials/yckrr/goudie/ (code 200), processing.
+Invalid code 301 for http://www.patswayne.com/lesley
+Trying http://www.superseventies.com/1974_6singles.html...too soon
+Trying http://artistdirect.com/music/artist/card/0,,437668,00.html?src=search&artist=Grand+Funk+Railroad...too soon
+Trying http://www.thenightowl.com/reviews/gfr.htm...too soon
+Trying http://www.thenightowl.com/reviews/gfr2.htm...too soon
+Trying http://www.thenightowl.com/reviews/gfr3.htm...too soon
+Trying http://www.epinions.com/content_31020977796...Got robots for http://lgowan.tripod.com/ (code 200), processing.
+Writing http://eurogoo.itgo.com/ to /mnt/indexer/eurogoo.itgo.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.jimfitzpatrick.ie/gallery/scott.html to /mnt/indexer/www.jimfitzpatrick.ie/40a18837b542dcae2104275b51310385.html
+Got robots for http://www.gorkys.freeserve.co.uk/gorkys/gorkys.htm (code 404), processing.
+Got robots for http://dragcity.fateback.com/ (code 404), processing.
+Invalid code 301 for http://www.matthewgood.net/
+Trying http://www.thenightowl.com/reviews/gfrbox.htm...too soon
+Trying http://www.musictap.net/Reviews/GrandFunkRailroadLiveThe1971Tour.html...Trying http://www.grandfunkrock.com/...Trying http://www.coversproject.com/artist/grand%20funk%20railroad...Got robots for http://www.mulebase.com/ (code 404), processing.
+Writing http://www.goldfrappmania.com/ to /mnt/indexer/www.goldfrappmania.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://mattgood.imgarbage.com/ to /mnt/indexer/mattgood.imgarbage.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.austinchronicle.com/gyrobase/Issue/review?oid=oid:83734 (code 200), processing.
+Got robots for http://www.gorillaz-unofficial.com/ (code 404), processing.
+Got robots for http://www.musicmoz.org/Bands_and_Artists/G/Goudie/ (code 301), processing.
+Got robots for http://utenti.multimania.it/onetwodthree/enter.htm (code 302), processing.
+Writing http://googoodolls.iwarp.com/ to /mnt/indexer/googoodolls.iwarp.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.deltagoodrem.com/ to /mnt/indexer/www.deltagoodrem.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.dailyvault.com/toc.php5?review=1907...Trying http://wap.parrette.net/GFR_WEB/...Trying http://www.grandfunkrailroad.com/station.htm...Trying http://new.music.yahoo.com/grand-funk/...too soon
+Trying http://www.allmusic.com/artist/grand-funk-railroad-p4392...too soon
+Trying http://www.vintagerock.com/index.php?option=com_content&view=article&id=264:grand-funk-railroad-june-30-1997-san-diego-ca&catid=5:show-reviews&Itemid=6...Got robots for http://timemachine.0catch.com/ (code 404), processing.
+Trying http://www.maximumink.com/articles.php?articleId=55...Trying http://www.amygrant.de/...Trying http://ww4.choice.net/~dyan/...Got robots for http://www.classicbands.com/grandfunk.html (code 404), processing.
+Writing http://www.rocknworld.com/specials/yckrr/goudie/ to /mnt/indexer/www.rocknworld.com/81d93434b8fcfcba0550dfc34b59dd26.html
+Writing http://www.peta2.com/heroes/interview-with-billy-from-good-charlotte/ to /mnt/indexer/www.peta2.com/8f8a0ffbe79c54fce51ee41fcbc9216f.html
+Got robots for http://www.gowanstrangeanimal.com/ (code 404), processing.
+Got robots for http://www.pro-music-news.com/html/09/e10124gr.htm (code 200), processing.
+Writing http://fans.gorillaz.com/ to /mnt/indexer/fans.gorillaz.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.gorillaz-geep.com/ to /mnt/indexer/www.gorillaz-geep.com/6666cd76f96956469e7be39d750cc7d9.html
+Trying http://www.amygrantnetwork.com/...Writing http://www.mulebase.com/ to /mnt/indexer/www.mulebase.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.coversproject.com/artist/grand%20funk%20railroad (code 200), processing.
+Got robots for http://www.theslant.com/music/articles/more/rail3.html (code 200), processing.
+Writing http://www.gorillaz-unofficial.com/ to /mnt/indexer/www.gorillaz-unofficial.com/6666cd76f96956469e7be39d750cc7d9.html
+Invalid code 301 for http://www.musicmoz.org/Bands_and_Artists/G/Goudie/
+Writing http://www.siebenberg.com.es/bob-siebenberg-more-info/bob-and-friends/61-scott-gorham.html to /mnt/indexer/www.siebenberg.com.es/2f04d08510cade33c506bd75f50791ca.html
+Trying http://www.deuceofclubs.com/tunes/amy/index.htm...Trying http://www.faqs.org/faqs/music/amy-grant-faq/part1/...Trying http://www.allmusic.com/artist/amy-grant-p2295...too soon
+Trying http://new.music.yahoo.com/grant-lee-buffalo/...too soon
+Trying http://www.homespunarchive.com/...Trying http://rockhall.com/inductee/the-grateful-dead...too soon
+Trying http://www.theblackdog.org/gd-bpo/...Writing http://lgowan.tripod.com/ to /mnt/indexer/lgowan.tripod.com/6666cd76f96956469e7be39d750cc7d9.html
+Writing http://www.goohive.orconhosting.net.nz/ to /mnt/indexer/www.goohive.orconhosting.net.nz/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://globalia.net/donlope/fz/related/Good_Singin'_Good_Playin'.html (code 200), processing.
+Writing http://www.gorkys.freeserve.co.uk/gorkys/gorkys.htm to /mnt/indexer/www.gorkys.freeserve.co.uk/249ac52fc4b1638737e42ff88605aea9.html
+Writing http://dragcity.fateback.com/ to /mnt/indexer/dragcity.fateback.com/6666cd76f96956469e7be39d750cc7d9.html
+Got robots for http://www.superseventies.com/spgrandfunk3.html (code 200), processing.
+Trying http://www.time.com/time/magazine/article/

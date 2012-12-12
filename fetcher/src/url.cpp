@@ -88,6 +88,10 @@ bool Url::parse(Url* base) {
 	if((strncmp(m_url, "mailto:", 7) == 0) || (strncmp(m_url, "javascript:", 11) == 0)) {
 		return(false);
 	}
+
+	if(!base) {
+		return(false);
+	}
 	
 	// Strip out any "current directory" starting part of the URL (./)
 	if(strncmp(m_url, "./", 2) == 0) {
@@ -232,10 +236,23 @@ bool Url::_split() {
 	for(unsigned int i = 0; i < strlen(m_parts[URL_DOMAIN]); i++)
 		m_parts[URL_DOMAIN][i] = tolower(m_parts[URL_DOMAIN][i]);
 
-	// Get the MD5 m_hash of the path
+	// Get the MD5 m_hash of the path and query
+	unsigned int length = strlen(m_parts[URL_PATH]);
+	if(strlen(m_parts[URL_QUERY])) {
+		length += 1 + strlen(m_parts[URL_QUERY]);
+	}
+
+	char* encrypt = (char*)malloc(length + 1);
+	if(strlen(m_parts[URL_QUERY]))
+		sprintf(encrypt, "%s?%s", m_parts[URL_PATH], m_parts[URL_QUERY]);
+	else
+		sprintf(encrypt, "%s", m_parts[URL_PATH]);
+
         unsigned char temp[MD5_DIGEST_LENGTH];
         memset(temp, 0, MD5_DIGEST_LENGTH);
-        MD5((const unsigned char*)m_parts[URL_PATH], strlen(m_parts[URL_PATH]), temp);
+        MD5((const unsigned char*)encrypt, length, temp);
+
+	free(encrypt);
 
         // Convert it to hex
         m_hash = (char*)malloc((MD5_DIGEST_LENGTH * 2) + 1);

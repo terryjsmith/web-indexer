@@ -96,6 +96,10 @@ int HttpRequest::initialize(Url* url) {
                 return(0);
         }
 
+	// Tell the socket not to doddle
+	linger no = { 0, 0 };
+	setsockopt(m_socket, SOL_SOCKET, SO_LINGER, &no, sizeof(linger));
+
 	// Start our DNS request
 	ares_init(&m_channel);
 	ares_gethostbyname(m_channel, m_url->get_host(), AF_INET, _dns_lookup, this);
@@ -105,8 +109,6 @@ int HttpRequest::initialize(Url* url) {
 }
 
 void HttpRequest::fetch_robots(Url* url) {
-	printf("Fetching robots.txt for %s\n", url->get_url());
-
 	// Compute the robots.txt URL
         char* path = "/robots.txt";
         m_robots = new Url(path);
@@ -124,7 +126,6 @@ void HttpRequest::_dns_lookup(void *arg, int status, int timeouts, hostent* host
 }
 
 void HttpRequest::connect(struct hostent* host) {
-
 	if(host) {
 		m_sockaddr.sin_family = AF_INET;
 		bcopy((char*)host->h_addr, (char*)&m_sockaddr.sin_addr.s_addr, host->h_length);
@@ -162,6 +163,10 @@ int HttpRequest::resend() {
 	m_size = 0;
 
 	close(m_socket);
+
+	// Tell the socket not to doddle
+        linger no = { 0, 0 };
+        setsockopt(m_socket, SOL_SOCKET, SO_LINGER, &no, sizeof(linger));
 
 	// Initialize the socket for TCP
         if((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
@@ -245,7 +250,8 @@ bool HttpRequest::process(void* arg) {
 
                		if(count == 0) {
                		        free(buffer);
-				m_state = HTTPREQUESTSTATE_WRITE;
+				if(m_size)
+					m_state = HTTPREQUESTSTATE_WRITE;
 	                        break;
                		}
 
@@ -281,6 +287,7 @@ bool HttpRequest::process(void* arg) {
 
 		if(!m_content) {
 			printf("No content returned for %s\n", m_url->get_url());
+			m_state = HTTPREQUESTSTATE_COMPLETE;
 			return(false);
 		}
 
@@ -366,14 +373,6 @@ bool HttpRequest::process(void* arg) {
                 }
 
 		printf("Writing %s to %s\n", m_url->get_url(), m_filename);
-
-		// Set the output filename
-       	        unsigned int dir_length = strlen(BASE_PATH) + strlen(m_url->get_host());
-                char* dir = (char*)malloc(dir_length + 1);
-               	sprintf(dir, "%s%s", BASE_PATH, m_url->get_host());
-
-       	        mkdir(dir, 0644);
-                free(dir);
 
                 // Save the rest to a file
                 FILE* fp = fopen(m_filename, "w");

@@ -27,6 +27,7 @@ Worker::Worker() {
 	m_context = 0;
 	m_epoll = 0;
 	m_requests = 0;
+	m_active = 0;
 }
 
 Worker::~Worker() {
@@ -170,6 +171,16 @@ void Worker::fill_list() {
         unsigned int max_tries = 100;
 
         redisReply* reply = (redisReply*)redisCommand(m_context, "LLEN url_queue");
+	if(!reply) {
+		printf("Y U NO REPLY REDIS?\n");
+		pthread_exit(0);
+	}
+
+	if(reply->type == REDIS_REPLY_ERROR) {
+		printf("REDIS ERROR: %s\n", reply->str);
+		pthread_exit(0);
+	}
+
         max_tries = min(max_tries, reply->integer);
         freeReplyObject(reply);
 
@@ -182,6 +193,10 @@ void Worker::fill_list() {
 
                 // Fetch a URL from redis
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
+		if(reply->type == REDIS_REPLY_ERROR) {
+                	printf("REDIS ERROR: %s\n", reply->str);
+        	        pthread_exit(0);
+	        }
 
 		// Make sure the URL doesn't have quotes around it
 		char* urlstr = reply->str;
@@ -198,11 +213,17 @@ void Worker::fill_list() {
 		}
 		freeReplyObject(reply);
 
-		printf("Trying %s... ", urlstr);
+		printf("Trying %s...\n", urlstr);
 
                 // Split the URL info it's parts; no base URL
                 Url* url = new Url(urlstr);
-                url->parse(NULL);
+                if(!url->parse(NULL)) {
+			printf("unparsable URL %s\n", url->get_url());
+			free(urlstr);
+			delete url;
+                        i--;
+                        continue;
+		}
 
 		free(urlstr);
 
@@ -223,6 +244,10 @@ void Worker::fill_list() {
                 if((now - info->last_access) < MIN_ACCESS_TIME) {
 			printf("too soon\n");
                         reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->get_url());
+			if(reply->type == REDIS_REPLY_ERROR) {
+                		printf("REDIS ERROR: %s\n", reply->str);
+	        	        pthread_exit(0);
+		        }
                         freeReplyObject(reply);
 
                         delete info;
@@ -266,7 +291,7 @@ void Worker::fill_list() {
 
                 unsigned int length = strlen(BASE_PATH) + strlen(url->get_host()) + 1 + (MD5_DIGEST_LENGTH * 2) + 5;
                 char* filename = (char*)malloc(length + 1);
-                sprintf(filename, "%s%s/%s.html", BASE_PATH, url->get_host(), url->get_path_hash());
+                sprintf(filename, "%s%s_%s.html", BASE_PATH, url->get_host(), url->get_path_hash());
 	
 		m_requests[i]->set_output_filename(filename);
 		free(filename);	
@@ -276,8 +301,6 @@ void Worker::fill_list() {
 		sprintf(query, "UPDATE domain SET last_access = %ld WHERE domain_id = %ld", now, url->get_domain_id());
 		mysql_query(m_conn, query);
 		free(query);
-
-		printf("added!\n");
 
                 // Otherwise, we're good
                 int socket = m_requests[i]->initialize(url);
@@ -296,6 +319,8 @@ void Worker::fill_list() {
                         printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
                         pthread_exit(0);
                 }
+
+		m_active++;
         }
 }
 
@@ -347,13 +372,30 @@ void Worker::run() {
                         }
 
                         if(!m_requests[pos]) {
-                                printf("Thread #%d unable to look up request for socket.\n", m_threadid);
-                                pthread_exit(0);
+				continue;
                         }
+
+			if(events[i].events & EPOLLERR) {
+				printf("EPOLL ERROR FLAG on %s at stage %d: %s\n", m_requests[pos]->get_url()->get_url(), m_requests[pos]->get_state(), strerror(errno));
+
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
+                                delete m_requests[pos];
+                                m_requests[pos] = 0;
+
+				m_active--;
+                                continue;
+			}
 
 			if(!m_requests[pos]->process((void*)&events[i])) {
 				// TODO: something went wrong, figure that out
-				printf("ERROR: %s\n", m_requests[pos]->get_error());
+				printf("ERROR: Processing error.\n");
+
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
+				delete m_requests[pos];
+				m_requests[pos] = 0;
+
+				m_active--;
+				continue;
 			}
 
 			// If we need to process robots.txt rules, do so
@@ -362,6 +404,13 @@ void Worker::run() {
                                 Url* url = m_requests[pos]->get_url();
 
 				printf("Got robots for %s (code %d), processing.\n", url->get_url(), m_requests[pos]->get_code());
+
+				// Set the last access time to now
+				time_t now = time(NULL);
+		                char* query = (char*)malloc(1000);
+		                sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", now, url->get_domain_id());
+                		mysql_query(m_conn, query);
+		                free(query);
 
 				if(m_requests[pos]->get_code() == 200) {
 					// Get and parse the rules
@@ -423,9 +472,13 @@ void Worker::run() {
 				if(!check_robots_rules(url)) {
 					printf("After fetching robots.txt, %s is disallow.\n", url->get_url());
 
+					epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
+
 					// If it's against the rules, get rid of it and move on
 					delete m_requests[pos];
 	                                m_requests[pos] = 0;
+
+					m_active--;
 					continue;
 				}
 
@@ -474,6 +527,10 @@ void Worker::run() {
 
                                         // Add it to the parse_queue in redis
                                         redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
+					if(reply->type == REDIS_REPLY_ERROR) {
+				                printf("REDIS ERROR: %s\n", reply->str);
+				                pthread_exit(0);
+        				}
                                         freeReplyObject(reply);
                                 }
 
@@ -481,17 +538,24 @@ void Worker::run() {
 					if(m_requests[i]->get_effective_url()) {
 	                                        // Add the URL back into the queue
         	                                redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[i]->get_effective_url());
+						if(reply->type == REDIS_REPLY_ERROR) {
+         					       printf("REDIS ERROR: %s\n", reply->str);
+					               pthread_exit(0);
+					        }
                 	                        freeReplyObject(reply);
 					}
                                 }
 
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
                                 delete m_requests[i];
                                 m_requests[i] = 0;
+				m_active--;
                         }
 		}
 
 		// Re-fill the list
-		fill_list();
+		if(m_active < CONNECTIONS_PER_THREAD)
+			fill_list();
 
                 usleep(1);
         }
