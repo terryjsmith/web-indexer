@@ -25,6 +25,9 @@ public:
 	// Check the robots rules in the database
 	bool check_robots_rules(Url* url);
 
+	// Check that redis is connected, reconnect if not
+	void check_redis_connection();
+
 protected:
 	// Our internal thread processing function
 	static void* _thread_function(void* ptr);

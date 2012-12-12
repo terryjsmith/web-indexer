@@ -1,22 +1,21 @@
 
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/epoll.h>
-#include <fcntl.h>
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <openssl/md5.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 #include <regex.h>
+#include <pthread.h>
+#include <hiredis/hiredis.h>
+#include <openssl/md5.h>
+#include <my_global.h>
+#include <mysql.h>
+#include <sys/epoll.h>
 #include <ares.h>
 #include <time.h>
-#include <errno.h>
+#include <netdb.h>
 
 #include <defines.h>
 #include <url.h>
@@ -36,7 +35,7 @@ HttpRequest::HttpRequest() {
 	m_effective = 0;
 	m_robots = 0;
 	m_keepalive = false;
-	m_lasttime = 0;
+	m_lasttime = time(NULL);
 	memset(&m_sockaddr, 0, sizeof(sockaddr_in));
 }
 
@@ -311,6 +310,7 @@ bool HttpRequest::process(void* arg) {
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
 		// First process the HTTP response headers
 		unsigned int offset = 0;
+		m_lasttime = time(NULL);
 
 		if(!m_content) {
 			printf("No content returned for %s\n", m_url->get_url());
@@ -340,7 +340,7 @@ bool HttpRequest::process(void* arg) {
 	        }
 
 		// Process the rest of the header
-       		while(line_length > (content_length - offset - 1)) {
+       		while(line_length < (content_length - offset - 1)) {
 			if(line_length <= 1) {
 				offset++;
 				break;
@@ -360,15 +360,20 @@ bool HttpRequest::process(void* arg) {
 			}
 
 			free(line);
+			line = 0;
 
 			offset += line_length + 1;
+			offset = min(strlen(m_content) - 1, offset);
+			if(offset >= (strlen(m_content) - 1)) break;
+
 			line_length = strcspn(m_content + offset, "\n");
 			line = (char*)malloc(line_length + 1);
 			strncpy(line, m_content + offset, line_length);
 			line[line_length] = '\0';
        		}
 
-		free(line);
+		if(line)
+			free(line);
 
 		// If this is a robots.txt request, mark it as "to be processed"
 		if(m_robots != 0) {
@@ -411,8 +416,8 @@ bool HttpRequest::process(void* arg) {
 	                return(false);
       		}
 
-                int written = fwrite(m_content, 1, strlen(m_content), fp);
-		if(written != strlen(m_content))
+                int written = fwrite(m_content, strlen(m_content), 1, fp);
+		if(!written)
 			printf("WRITE ERROR: %d v. %d\n", m_size - offset, written);
           	fclose(fp);
 

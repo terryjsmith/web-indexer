@@ -17,7 +17,8 @@ enum {
 
 enum {
 	HTTPTIMEOUT_CONNECT = 30,
-	HTTPTIMEOUT_RECV = 60
+	HTTPTIMEOUT_RECV = 60,
+	HTTPTIMEOUT_ANY = 90,
 };
 
 class HttpRequest {
@@ -47,15 +48,16 @@ public:
 	int resend();
 
 	// Getter functions
-	int   get_socket() { return m_socket; }
-	char* get_content() { return m_content; }
-	char* get_filename() { return m_filename; }
-	char* get_error() { return m_error; }
-	int   get_code() { return (int)m_code; }
-	char* get_effective_url() { return m_effective; }
-	int   get_state() { return m_state; }
-	Url*  get_url() { return m_url; }
-	void* get_sockaddr() { return &m_sockaddr; }
+	int    get_socket() { return m_socket; }
+	char*  get_content() { return m_content; }
+	char*  get_filename() { return m_filename; }
+	char*  get_error() { return m_error; }
+	int    get_code() { return (int)m_code; }
+	char*  get_effective_url() { return m_effective; }
+	int    get_state() { return m_state; }
+	Url*   get_url() { return m_url; }
+	void*  get_sockaddr() { return &m_sockaddr; }
+	time_t get_last_time() { return m_lasttime; };
 
 	// Our static DNS lookup functions
 	static void _dns_lookup(void *arg, int status, int timeouts, hostent* host);

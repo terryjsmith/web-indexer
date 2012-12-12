@@ -60,6 +60,17 @@ void* Worker::_thread_function(void* ptr) {
 	return(0);
 }
 
+void Worker::check_redis_connection() {
+	redisFree(m_context);
+
+	// Get a connection to redis to grab URLs
+        m_context = redisConnect(REDIS_HOST, REDIS_PORT);
+        if(m_context->err) {
+                printf("Thread #%d unable to connect to redis.\n", m_threadid);
+                pthread_exit(0);
+        }
+}
+
 Domain* Worker::load_domain_info(char* strdomain) {
 	// Our return domain
 	Domain* ret = new Domain;
@@ -226,8 +237,6 @@ void Worker::fill_list() {
                         continue;
 		}
 
-		printf("Valid URL: %s\n", url->get_url());
-
 		free(urlstr);
 
                 // Verify the scheme is one we want (just http for now)
@@ -241,8 +250,6 @@ void Worker::fill_list() {
                 // Load the site info from the database
                 Domain* info = load_domain_info(url->get_host());
                 url->set_domain_id(info->domain_id);
-
-		printf("Loaded domain info: %s\n", url->get_url());
 
                 // Check whether this domain is on a timeout
                 time_t now = time(NULL);
@@ -261,8 +268,6 @@ void Worker::fill_list() {
                         continue;
                 }
 
-		printf("Valid access time: %s\n", url->get_url());
-
                 // Next check if we've already parsed this URL
                 if(url_exists(url, info)) {
 			printf("exists in db\n");
@@ -271,8 +276,6 @@ void Worker::fill_list() {
                         i--;
                         continue;
                 }
-
-		printf("URL does no exist in DB: %s\n", url->get_url());
 
 		// Create our HTTP request
 		m_requests[i] = new HttpRequest();
@@ -295,8 +298,6 @@ void Worker::fill_list() {
 			}
 		}
 
-		printf("Cleared robots rules: %s\n", url->get_url());
-
 		// Don't need this anymore
 		delete info;
 
@@ -313,16 +314,12 @@ void Worker::fill_list() {
 		mysql_query(m_conn, query);
 		free(query);
 
-		printf("Updated last access for URL: %s\n", url->get_url());
-
                 // Otherwise, we're good
                 int socket = m_requests[i]->initialize(url);
                 if(!socket) {
                         printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->get_url());
                         pthread_exit(0);
                 }
-
-		printf("Initialized socket: %s\n", url->get_url());
 
                 // Add the socket to epoll
                 struct epoll_event event;
@@ -335,11 +332,7 @@ void Worker::fill_list() {
                         pthread_exit(0);
                 }
 
-		printf("Added to epoll: %s\n", url->get_url());
-
 		m_active++;
-
-		printf("Active count: %d\n", m_active);
         }
 }
 
@@ -434,13 +427,21 @@ void Worker::run() {
 				if(m_requests[pos]->get_code() == 200) {
 					// Get and parse the rules
 					char* content = m_requests[pos]->get_content();
-					char* line = strtok(content, "\r\n");
 					bool applicable = false;
-					while(line != NULL) {
-						if(strlen(line) <= 2) {
-							line = strtok(NULL, "\r\n");
-							continue;
-						}
+
+					int content_length = strlen(content);
+			                int line_length = strcspn(content, "\r\n");
+					int offset = 0;
+					while(line_length < (content_length - offset - 1)) {
+						if(line_length <= 2) {
+                         			       	offset += line_length + 1;
+							line_length = strcspn(content + offset, "\r\n");
+			                               	continue;
+                        			}
+
+						char* line = (char*)malloc(line_length + 1);
+			                        strncpy(line, content + offset, line_length);
+                        			line[line_length] = '\0';
 
 						// Check to see if this is a user agent line, start by making it all lowercase
 	                                        for(unsigned int i = 0; i < strlen(line); i++) {
@@ -464,12 +465,6 @@ void Worker::run() {
                                         	                unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
                                                 	        copy_length -= 10;
 
-                                                        	// If copy length is 1, it's just a newline, "Disallow: " means you can index everything
-	                                                        if(copy_length <= 1) {
-									line = strtok(NULL, "\r\n");
-                        	                                        continue;
-                                	                        }
-
                                         	                char* disallowed = (char*)malloc(copy_length + 1);
                                                 	        strncpy(disallowed, line + 10, copy_length);
                                                         	disallowed[copy_length] = '\0';
@@ -483,7 +478,14 @@ void Worker::run() {
                                                 	}
 	                                        }
 
-						line = strtok(NULL, "\r\n");
+						free(line);
+			                        line = 0;
+
+                        			offset += line_length + 1;
+			                        offset = min(strlen(content) - 1, offset);
+                        			if(offset >= (strlen(content) - 1)) break;
+
+			                        line_length = strcspn(content + offset, "\r\n");
 					}
 				}
 
@@ -537,6 +539,7 @@ void Worker::run() {
 					delete m_requests[i];
 					m_requests[i] = 0;
 					m_active--;
+
 					continue;
 				}
 			}
@@ -581,7 +584,20 @@ void Worker::run() {
                                 delete m_requests[i];
                                 m_requests[i] = 0;
 				m_active--;
+
+				continue;
                         }
+
+			// Finally, no matter what if it's been 60 seconds without any activity, shut it down
+			time_t now = time(NULL);
+			if(abs(now - m_requests[i]->get_last_time()) > HTTPTIMEOUT_ANY) {
+				printf("TIMED OUT: %s\n", m_requests[i]->get_url()->get_url());
+
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
+                                delete m_requests[i];
+                                m_requests[i] = 0;
+                                m_active--;
+			}
 		}
 
 		// Re-fill the list
