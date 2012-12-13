@@ -43,14 +43,23 @@ Worker::~Worker() {
 	}
 }
 
-void Worker::start(int pos) {
+int Worker::start(int pos) {
 	m_threadid = pos;
 
-	int rc = pthread_create(&m_thread, NULL, Worker::_thread_function, this);
+	int pid = fork();
+	if(pid == 0) {
+		// Start up, connect to databases
+        	run();
+	}
+
+	/*int rc = pthread_create(&m_thread, NULL, Worker::_thread_function, this);
 	if(rc) {
 		printf("Unable to create thread %d.\n", pos);
 		return;
-	}
+	}*/
+
+
+	return(pid);
 }
 
 void* Worker::_thread_function(void* ptr) {
@@ -535,7 +544,7 @@ void Worker::run() {
 			// Check for any timeouts
 			if((m_requests[i]->get_state() == HTTPREQUESTSTATE_RECV) || (m_requests[i]->get_state() == HTTPREQUESTSTATE_CONNECTING)) {
 				if(!m_requests[i]->process(NULL)) {
-					printf("ERROR: Processing error: %s\n", m_requests[i]->get_error());
+					printf("ERROR: %s timeout after %d seconds\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 
 					delete m_requests[i];
 					m_requests[i] = 0;
@@ -543,6 +552,7 @@ void Worker::run() {
 
 					continue;
 				}
+				//printf("Thread #%d checking on %s: %d\n", m_threadid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
 
 			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {

@@ -5,6 +5,7 @@
 using namespace std;
 
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,9 +44,8 @@ int main(int argc, char** argv) {
         }
 
         // Enter the main loop
-        while(true) {
-                usleep(1);
-        }
+	int status = 0;
+	wait(&status);
 
 	// Shut it down
 	ares_library_cleanup();

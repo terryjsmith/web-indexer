@@ -8,7 +8,7 @@ public:
 	~Worker();
 
 	// Start the thread
-	void start(int pos);
+	int start(int pos);
 
 	// Run
 	void run();
