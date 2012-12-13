@@ -3,7 +3,7 @@
 #define __DEFINES_H__
 
 #define NUM_THREADS			3
-#define CONNECTIONS_PER_THREAD		50
+#define CONNECTIONS_PER_THREAD		25
 #define SOCKET_BUFFER_SIZE		2048
 
 #define BASE_PATH       		"/mnt/gluster/"

@@ -333,7 +333,11 @@ bool HttpRequest::process(void* arg) {
 			}
 	        }
 		else {
-			m_lastcheck = time(NULL);
+			time_t now = time(NULL);
+			if(abs(now - m_lasttime) > HTTPTIMEOUT_RECV) {
+				this->error("RECV TIMEOUT");
+				return(false);
+			}
 		}
 	}
 

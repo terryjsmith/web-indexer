@@ -371,7 +371,7 @@ void Worker::run() {
 		epoll_event* events = (epoll_event*)malloc(CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 		memset(events, 0, CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 
-		int msgs = epoll_wait(m_epoll, events, CONNECTIONS_PER_THREAD, -1);
+		int msgs = epoll_wait(m_epoll, events, CONNECTIONS_PER_THREAD, 0);
 		for(unsigned int i = 0; i < msgs; i++) {
 			// Find the applicable HttpRequest object
                         int pos = 0;
