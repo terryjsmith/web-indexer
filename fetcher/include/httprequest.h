@@ -17,8 +17,8 @@ enum {
 
 enum {
 	HTTPTIMEOUT_CONNECT = 30,
-	HTTPTIMEOUT_RECV = 60,
-	HTTPTIMEOUT_ANY = 90,
+	HTTPTIMEOUT_RECV = 90,
+	HTTPTIMEOUT_ANY = 120,
 };
 
 class HttpRequest {
@@ -57,7 +57,8 @@ public:
 	int    get_state() { return m_state; }
 	Url*   get_url() { return m_url; }
 	void*  get_sockaddr() { return &m_sockaddr; }
-	time_t get_last_time() { return m_lasttime; };
+	time_t get_last_time() { return m_lasttime; }
+	time_t get_last_check() { return m_lastcheck; }
 
 	// Our static DNS lookup functions
 	static void _dns_lookup(void *arg, int status, int timeouts, hostent* host);
@@ -77,6 +78,9 @@ protected:
 
 	// The string filename we're outputting to
 	char* m_filename;
+
+	// An open file handle if applicable
+	FILE* m_fp;
 
 	// The state of this request from the enum at the top of this file
 	short m_state;
@@ -104,6 +108,9 @@ protected:
 
 	// The last timestamp we did something
 	time_t m_lasttime;
+
+	// The last timestamp we checked for data
+	time_t m_lastcheck;
 };
 
 #endif

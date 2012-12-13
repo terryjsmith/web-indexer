@@ -34,8 +34,10 @@ HttpRequest::HttpRequest() {
 	m_code = 0;
 	m_effective = 0;
 	m_robots = 0;
+	m_fp = 0;
 	m_keepalive = false;
 	m_lasttime = time(NULL);
+	m_lastcheck = time(NULL);
 	memset(&m_sockaddr, 0, sizeof(sockaddr_in));
 }
 
@@ -78,6 +80,11 @@ HttpRequest::~HttpRequest() {
 		delete m_robots;
 		m_robots = 0;
 	}
+
+	if(m_fp)  {
+		fclose(m_fp);
+		m_fp = 0;
+	}
 }
 
 void HttpRequest::set_output_filename(char* filename) {
@@ -105,6 +112,7 @@ int HttpRequest::initialize(Url* url) {
 	ares_init(&m_channel);
 	ares_gethostbyname(m_channel, m_url->get_host(), AF_INET, _dns_lookup, this);
 	m_state = HTTPREQUESTSTATE_DNS;
+	m_lasttime = time(NULL);
 
         return(m_socket);
 }
@@ -150,6 +158,7 @@ void HttpRequest::connect(struct hostent* host) {
         }
 
 	m_lasttime = time(NULL);
+	m_lastcheck = time(NULL);
 
 	::connect(m_socket,(struct sockaddr *)&m_sockaddr, sizeof(sockaddr));
         m_state = HTTPREQUESTSTATE_CONNECTING;
@@ -261,9 +270,15 @@ bool HttpRequest::process(void* arg) {
 
 	                	int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
 				m_lasttime = time(NULL);
-	               		if((count < 0) && (errno == EAGAIN)) {
-		                        free(buffer);
-               			        break;
+	               		if(count < 0) {
+					if(errno == EAGAIN) {
+			                        free(buffer);
+        	       			        break;
+					}
+					else {
+						this->error("EPOLL READ ERROR\n");
+						return(false);
+					}
 	                	}
 
 	               		if(count == 0) {
@@ -281,6 +296,25 @@ bool HttpRequest::process(void* arg) {
                                			strncpy(new_content, m_content, m_size);
 		                        strncpy(new_content + m_size, buffer, count);
         	       		        new_content[length] = '\0';
+
+					// If we're not handling robots.txt, output
+					if(!m_robots) {
+						if(!m_fp) {
+							m_fp = fopen(m_filename, "w");
+                					if(!m_fp) {
+					                        m_error = (char*)malloc(100 + strlen(m_filename));
+					                        printf("Unable to open file %s.", m_filename);
+
+					                        m_state = HTTPREQUESTSTATE_ERROR;
+					                        pthread_exit(0);
+					                        return(false);
+                					}
+						}
+
+						int written = fwrite(buffer, count, 1, m_fp);
+				                if(!written)
+				                        printf("WRITE ERROR: %s to %s\n", m_url->get_url(), m_filename);
+					}
 	
 		                        if(m_content)
                			                free(m_content);
@@ -291,7 +325,7 @@ bool HttpRequest::process(void* arg) {
 
                			if(count < SOCKET_BUFFER_SIZE) {
                		        	free(buffer);
-					m_state = HTTPREQUESTSTATE_WRITE;
+					//m_state = HTTPREQUESTSTATE_WRITE;
 		                        break;
                			}
 
@@ -299,11 +333,7 @@ bool HttpRequest::process(void* arg) {
 			}
 	        }
 		else {
-			time_t now = time(NULL);
-                        if(abs(now - m_lasttime) > HTTPTIMEOUT_CONNECT) {
-                                this->error("Timeout on recv.");
-                                return(false);
-                        }
+			m_lastcheck = time(NULL);
 		}
 	}
 
@@ -404,23 +434,7 @@ bool HttpRequest::process(void* arg) {
                         return(true);
                 }
 
-		printf("Writing %s to %s\n", m_url->get_url(), m_filename);
-
-                // Save the rest to a file
-                FILE* fp = fopen(m_filename, "w");
-      		if(!fp) {
-			m_error = (char*)malloc(100 + strlen(m_filename));
-	                printf("Unable to open file %s.", m_filename);
-
-			m_state = HTTPREQUESTSTATE_ERROR;
-			pthread_exit(0);
-	                return(false);
-      		}
-
-                int written = fwrite(m_content, strlen(m_content), 1, fp);
-		if(!written)
-			printf("WRITE ERROR: %d v. %d\n", m_size - offset, written);
-          	fclose(fp);
+		printf("Wrote %s to %s (%d)\n", m_url->get_url(), m_filename, m_size);
 
 		m_state = HTTPREQUESTSTATE_COMPLETE;
 		return(true);

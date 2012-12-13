@@ -3,10 +3,10 @@
 #define __DEFINES_H__
 
 #define NUM_THREADS			3
-#define CONNECTIONS_PER_THREAD		25
-#define SOCKET_BUFFER_SIZE		8096
+#define CONNECTIONS_PER_THREAD		50
+#define SOCKET_BUFFER_SIZE		2048
 
-#define BASE_PATH       		"/mnt/indexer/"
+#define BASE_PATH       		"/mnt/gluster/"
 
 #define MIN_ACCESS_TIME 		10
 #define ROBOTS_MIN_ACCESS_TIME		604800 			// One week
