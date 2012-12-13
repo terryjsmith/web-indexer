@@ -193,15 +193,16 @@ void Worker::fill_list() {
 		pthread_exit(0);
 	}
 
-        max_tries = min(max_tries, reply->integer);
+        max_tries = reply->integer;
         freeReplyObject(reply);
 
 	unsigned int counter = 0;
         for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
 		if(m_requests[i]) continue;
+		if(counter >= max_tries) break;
+		counter++;
 
-                if(counter >= max_tries) break;
-                counter++;
+		usleep(1);
 
                 // Fetch a URL from redis
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");

@@ -413,6 +413,7 @@ bool HttpRequest::process(void* arg) {
 	                printf("Unable to open file %s.", m_filename);
 
 			m_state = HTTPREQUESTSTATE_ERROR;
+			pthread_exit(0);
 	                return(false);
       		}
 
