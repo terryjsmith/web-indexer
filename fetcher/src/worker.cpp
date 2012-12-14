@@ -381,7 +381,7 @@ void Worker::run() {
 		memset(events, 0, CONNECTIONS_PER_THREAD * sizeof(epoll_event));
 
 		int msgs = epoll_wait(m_epoll, events, CONNECTIONS_PER_THREAD, 0);
-		for(unsigned int i = 0; i < msgs; i++) {
+		for(int i = 0; i < msgs; i++) {
 			// Find the applicable HttpRequest object
                         int pos = 0;
                         for(unsigned int j = 0; j < CONNECTIONS_PER_THREAD; j++) {
@@ -394,6 +394,7 @@ void Worker::run() {
                         }
 
                         if(!m_requests[pos]) {
+				printf("ERROR: unable to find request.\n");
 				continue;
                         }
 
@@ -533,16 +534,18 @@ void Worker::run() {
 		free(events);
 
 		// Process any waiting DNS requests
-		for(unsigned int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
+		for(int i = 0; i < CONNECTIONS_PER_THREAD; i++) {
 			if(!m_requests[i]) continue;
-			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_DNS)
+	
+			int state = m_requests[i]->get_state();
+			if(state == HTTPREQUESTSTATE_DNS)
 				m_requests[i]->process(NULL);
 
-			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_WRITE)
+			if(state == HTTPREQUESTSTATE_WRITE)
                                 m_requests[i]->process(NULL);
 
 			// Check for any timeouts
-			if((m_requests[i]->get_state() == HTTPREQUESTSTATE_RECV) || (m_requests[i]->get_state() == HTTPREQUESTSTATE_CONNECTING)) {
+			if((state == HTTPREQUESTSTATE_RECV) || (state == HTTPREQUESTSTATE_CONNECTING)) {
 				if(!m_requests[i]->process(NULL)) {
 					printf("ERROR: %s timeout after %d seconds\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 
@@ -555,7 +558,7 @@ void Worker::run() {
 				//printf("Thread #%d checking on %s: %d\n", m_threadid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
 
-			if(m_requests[i]->get_state() == HTTPREQUESTSTATE_COMPLETE) {
+			if(state == HTTPREQUESTSTATE_COMPLETE) {
                                 // Get the URL we were working on
                                 Url* url = m_requests[i]->get_url();
                                 int code = m_requests[i]->get_code();

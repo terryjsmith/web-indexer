@@ -27,6 +27,8 @@ HttpRequest::HttpRequest() {
 	m_state = 0;
 	m_url = 0;
 	m_content = 0;
+	m_header = 0;
+	m_inheader = true;
 	m_filename = 0;
 	m_error = 0;
 	m_channel = 0;
@@ -34,6 +36,7 @@ HttpRequest::HttpRequest() {
 	m_code = 0;
 	m_effective = 0;
 	m_robots = 0;
+	m_contentlength = 0;
 	m_fp = 0;
 	m_keepalive = false;
 	m_lasttime = time(NULL);
@@ -55,6 +58,11 @@ HttpRequest::~HttpRequest() {
 	if(m_content) {
 		free(m_content);
 		m_content = 0;
+	}
+
+	if(m_header) {
+		free(m_header);
+		m_header = 0;
 	}
 
 	if(m_filename) {
@@ -245,14 +253,14 @@ bool HttpRequest::process(void* arg) {
 
 		// Connect should have been successful, send data
 		char* request = (char*)malloc(strlen(use->get_path()) + strlen(use->get_query()) + strlen(use->get_host()) + 250);
-		char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\nConnection: keep-alive";
+		char* always = "Accept-Encoding:\r\nAccept: text/html,application/xhtml+xml,application/xml\r\nUser-Agent: Open Web Indexer (+http://www.icedteapowered.com/openweb/)\r\nConnection: Keep-alive";
 		unsigned int length = 0;
 
 		if(strlen(use->get_query())) {
-			length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_query(), use->get_host(), always);
+			length = sprintf(request, "GET %s?%s HTTP/1.0\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_query(), use->get_host(), always);
 		}
 		else {
-			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
+			length = sprintf(request, "GET %s HTTP/1.0\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
 		}
 
 		send(m_socket, request, length, 0);
@@ -289,13 +297,93 @@ bool HttpRequest::process(void* arg) {
 	               		}
 
 		                if(count > 0) {
-               			        unsigned int length = m_size + count;
-	                	        char* new_content = (char*)malloc(length + 1);
+					bool found_end = false;
+					int handled = 0;
 
-               		        	if(m_content)
-                               			strncpy(new_content, m_content, m_size);
-		                        strncpy(new_content + m_size, buffer, count);
-        	       		        new_content[length] = '\0';
+					if(m_inheader) {
+						char* pos = strstr(buffer, "\r\n\r\n");
+						found_end = (pos == NULL) ? false : true;
+						m_inheader = (pos == NULL) ? true : false;
+
+						int existing_length = (m_header == 0) ? 0 : strlen(m_header);
+						int new_length = (pos == NULL) ? count : pos - buffer;
+						handled += new_length + 4;
+
+						int length = (m_header == 0) ? new_length : existing_length + new_length;
+
+						char* header = (char*)malloc(length + 1);
+						if(m_header)
+							strncpy(header, m_header, existing_length);
+						strncpy(header + existing_length, buffer, new_length);
+						header[length] = '\0';
+
+						if(m_header)
+							free(m_header);
+
+						m_header = header;
+					}
+
+					// If we've found the end of the header, parse it
+					if(found_end) {
+						// Get the code out
+						if(strlen(m_header) > 13) {
+							char* code = (char*)malloc(4);
+				                        strncpy(code, m_header + 9, 3);
+				                        code[3] = '\0';
+				                        m_code = atoi(code);
+				                        free(code);
+						}
+
+						int line_length = strcspn(m_header, "\n");
+						int header_length = strlen(m_header);
+						int offset = 0;
+						while(line_length < (header_length - offset)) {
+							if(line_length <= 1) break;
+
+							// Get the line out
+							char* line = (char*)malloc(line_length + 1);
+				                        strncpy(line, m_header + offset, line_length);
+				                        line[line_length] = '\0';
+
+							if((strstr(line, "Location: ")) == line) {
+				                                unsigned int length = strlen(line) - 11;
+				                                m_effective = (char*)malloc(length + 1);
+				                                strncpy(m_effective, line + 10, length);
+				                                m_effective[length] = '\0';
+				                        }
+
+				                        // If we have a keep-alive header, mark that too
+				                        if((strstr(line, "Connection: Keep-alive")) == line) {
+				                                m_keepalive = true;
+				                        }
+
+							// If we have a content length header, process
+							if((strstr(line, "Content-Length: ")) == line) {
+								m_contentlength = atol(line + 16);
+							}
+
+							offset += strlen(line) + 1;
+							free(line);
+
+							if(offset >= header_length) break;
+							line_length = strcspn(m_header + offset, "\n");
+						}
+					}
+
+					if(handled < count) {
+						// Copy the rest into the content
+						int new_length = count - handled;
+						char* new_content = (char*)malloc(m_size + new_length + 1);
+						if(m_content)
+							strncpy(new_content, m_content, m_size);
+						strncpy(new_content + m_size, buffer + handled, new_length);
+
+						if(m_content)
+							free(m_content);
+						m_content = new_content;
+
+						m_size += new_length;
+					}
 
 					// If we're not handling robots.txt, output
 					if(!m_robots) {
@@ -315,17 +403,19 @@ bool HttpRequest::process(void* arg) {
 				                if(!written)
 				                        printf("WRITE ERROR: %s to %s\n", m_url->get_url(), m_filename);
 					}
-	
-		                        if(m_content)
-               			                free(m_content);
-	                	        m_content = new_content;
-	
-        	       		        m_size += count;
 	        	        }
+
+				// If we're done, finish up
+				if(m_keepalive) {
+	                                if(m_size >= m_contentlength) {
+						free(buffer);
+						m_state = HTTPREQUESTSTATE_WRITE;
+						break;
+                                	}
+				}
 
                			if(count < SOCKET_BUFFER_SIZE) {
                		        	free(buffer);
-					//m_state = HTTPREQUESTSTATE_WRITE;
 		                        break;
                			}
 
@@ -352,72 +442,9 @@ bool HttpRequest::process(void* arg) {
 			return(false);
 		}
 
-		int content_length = strlen(m_content);
-		int line_length = strcspn(m_content, "\n");
-		if(line_length == content_length) {
-			printf("No newlines found for %s\n", m_url->get_url());
-			return(false);
-		}
-
-		char* line = (char*)malloc(line_length + 1);
-		strncpy(line, m_content, line_length);
-		line[line_length] = '\0';
-		offset += line_length + 1;
-
-	        // Parse the first line as the HTTP code
-	        if(strlen(line) >= 13) {
-               		char* code = (char*)malloc(4);
-	                strncpy(code, line + 9, 3);
-               		code[3] = '\0';
-	                m_code = atoi(code);
-               		free(code);
-	        }
-
-		// Process the rest of the header
-       		while(line_length < (content_length - offset - 1)) {
-			if(line_length <= 1) {
-				offset++;
-				break;
-			}
-
-			// If we get a location header, record it
-	                if((strstr(line, "Location: ")) == line) {
-               		        unsigned int length = strlen(line) - 11;
-	                        m_effective = (char*)malloc(length + 1);
-                		strncpy(m_effective, line + 10, length);
-		                m_effective[length] = '\0';
-               		}
-
-			// If we have a keep-alive header, mark that too
-			if((strstr(line, "Connection: keep-alive")) == line) {
-				m_keepalive = true;
-			}
-
-			free(line);
-			line = 0;
-
-			offset += line_length + 1;
-			offset = min(strlen(m_content) - 1, offset);
-			if(offset >= (strlen(m_content) - 1)) break;
-
-			line_length = strcspn(m_content + offset, "\n");
-			line = (char*)malloc(line_length + 1);
-			strncpy(line, m_content + offset, line_length);
-			line[line_length] = '\0';
-       		}
-
-		if(line)
-			free(line);
-
 		// If this is a robots.txt request, mark it as "to be processed"
 		if(m_robots != 0) {
 			m_state = HTTPREQUESTSTATE_ROBOTS;
-
-			// Move the rest to the content
-			char* new_content = (char*)malloc(m_size - offset + 1);
-			strcpy(new_content, m_content + offset);
-			free(m_content);
-			m_content = new_content;
 
 			delete m_robots;
 			m_robots = 0;

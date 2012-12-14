@@ -73,8 +73,13 @@ protected:
 	// The actual HTML content we've received so far
 	char* m_content;
 
+	// The content of the HTTP header
+	char* m_header;
+	bool m_inheader;
+
 	// The size of the HTML content
 	int m_size;
+	int m_contentlength;
 
 	// The string filename we're outputting to
 	char* m_filename;
