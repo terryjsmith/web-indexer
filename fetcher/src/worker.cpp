@@ -235,8 +235,6 @@ void Worker::fill_list() {
 		}
 		freeReplyObject(reply);
 
-		printf("Trying %s...\n", urlstr);
-
                 // Split the URL info it's parts; no base URL
                 Url* url = new Url(urlstr);
                 if(!url->parse(NULL)) {
@@ -264,7 +262,6 @@ void Worker::fill_list() {
                 // Check whether this domain is on a timeout
                 time_t now = time(NULL);
                 if((now - info->last_access) < MIN_ACCESS_TIME) {
-			printf("too soon\n");
                         reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->get_url());
 			if(reply->type == REDIS_REPLY_ERROR) {
                 		printf("REDIS ERROR: %s\n", reply->str);
@@ -280,12 +277,13 @@ void Worker::fill_list() {
 
                 // Next check if we've already parsed this URL
                 if(url_exists(url, info)) {
-			printf("exists in db\n");
                         delete info;
                         delete url;
                         i--;
                         continue;
                 }
+
+		printf("Fetching %s...\n", url->get_url());
 
 		// Create our HTTP request
 		m_requests[i] = new HttpRequest();
@@ -411,7 +409,7 @@ void Worker::run() {
 
 			if(!m_requests[pos]->process((void*)&events[i])) {
 				// Something went wrong, figure that out
-				printf("ERROR: Processing error.\n");
+				printf("ERROR: Processing error in stage %d: %s.\n", m_requests[pos]->get_state(), m_requests[pos]->get_error());
 
 				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
 				delete m_requests[pos];
@@ -432,6 +430,7 @@ void Worker::run() {
 			if(state == HTTPREQUESTSTATE_DNS)
 				m_requests[i]->process(NULL);
 
+			state = m_requests[i]->get_state();
 			if(state == HTTPREQUESTSTATE_WRITE)
                                 m_requests[i]->process(NULL);
 
@@ -548,8 +547,9 @@ void Worker::run() {
 			if((state == HTTPREQUESTSTATE_RECV) || (state == HTTPREQUESTSTATE_CONNECTING)) {
 				if(!m_requests[i]->process(NULL)) {
 					// Make sure the request is still in this status
+					state = m_requests[i]->get_state();
 					if((state == HTTPREQUESTSTATE_RECV) || (state == HTTPREQUESTSTATE_CONNECTING)) {
-						printf("ERROR: %s timeout after %d seconds\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
+						printf("ERROR: %s timeout after %d seconds in stage %d\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time(), m_requests[i]->get_state());
 
 						delete m_requests[i];
 						m_requests[i] = 0;
@@ -561,6 +561,7 @@ void Worker::run() {
 				//printf("Thread #%d checking on %s: %d\n", m_threadid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
 
+			state = m_requests[i]->get_state();
 			if(state == HTTPREQUESTSTATE_COMPLETE) {
                                 // Get the URL we were working on
                                 Url* url = m_requests[i]->get_url();

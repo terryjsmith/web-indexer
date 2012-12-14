@@ -322,10 +322,9 @@ bool HttpRequest::process(void* arg) {
                                                         m_fp = fopen(m_filename, "w");
                                                         if(!m_fp) {
                                                                 m_error = (char*)malloc(100 + strlen(m_filename));
-                                                                printf("Unable to open file %s.", m_filename);
+								sprintf(m_error, "Unable to open file %s.", m_filename);
 
                                                                 m_state = HTTPREQUESTSTATE_ERROR;
-                                                                pthread_exit(0);
                                                                 return(false);
                                                         }
                                                 }
@@ -561,7 +560,7 @@ bool HttpRequest::process(void* arg) {
 		if(!m_content) {
 			printf("No content returned for %s\n", url->get_url());
 			m_state = HTTPREQUESTSTATE_COMPLETE;
-			return(false);
+			return(true);
 		}
 
 		// If this is a robots.txt request, mark it as "to be processed"
