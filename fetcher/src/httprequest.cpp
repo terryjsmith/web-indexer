@@ -186,6 +186,7 @@ int HttpRequest::resend() {
 	free(m_content);
 	m_content = 0;
 	m_size = 0;
+	m_chunked = false;
 	m_chunksize = 0;
 	m_chunkread = 0;
 	m_contentlength = 0;
@@ -285,7 +286,6 @@ bool HttpRequest::process(void* arg) {
                			memset(buffer, 0, SOCKET_BUFFER_SIZE);
 
 	                	int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
-				printf("Got %d bytes back.\n", count);
 				m_lasttime = time(NULL);
 	               		if(count < 0) {
 					if(errno == EAGAIN) {
@@ -309,14 +309,28 @@ bool HttpRequest::process(void* arg) {
 					bool found_end = false;
 					int handled = 0;
 
+					// If we're not handling robots.txt, output
+                                        if(!m_robots) {
+                                                if(!m_fp) {
+                                                        m_fp = fopen(m_filename, "w");
+                                                        if(!m_fp) {
+                                                                m_error = (char*)malloc(100 + strlen(m_filename));
+                                                                printf("Unable to open file %s.", m_filename);
+
+                                                                m_state = HTTPREQUESTSTATE_ERROR;
+                                                                pthread_exit(0);
+                                                                return(false);
+                                                        }
+                                                }
+					}
+
 					if(m_inheader) {
-						printf("In the header\n");
 						char* pos = strstr(buffer, "\r\n\r\n");
 						found_end = (pos == NULL) ? false : true;
 						m_inheader = (pos == NULL) ? true : false;
 
 						int existing_length = (m_header == 0) ? 0 : strlen(m_header);
-						int new_length = (pos == NULL) ? count : pos - buffer;
+						int new_length = (pos == NULL) ? count : pos - buffer + 4;
 						handled += new_length;
 
 						int length = (m_header == 0) ? new_length : existing_length + new_length;
@@ -327,6 +341,10 @@ bool HttpRequest::process(void* arg) {
 						strncpy(header + existing_length, buffer, new_length);
 						header[length] = '\0';
 
+						// Write the header out to a file
+                                                if(!m_robots)
+                                                        fwrite(buffer, new_length, 1, m_fp);
+
 						if(m_header)
 							free(m_header);
 
@@ -335,7 +353,6 @@ bool HttpRequest::process(void* arg) {
 
 					// If we've found the end of the header, parse it
 					if(found_end) {
-						printf("Found header end, parsing.\n");
 						// Get the code out
 						if(strlen(m_header) > 13) {
 							char* code = (char*)malloc(4);
@@ -359,8 +376,6 @@ bool HttpRequest::process(void* arg) {
 							// Set the line to all lower case for our comparisons
 							for(int i = 0; i < line_length; i++)
 								line[i] = tolower(line[i]);
-
-							printf("Line: %s\n", line);
 
 							if((strstr(line, "location: ")) == line) {
 				                                unsigned int length = strlen(line) - 11;
@@ -392,11 +407,11 @@ bool HttpRequest::process(void* arg) {
 					}
 
 					if(m_chunked) {
-						printf("We have chunked encoding, processing.\n");
 						while(handled < count) {
 							if(!m_chunksize) {
 								// Read in the next chunksize
 								int length = strcspn(buffer + handled, "\n");
+								m_chunkread = 0;
 
 								// If this is a blank line or just a newline character in it, move to the next line
 								if(length <= 1) {
@@ -404,15 +419,11 @@ bool HttpRequest::process(void* arg) {
 									continue;
 								}
 
-								printf("Leftover: %s", buffer + handled);
-
 								char* hex = (char*)malloc(length + 1);
 								strncpy(hex, buffer + handled, length);
 								hex[length] = '\0';
 								m_chunksize = strtol(hex, NULL, 16);
 								free(hex);
-
-								printf("Found a new chunk to read of size %d\n", m_chunksize);
 
 								if(m_chunksize == 0) {
 									end_of_file = true;
@@ -427,6 +438,10 @@ bool HttpRequest::process(void* arg) {
 								// Read up to a maximum of m_chunksize - m_chunkread bytes
 								int max_read = m_chunksize - m_chunkread;
 								int new_length = (max_read > (count - handled)) ? count - handled : max_read;
+
+								// Write what we have out to file
+								if(!m_robots)
+									fwrite(buffer + handled, new_length, 1, m_fp);
 
 								// Copy the existing content in and the new content
 								char* new_content = (char*)malloc(m_size + new_length + 1);
@@ -443,16 +458,15 @@ bool HttpRequest::process(void* arg) {
 								m_chunkread += new_length;
 								m_size += new_length;
 
-								printf("Read chunk bytes %d of %d\n", m_chunkread, m_chunksize);
-
 								// If we've already read the whole chunk size, set m_chunksize to zero to make it reset
-								if(m_chunkread >= m_chunksize)
+								if(m_chunkread >= m_chunksize) {
 									m_chunksize = 0;
+									handled++;
+								}
 							}
 						}
 					}
 					else {
-						printf("Looking for simply content-length.\n");
 						if(handled < count) {
 							// Copy the rest into the content
 							int new_length = count - handled;
@@ -460,41 +474,24 @@ bool HttpRequest::process(void* arg) {
 							if(m_content)
 								strncpy(new_content, m_content, m_size);
 
+							// Write it out to file as well
+							if(!m_robots)
+								fwrite(buffer + handled, new_length, 1, m_fp);
+
 							strncpy(new_content + m_size, buffer + handled, new_length);
 							if(m_content)
 								free(m_content);
 							m_content = new_content;
 
 							m_size += new_length;
-							printf("Read in %d bytes.\n", m_size);
 
 							if(m_size >= m_contentlength) end_of_file = true;
 						}
-					}
-
-					// If we're not handling robots.txt, output
-					if(!m_robots) {
-						if(!m_fp) {
-							m_fp = fopen(m_filename, "w");
-                					if(!m_fp) {
-					                        m_error = (char*)malloc(100 + strlen(m_filename));
-					                        printf("Unable to open file %s.", m_filename);
-
-					                        m_state = HTTPREQUESTSTATE_ERROR;
-					                        pthread_exit(0);
-					                        return(false);
-                					}
-						}
-
-						int written = fwrite(buffer, count, 1, m_fp);
-				                if(!written)
-				                        printf("WRITE ERROR: %s to %s\n", m_url->get_url(), m_filename);
 					}
 	        	        }
 
 				// If we're done, finish up
 				if(end_of_file) {
-					printf("End of the file, moving along!\n");
 					free(buffer);
 					m_state = HTTPREQUESTSTATE_WRITE;
 					break;
