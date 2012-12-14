@@ -81,6 +81,11 @@ protected:
 	int m_size;
 	int m_contentlength;
 
+	// Info for chunked encoding
+	bool m_chunked;
+	int m_chunksize;
+	int m_chunkread;
+
 	// The string filename we're outputting to
 	char* m_filename;
 

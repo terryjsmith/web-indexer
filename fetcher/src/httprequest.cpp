@@ -34,6 +34,9 @@ HttpRequest::HttpRequest() {
 	m_channel = 0;
 	m_size = 0;
 	m_code = 0;
+	m_chunked = false;
+	m_chunksize = 0;
+	m_chunkread = 0;
 	m_effective = 0;
 	m_robots = 0;
 	m_contentlength = 0;
@@ -183,6 +186,10 @@ int HttpRequest::resend() {
 	free(m_content);
 	m_content = 0;
 	m_size = 0;
+	m_chunksize = 0;
+	m_chunkread = 0;
+	m_contentlength = 0;
+	m_inheader = true;
 
 	close(m_socket);
 
@@ -257,10 +264,10 @@ bool HttpRequest::process(void* arg) {
 		unsigned int length = 0;
 
 		if(strlen(use->get_query())) {
-			length = sprintf(request, "GET %s?%s HTTP/1.0\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_query(), use->get_host(), always);
+			length = sprintf(request, "GET %s?%s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_query(), use->get_host(), always);
 		}
 		else {
-			length = sprintf(request, "GET %s HTTP/1.0\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
+			length = sprintf(request, "GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n\r\n", use->get_path(), use->get_host(), always);
 		}
 
 		send(m_socket, request, length, 0);
@@ -273,10 +280,12 @@ bool HttpRequest::process(void* arg) {
 	if(m_state == HTTPREQUESTSTATE_RECV) {
 		if(arg) {
 			while(true) {
+				bool end_of_file = false;
         	       		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
                			memset(buffer, 0, SOCKET_BUFFER_SIZE);
 
 	                	int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
+				printf("Got %d bytes back.\n", count);
 				m_lasttime = time(NULL);
 	               		if(count < 0) {
 					if(errno == EAGAIN) {
@@ -301,13 +310,14 @@ bool HttpRequest::process(void* arg) {
 					int handled = 0;
 
 					if(m_inheader) {
+						printf("In the header\n");
 						char* pos = strstr(buffer, "\r\n\r\n");
 						found_end = (pos == NULL) ? false : true;
 						m_inheader = (pos == NULL) ? true : false;
 
 						int existing_length = (m_header == 0) ? 0 : strlen(m_header);
 						int new_length = (pos == NULL) ? count : pos - buffer;
-						handled += new_length + 4;
+						handled += new_length;
 
 						int length = (m_header == 0) ? new_length : existing_length + new_length;
 
@@ -325,6 +335,7 @@ bool HttpRequest::process(void* arg) {
 
 					// If we've found the end of the header, parse it
 					if(found_end) {
+						printf("Found header end, parsing.\n");
 						// Get the code out
 						if(strlen(m_header) > 13) {
 							char* code = (char*)malloc(4);
@@ -345,7 +356,13 @@ bool HttpRequest::process(void* arg) {
 				                        strncpy(line, m_header + offset, line_length);
 				                        line[line_length] = '\0';
 
-							if((strstr(line, "Location: ")) == line) {
+							// Set the line to all lower case for our comparisons
+							for(int i = 0; i < line_length; i++)
+								line[i] = tolower(line[i]);
+
+							printf("Line: %s\n", line);
+
+							if((strstr(line, "location: ")) == line) {
 				                                unsigned int length = strlen(line) - 11;
 				                                m_effective = (char*)malloc(length + 1);
 				                                strncpy(m_effective, line + 10, length);
@@ -353,13 +370,17 @@ bool HttpRequest::process(void* arg) {
 				                        }
 
 				                        // If we have a keep-alive header, mark that too
-				                        if((strstr(line, "Connection: Keep-alive")) == line) {
+				                        if((strstr(line, "connection: keep-alive")) == line) {
 				                                m_keepalive = true;
 				                        }
 
 							// If we have a content length header, process
-							if((strstr(line, "Content-Length: ")) == line) {
+							if((strstr(line, "content-length: ")) == line) {
 								m_contentlength = atol(line + 16);
+							}
+
+							if((strstr(line, "transfer-encoding: chunked")) == line) {
+								m_chunked = true;
 							}
 
 							offset += strlen(line) + 1;
@@ -370,19 +391,85 @@ bool HttpRequest::process(void* arg) {
 						}
 					}
 
-					if(handled < count) {
-						// Copy the rest into the content
-						int new_length = count - handled;
-						char* new_content = (char*)malloc(m_size + new_length + 1);
-						if(m_content)
-							strncpy(new_content, m_content, m_size);
-						strncpy(new_content + m_size, buffer + handled, new_length);
+					if(m_chunked) {
+						printf("We have chunked encoding, processing.\n");
+						while(handled < count) {
+							if(!m_chunksize) {
+								// Read in the next chunksize
+								int length = strcspn(buffer + handled, "\n");
 
-						if(m_content)
-							free(m_content);
-						m_content = new_content;
+								// If this is a blank line or just a newline character in it, move to the next line
+								if(length <= 1) {
+									handled++;
+									continue;
+								}
 
-						m_size += new_length;
+								printf("Leftover: %s", buffer + handled);
+
+								char* hex = (char*)malloc(length + 1);
+								strncpy(hex, buffer + handled, length);
+								hex[length] = '\0';
+								m_chunksize = strtol(hex, NULL, 16);
+								free(hex);
+
+								printf("Found a new chunk to read of size %d\n", m_chunksize);
+
+								if(m_chunksize == 0) {
+									end_of_file = true;
+									break;
+								}
+
+								handled += length + 1;
+								continue;
+							}
+
+							if(m_chunkread < m_chunksize) {
+								// Read up to a maximum of m_chunksize - m_chunkread bytes
+								int max_read = m_chunksize - m_chunkread;
+								int new_length = (max_read > (count - handled)) ? count - handled : max_read;
+
+								// Copy the existing content in and the new content
+								char* new_content = (char*)malloc(m_size + new_length + 1);
+								if(m_content)
+									strncpy(new_content, m_content, m_size);
+								strncpy(new_content + m_size, buffer + handled, new_length);
+								new_content[m_size + new_length] = '\0';
+
+								if(m_content)
+									free(m_content);
+								m_content = new_content;
+
+								handled += new_length;
+								m_chunkread += new_length;
+								m_size += new_length;
+
+								printf("Read chunk bytes %d of %d\n", m_chunkread, m_chunksize);
+
+								// If we've already read the whole chunk size, set m_chunksize to zero to make it reset
+								if(m_chunkread >= m_chunksize)
+									m_chunksize = 0;
+							}
+						}
+					}
+					else {
+						printf("Looking for simply content-length.\n");
+						if(handled < count) {
+							// Copy the rest into the content
+							int new_length = count - handled;
+							char* new_content = (char*)malloc(m_size + new_length + 1);
+							if(m_content)
+								strncpy(new_content, m_content, m_size);
+
+							strncpy(new_content + m_size, buffer + handled, new_length);
+							if(m_content)
+								free(m_content);
+							m_content = new_content;
+
+							m_size += new_length;
+							printf("Read in %d bytes.\n", m_size);
+
+							if(m_size >= m_contentlength) end_of_file = true;
+						}
 					}
 
 					// If we're not handling robots.txt, output
@@ -406,12 +493,11 @@ bool HttpRequest::process(void* arg) {
 	        	        }
 
 				// If we're done, finish up
-				if(m_keepalive) {
-	                                if(m_size >= m_contentlength) {
-						free(buffer);
-						m_state = HTTPREQUESTSTATE_WRITE;
-						break;
-                                	}
+				if(end_of_file) {
+					printf("End of the file, moving along!\n");
+					free(buffer);
+					m_state = HTTPREQUESTSTATE_WRITE;
+					break;
 				}
 
                			if(count < SOCKET_BUFFER_SIZE) {
