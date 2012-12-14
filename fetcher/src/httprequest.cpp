@@ -41,6 +41,7 @@ HttpRequest::HttpRequest() {
 	m_robots = 0;
 	m_contentlength = 0;
 	m_fp = 0;
+	m_connecttime = 0;
 	m_keepalive = false;
 	m_lasttime = time(NULL);
 	m_lastcheck = time(NULL);
@@ -185,6 +186,10 @@ int HttpRequest::resend() {
 	// Get rid of old content
 	free(m_content);
 	m_content = 0;
+
+	free(m_header);
+	m_header = 0;
+
 	m_size = 0;
 	m_chunked = false;
 	m_chunksize = 0;
@@ -243,7 +248,9 @@ bool HttpRequest::process(void* arg) {
 				return(false);
 			}
 			else {
-				m_lasttime = time(NULL);
+				time_t now = time(NULL);
+				m_connecttime = max(now - m_lasttime, 1);
+				m_lasttime = now;
 				m_state = HTTPREQUESTSTATE_SEND;
 			}
 		}
@@ -466,7 +473,7 @@ bool HttpRequest::process(void* arg) {
 							}
 						}
 					}
-					else {
+					else if(m_contentlength) {
 						if(handled < count) {
 							// Copy the rest into the content
 							int new_length = count - handled;
@@ -479,6 +486,7 @@ bool HttpRequest::process(void* arg) {
 								fwrite(buffer + handled, new_length, 1, m_fp);
 
 							strncpy(new_content + m_size, buffer + handled, new_length);
+							new_content[m_size + new_length] = '\0';
 							if(m_content)
 								free(m_content);
 							m_content = new_content;
@@ -486,6 +494,27 @@ bool HttpRequest::process(void* arg) {
 							m_size += new_length;
 
 							if(m_size >= m_contentlength) end_of_file = true;
+						}
+					}
+					else {
+						// We just have to wait for the connection to close (BOOOOO), read in what we have
+						if(handled < count) {
+							// Copy the rest into the content
+                                                        int new_length = count - handled;
+                                                        char* new_content = (char*)malloc(m_size + new_length + 1);
+                                                        if(m_content)
+                                                                strncpy(new_content, m_content, m_size);
+
+                                                        // Write it out to file as well
+                                                        if(!m_robots)
+                                                                fwrite(buffer + handled, new_length, 1, m_fp);
+
+                                                        strncpy(new_content + m_size, buffer + handled, new_length);
+                                                        if(m_content)
+                                                                free(m_content);
+                                                        m_content = new_content;
+
+                                                        m_size += new_length;
 						}
 					}
 	        	        }
@@ -506,10 +535,18 @@ bool HttpRequest::process(void* arg) {
 			}
 	        }
 		else {
+			// Wait for a max multiple of the connect time
+			int wait_time = m_connecttime * 5;
 			m_lastcheck = time(NULL);
-			if((m_lastcheck - m_lasttime) > HTTPTIMEOUT_RECV) {
-				this->error("RECV TIMEOUT");
-				return(false);
+			if((m_lastcheck - m_lasttime) > wait_time) {
+				if(!m_chunked && !m_contentlength) {
+					// Just mark it as complete
+					m_state = HTTPREQUESTSTATE_WRITE;
+				}
+				else {
+					this->error("RECV TIMEOUT");
+					return(false);
+				}
 			}
 		}
 	}
@@ -519,8 +556,10 @@ bool HttpRequest::process(void* arg) {
 		unsigned int offset = 0;
 		m_lasttime = time(NULL);
 
+		Url* url = (m_robots == NULL) ? m_url : m_robots;
+
 		if(!m_content) {
-			printf("No content returned for %s\n", m_url->get_url());
+			printf("No content returned for %s\n", url->get_url());
 			m_state = HTTPREQUESTSTATE_COMPLETE;
 			return(false);
 		}
@@ -537,18 +576,18 @@ bool HttpRequest::process(void* arg) {
 		if(m_code != 200) {
                         // Nothing too do here, mark as complete and move on
                         m_state = HTTPREQUESTSTATE_COMPLETE;
-			printf("Invalid code %d for %s\n", m_code, m_url->get_url());
+			printf("Invalid code %d for %s\n", m_code, url->get_url());
                         return(true);
                 }
 
 		// If we get here, it means we need to (optionally) dump it out to a file if there's on set, otherwise, complete
                 if(!m_filename) {
-			printf("No file name specified for %s, returning.\n", m_url->get_url());
+			printf("No file name specified for %s, returning.\n", url->get_url());
                         m_state = HTTPREQUESTSTATE_COMPLETE;
                         return(true);
                 }
 
-		printf("Wrote %s to %s (%d)\n", m_url->get_url(), m_filename, m_size);
+		printf("Wrote %s to %s (%d)\n", url->get_url(), m_filename, m_size);
 
 		m_state = HTTPREQUESTSTATE_COMPLETE;
 		return(true);

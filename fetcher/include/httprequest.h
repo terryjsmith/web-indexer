@@ -16,9 +16,8 @@ enum {
 };
 
 enum {
-	HTTPTIMEOUT_CONNECT = 15,
-	HTTPTIMEOUT_RECV = 60,
-	HTTPTIMEOUT_ANY = 90,
+	HTTPTIMEOUT_CONNECT = 10,
+	HTTPTIMEOUT_ANY = 30,
 };
 
 class HttpRequest {
@@ -121,6 +120,9 @@ protected:
 
 	// The last timestamp we checked for data
 	time_t m_lastcheck;
+
+	// The amount of time it took to connect
+	int m_connecttime;
 };
 
 #endif

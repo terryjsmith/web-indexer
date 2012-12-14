@@ -420,115 +420,6 @@ void Worker::run() {
 				m_active--;
 				continue;
 			}
-
-			// If we need to process robots.txt rules, do so
-			if(m_requests[pos]->get_state() == HTTPREQUESTSTATE_ROBOTS) {
-				// Get the URL we were working on
-                                Url* url = m_requests[pos]->get_url();
-
-				printf("Got robots for %s (code %d), processing.\n", url->get_url(), m_requests[pos]->get_code());
-
-				// Set the last access time to now
-				time_t now = time(NULL);
-		                char* query = (char*)malloc(1000);
-		                sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", now, url->get_domain_id());
-                		mysql_query(m_conn, query);
-		                free(query);
-
-				if(m_requests[pos]->get_code() == 200) {
-					// Get and parse the rules
-					char* content = m_requests[pos]->get_content();
-					bool applicable = false;
-
-					int content_length = strlen(content);
-			                int line_length = strcspn(content, "\r\n");
-					int offset = 0;
-					while(line_length < (content_length - offset - 1)) {
-						if(line_length <= 2) {
-                         			       	offset += line_length + 1;
-							line_length = strcspn(content + offset, "\r\n");
-			                               	continue;
-                        			}
-
-						char* line = (char*)malloc(line_length + 1);
-			                        strncpy(line, content + offset, line_length);
-                        			line[line_length] = '\0';
-
-						// Check to see if this is a user agent line, start by making it all lowercase
-	                                        for(unsigned int i = 0; i < strlen(line); i++) {
-        	                                        line[i] = tolower(line[i]);
-                	                        }
-
-                        	                // If it is a user-agent line, make sure it's aimed at us
-                                	        if(strstr(line, "user-agent") != NULL) {
-                                        	        if(strstr(line, "user-agent: *") != NULL) {
-                                                	        applicable = true;
-	                                                }
-        	                                        else
-                	                                        applicable = false;
-                        	                }
-
-	                                        if(applicable) {
-        	                                        // Record the rule in the database
-                	                                char* part = strstr(line, "disallow: ");
-                        	                        if(part) {
-                                	                        char* position = strchr(line, '\n');
-                                        	                unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
-                                                	        copy_length -= 10;
-
-                                        	                char* disallowed = (char*)malloc(copy_length + 1);
-                                                	        strncpy(disallowed, line + 10, copy_length);
-                                                        	disallowed[copy_length] = '\0';
-
-	                                                        char* query = (char*)malloc(5000);
-        	                                                sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->get_domain_id(), disallowed);
-                        	                                mysql_query(m_conn, query);
-
-                                	                        free(disallowed);
-                                        	                free(query);
-                                                	}
-	                                        }
-
-						free(line);
-			                        line = 0;
-
-                        			offset += line_length + 1;
-			                        offset = min(strlen(content) - 1, offset);
-                        			if(offset >= (strlen(content) - 1)) break;
-
-			                        line_length = strcspn(content + offset, "\r\n");
-					}
-				}
-
-				// Now that we have the robots.txt back, check it again
-				if(!check_robots_rules(url)) {
-					printf("After fetching robots.txt, %s is disallow.\n", url->get_url());
-
-					epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
-
-					// If it's against the rules, get rid of it and move on
-					delete m_requests[pos];
-	                                m_requests[pos] = 0;
-
-					m_active--;
-					continue;
-				}
-
-				// Re-send the request for the actual page
-				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
-				int socket = m_requests[pos]->resend();
-
-				// Add the new socket to epoll
-		                struct epoll_event event;
-        		        memset(&event, 0, sizeof(epoll_event));
-
-                		event.data.fd = socket;
-	                	event.events = EPOLLIN | EPOLLET | EPOLLOUT;
-	        	        if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-        	        	        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
-                	        	pthread_exit(0);
-	                	}
-			}
 		}
 
 		free(events);
@@ -544,16 +435,128 @@ void Worker::run() {
 			if(state == HTTPREQUESTSTATE_WRITE)
                                 m_requests[i]->process(NULL);
 
+			// If we need to process robots.txt rules, do so
+                        if(m_requests[i]->get_state() == HTTPREQUESTSTATE_ROBOTS) {
+                                // Get the URL we were working on
+                                Url* url = m_requests[i]->get_url();
+
+                                printf("Got robots for %s (code %d), processing.\n", url->get_url(), m_requests[i]->get_code());
+
+                                // Set the last access time to now
+                                time_t now = time(NULL);
+                                char* query = (char*)malloc(1000);
+                                sprintf(query, "UPDATE domain SET robots_last_access = %ld WHERE domain_id = %ld", now, url->get_domain_id());
+                                mysql_query(m_conn, query);
+                                free(query);
+
+                                if(m_requests[i]->get_code() == 200) {
+                                        // Get and parse the rules
+                                        char* content = m_requests[i]->get_content();
+                                        bool applicable = false;
+
+                                        int content_length = strlen(content);
+                                        int line_length = strcspn(content, "\r\n");
+                                        int offset = 0;
+                                        while(line_length < (content_length - offset - 1)) {
+                                                if(line_length <= 2) {
+                                                        offset += line_length + 1;
+                                                        line_length = strcspn(content + offset, "\r\n");
+                                                        continue;
+                                                }
+
+                                                char* line = (char*)malloc(line_length + 1);
+                                                strncpy(line, content + offset, line_length);
+                                                line[line_length] = '\0';
+
+                                                // Check to see if this is a user agent line, start by making it all lowercase
+                                                for(unsigned int i = 0; i < strlen(line); i++) {
+                                                        line[i] = tolower(line[i]);
+                                                }
+
+                                                // If it is a user-agent line, make sure it's aimed at us
+                                                if(strstr(line, "user-agent") != NULL) {
+                                                        if(strstr(line, "user-agent: *") != NULL) {
+                                                                applicable = true;
+                                                        }
+                                                        else
+                                                                applicable = false;
+                                                }
+
+                                                if(applicable) {
+                                                        // Record the rule in the database
+                                                        char* part = strstr(line, "disallow: ");
+                                                        if(part) {
+                                                                char* position = strchr(line, '\n');
+                                                                unsigned int copy_length = (position == NULL) ? strlen(line) : (position - line);
+                                                                copy_length -= 10;
+
+                                                                char* disallowed = (char*)malloc(copy_length + 1);
+                                                                strncpy(disallowed, line + 10, copy_length);
+                                                                disallowed[copy_length] = '\0';
+
+                                                                char* query = (char*)malloc(5000);
+                                                                sprintf(query, "INSERT INTO robotstxt VALUES(%ld, '%s');", url->get_domain_id(), disallowed);
+                                                                mysql_query(m_conn, query);
+
+                                                                free(disallowed);
+                                                                free(query);
+                                                        }
+                                                }
+
+                                                free(line);
+                                                line = 0;
+
+                                                offset += line_length + 1;
+                                                offset = min(strlen(content) - 1, offset);
+                                                if(offset >= (strlen(content) - 1)) break;
+
+                                                line_length = strcspn(content + offset, "\r\n");
+                                        }
+                                }
+
+                                // Now that we have the robots.txt back, check it again
+                                if(!check_robots_rules(url)) {
+                                        printf("After fetching robots.txt, %s is disallow.\n", url->get_url());
+
+                                        epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
+
+                                        // If it's against the rules, get rid of it and move on
+                                        delete m_requests[i];
+                                        m_requests[i] = 0;
+
+                                        m_active--;
+                                        continue;
+                                }
+
+                                // Re-send the request for the actual page
+                                epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
+                                int socket = m_requests[i]->resend();
+
+                                // Add the new socket to epoll
+                                struct epoll_event event;
+                                memset(&event, 0, sizeof(epoll_event));
+
+                                event.data.fd = socket;
+                                event.events = EPOLLIN | EPOLLET | EPOLLOUT;
+                                if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
+                                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
+                                        pthread_exit(0);
+                                }
+			}
+
 			// Check for any timeouts
 			if((state == HTTPREQUESTSTATE_RECV) || (state == HTTPREQUESTSTATE_CONNECTING)) {
 				if(!m_requests[i]->process(NULL)) {
-					printf("ERROR: %s timeout after %d seconds\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
+					// Make sure the request is still in this status
+					if((state == HTTPREQUESTSTATE_RECV) || (state == HTTPREQUESTSTATE_CONNECTING)) {
+						printf("ERROR: %s timeout after %d seconds\n", m_requests[i]->get_error(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 
-					delete m_requests[i];
-					m_requests[i] = 0;
-					m_active--;
+						delete m_requests[i];
+						m_requests[i] = 0;
+						m_active--;
 
-					continue;
+						continue;
+					}
 				}
 				//printf("Thread #%d checking on %s: %d\n", m_threadid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
@@ -605,7 +608,7 @@ void Worker::run() {
 			// Finally, no matter what if it's been 60 seconds without any activity, shut it down
 			time_t now = time(NULL);
 			if(abs(now - m_requests[i]->get_last_time()) > HTTPTIMEOUT_ANY) {
-				printf("TIMED OUT: %s\n", m_requests[i]->get_url()->get_url());
+				printf("TIMED OUT: %s, stage %d\n", m_requests[i]->get_url()->get_url(), m_requests[i]->get_state());
 
 				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
                                 delete m_requests[i];
