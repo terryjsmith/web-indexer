@@ -1,0 +1,10 @@
+/testing/this
+search
+search?test=blah
+../newsub
+../newsub/trail/
+../../subsub/test.html
+http://www.google.ca/
+https://www.reddit.com/
+./reddit/user
+google/../search/test/../search.php
