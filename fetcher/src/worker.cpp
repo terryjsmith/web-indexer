@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <regex.h>
-#include <pthread.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 #include <my_global.h>
@@ -23,7 +22,6 @@
 #include <worker.h>
 
 Worker::Worker() {
-	m_threadid = 0;
 	m_conn = 0;
 	m_context = 0;
 	m_epoll = 0;
@@ -41,10 +39,18 @@ Worker::~Worker() {
 
 		free(m_requests);
 	}
+
+	if(m_context) {
+		redisFree(m_context);
+	}
+
+	if(m_conn) {
+		mysql_close(m_conn);
+	}
 }
 
 int Worker::start(int pos) {
-	m_threadid = pos;
+	m_procid = pos;
 
 	int pid = fork();
 	if(pid == 0) {
@@ -55,20 +61,13 @@ int Worker::start(int pos) {
 	return(pid);
 }
 
-void* Worker::_thread_function(void* ptr) {
-	// Start up, connect to databases
-	Worker* worker = (Worker*)ptr;
-	worker->run();
-	return(0);
-}
-
 void Worker::check_redis_connection() {
 	redisFree(m_context);
 
 	// Get a connection to redis to grab URLs
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
         if(m_context->err) {
-                printf("Thread #%d unable to connect to redis.\n", m_threadid);
+                printf("Thread #%d unable to connect to redis.\n", m_procid);
                 pthread_exit(0);
         }
 }
@@ -318,7 +317,7 @@ void Worker::fill_list() {
                 // Otherwise, we're good
                 int socket = m_requests[i]->initialize(url);
                 if(!socket) {
-                        printf("Thread #%d unable to initialize socket for %s.\n", m_threadid, url->get_url());
+                        printf("Thread #%d unable to initialize socket for %s.\n", m_procid, url->get_url());
                         pthread_exit(0);
                 }
 
@@ -329,7 +328,7 @@ void Worker::fill_list() {
                 event.data.fd = socket;
                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
+                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
                         pthread_exit(0);
                 }
 
@@ -341,15 +340,15 @@ void Worker::run() {
 	// Get a connection to redis to grab URLs
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
         if(m_context->err) {
-                printf("Thread #%d unable to connect to redis.\n", m_threadid);
-                pthread_exit(0);
+                printf("Thread #%d unable to connect to redis.\n", m_procid);
+                return;
         }
 
         // Connect to MySQL
         m_conn = mysql_init(NULL);
         if(!mysql_real_connect(m_conn, MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, 0, NULL, 0)) {
-                printf("Thread #%d unable to connect to MySQL: %s\n", m_threadid, mysql_error(m_conn));
-                pthread_exit(0);
+                printf("Thread #%d unable to connect to MySQL: %s\n", m_procid, mysql_error(m_conn));
+                return;
         }
 
 	mysql_set_character_set(m_conn, "utf8");
@@ -357,8 +356,8 @@ void Worker::run() {
 	// Set up our libevent notification base
 	m_epoll = epoll_create(CONNECTIONS_PER_THREAD);
 	if(m_epoll < 0) {
-		printf("Thread #%d unable to create epoll interface.\n", m_threadid);
-                pthread_exit(0);
+		printf("Thread #%d unable to create epoll interface.\n", m_procid);
+                return;
 	}
 
 	// Initialize our stack of HttpRequests
@@ -531,7 +530,7 @@ void Worker::run() {
                                 event.data.fd = socket;
                                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_threadid, url->get_url(), strerror(errno));
+                                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
                                         pthread_exit(0);
                                 }
 			}
@@ -551,7 +550,7 @@ void Worker::run() {
 						continue;
 					}
 				}
-				//printf("Thread #%d checking on %s: %d\n", m_threadid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
+				//printf("Thread #%d checking on %s: %d\n", m_procid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
 
 			state = m_requests[i]->get_state();

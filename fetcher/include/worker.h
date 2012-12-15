@@ -29,17 +29,9 @@ public:
 	void check_redis_connection();
 
 protected:
-	// Our internal thread processing function
-	static void* _thread_function(void* ptr);
-
-protected:
 	// Our connections to our databases
 	MYSQL* m_conn;
 	redisContext* m_context;
-
-	// Out thread
-	int m_threadid;
-	pthread_t m_thread;
 
 	// Our list of requests we are currently processing
 	HttpRequest** m_requests;
@@ -47,6 +39,9 @@ protected:
 
 	// Our instance of epoll
 	int m_epoll;
+
+	// Our process ID
+	int m_procid;
 };
 
 #endif

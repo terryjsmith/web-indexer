@@ -2,7 +2,7 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-#define NUM_THREADS			3
+#define NUM_THREADS			5
 #define CONNECTIONS_PER_THREAD		25
 #define SOCKET_BUFFER_SIZE		2048
 

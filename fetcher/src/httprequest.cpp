@@ -289,7 +289,7 @@ bool HttpRequest::process(void* arg) {
 		if(arg) {
 			while(true) {
 				bool end_of_file = false;
-        	       		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE);
+        	       		char* buffer = (char*)malloc(SOCKET_BUFFER_SIZE + 1);
                			memset(buffer, 0, SOCKET_BUFFER_SIZE);
 
 	                	int count = read(m_socket, buffer, SOCKET_BUFFER_SIZE);
@@ -313,6 +313,7 @@ bool HttpRequest::process(void* arg) {
 	               		}
 
 		                if(count > 0) {
+					buffer[count] = '\0';
 					bool found_end = false;
 					int handled = 0;
 
