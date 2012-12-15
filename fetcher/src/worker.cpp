@@ -52,13 +52,6 @@ int Worker::start(int pos) {
         	run();
 	}
 
-	/*int rc = pthread_create(&m_thread, NULL, Worker::_thread_function, this);
-	if(rc) {
-		printf("Unable to create thread %d.\n", pos);
-		return;
-	}*/
-
-
 	return(pid);
 }
 

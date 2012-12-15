@@ -37,15 +37,32 @@ int main(int argc, char** argv) {
 	// Initialize a pool of workers
         Worker** workers = (Worker**)malloc(sizeof(Worker*) * NUM_THREADS);
 
+	// Keep track of the PIDs
+        int* pids = (int*)malloc(NUM_THREADS * sizeof(int));
+        memset(pids, 0, NUM_THREADS * sizeof(int));
+
         // Initialize them
         for(unsigned int i = 0; i < NUM_THREADS; i++) {
                 workers[i] = new Worker;
-                workers[i]->start(i);
+                pids[i] = workers[i]->start(i);
         }
 
         // Enter the main loop
-	int status = 0;
-	wait(&status);
+        while(true) {
+                // Check if the PID is still running
+                for(int i = 0; i < NUM_THREADS; i++) {
+                        if(kill(pids[i], 0) < 0) {
+                                // It died, clean up and re-spawn
+                                delete workers[i];
+                                workers[i] = 0;
+
+                                workers[i] = new Worker;
+                                pids[i] = workers[i]->start(i);
+                        }
+                }
+
+                sleep(1);
+        }
 
 	// Shut it down
 	ares_library_cleanup();
