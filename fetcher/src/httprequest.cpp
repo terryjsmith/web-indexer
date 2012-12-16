@@ -526,11 +526,6 @@ bool HttpRequest::process(void* arg) {
 					break;
 				}
 
-               			if(count < SOCKET_BUFFER_SIZE) {
-               		        	free(buffer);
-		                        break;
-               			}
-
 	                	free(buffer);
 				usleep(10);
 			}

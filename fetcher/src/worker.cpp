@@ -598,6 +598,19 @@ void Worker::run() {
 				continue;
                         }
 
+			// Check for any error states and remove them
+			state = m_requests[i]->get_state();
+                        if(state == HTTPREQUESTSTATE_ERROR) {
+				printf("ERROR: Processing error in stage %d: %s.\n", m_requests[i]->get_state(), m_requests[i]->get_error());
+
+                                epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[i]->get_socket(), NULL);
+                                delete m_requests[i];
+                                m_requests[i] = 0;
+
+                                m_active--;
+                                continue;
+			}
+
 			// Finally, no matter what if it's been 60 seconds without any activity, shut it down
 			time_t now = time(NULL);
 			if(abs(now - m_requests[i]->get_last_time()) > HTTPTIMEOUT_ANY) {
