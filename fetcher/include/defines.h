@@ -5,6 +5,7 @@
 #define NUM_THREADS			5
 #define CONNECTIONS_PER_THREAD		25
 #define SOCKET_BUFFER_SIZE		2048
+#define MAX_PAGE_SIZE			2097152
 
 #define BASE_PATH       		"/mnt/gluster/"
 

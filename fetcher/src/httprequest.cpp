@@ -526,6 +526,13 @@ bool HttpRequest::process(void* arg) {
 					break;
 				}
 
+				if(m_size > MAX_PAGE_SIZE) {
+					free(buffer);
+					this->error("Exceed max page size.");
+					m_state = HTTPREQUESTSTATE_ERROR;
+					return(false);
+				}
+
 	                	free(buffer);
 				usleep(10);
 			}
