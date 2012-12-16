@@ -460,8 +460,8 @@ void Worker::run() {
                                                 line[line_length] = '\0';
 
                                                 // Check to see if this is a user agent line, start by making it all lowercase
-                                                for(unsigned int i = 0; i < strlen(line); i++) {
-                                                        line[i] = tolower(line[i]);
+                                                for(unsigned int j = 0; j < strlen(line); j++) {
+                                                        line[j] = tolower(line[j]);
                                                 }
 
                                                 // If it is a user-agent line, make sure it's aimed at us
