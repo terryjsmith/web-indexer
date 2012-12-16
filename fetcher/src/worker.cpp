@@ -68,7 +68,7 @@ void Worker::check_redis_connection() {
         m_context = redisConnect(REDIS_HOST, REDIS_PORT);
         if(m_context->err) {
                 printf("Thread #%d unable to connect to redis.\n", m_procid);
-                pthread_exit(0);
+                exit(0);
         }
 }
 
@@ -186,12 +186,12 @@ void Worker::fill_list() {
         redisReply* reply = (redisReply*)redisCommand(m_context, "LLEN url_queue");
 	if(!reply) {
 		printf("Y U NO REPLY REDIS?\n");
-		pthread_exit(0);
+		exit(0);
 	}
 
 	if(reply->type == REDIS_REPLY_ERROR) {
 		printf("REDIS ERROR: %s\n", reply->str);
-		pthread_exit(0);
+		exit(0);
 	}
 
         max_tries = reply->integer;
@@ -209,7 +209,7 @@ void Worker::fill_list() {
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
 		if(reply->type == REDIS_REPLY_ERROR) {
                 	printf("REDIS ERROR: %s\n", reply->str);
-        	        pthread_exit(0);
+        	        exit(0);
 	        }
 
 		// Make sure the URL doesn't have quotes around it
@@ -257,7 +257,7 @@ void Worker::fill_list() {
                         reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", url->get_url());
 			if(reply->type == REDIS_REPLY_ERROR) {
                 		printf("REDIS ERROR: %s\n", reply->str);
-	        	        pthread_exit(0);
+	        	        exit(0);
 		        }
                         freeReplyObject(reply);
 
@@ -318,7 +318,7 @@ void Worker::fill_list() {
                 int socket = m_requests[i]->initialize(url);
                 if(!socket) {
                         printf("Thread #%d unable to initialize socket for %s.\n", m_procid, url->get_url());
-                        pthread_exit(0);
+                        exit(0);
                 }
 
                 // Add the socket to epoll
@@ -329,7 +329,7 @@ void Worker::fill_list() {
                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
                         printf("Thread #%d unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
-                        pthread_exit(0);
+                        exit(0);
                 }
 
 		m_active++;
@@ -385,6 +385,8 @@ void Worker::run() {
 
                         if(!m_requests[pos]) {
 				printf("ERROR: unable to find request.\n");
+				epoll_ctl(m_epoll, EPOLL_CTL_DEL, m_requests[pos]->get_socket(), NULL);
+				m_active--;
 				continue;
                         }
 
@@ -530,8 +532,12 @@ void Worker::run() {
                                 event.data.fd = socket;
                                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                                        printf("Thread #%d unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
-                                        pthread_exit(0);
+                                        printf("Unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
+					delete m_requests[i];
+                                        m_requests[i] = 0;
+
+                                        m_active--;
+                                        continue;
                                 }
 			}
 
@@ -573,7 +579,7 @@ void Worker::run() {
                                         redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH parse_queue \"%s\"", filename);
 					if(reply->type == REDIS_REPLY_ERROR) {
 				                printf("REDIS ERROR: %s\n", reply->str);
-				                pthread_exit(0);
+				                exit(0);
         				}
                                         freeReplyObject(reply);
                                 }
@@ -584,7 +590,7 @@ void Worker::run() {
         	                                redisReply* reply = (redisReply*)redisCommand(m_context, "RPUSH url_queue \"%s\"", m_requests[i]->get_effective_url());
 						if(reply->type == REDIS_REPLY_ERROR) {
          					       printf("REDIS ERROR: %s\n", reply->str);
-					               pthread_exit(0);
+					               exit(0);
 					        }
                 	                        freeReplyObject(reply);
 					}

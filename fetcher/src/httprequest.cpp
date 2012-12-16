@@ -7,7 +7,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <regex.h>
-#include <pthread.h>
 #include <hiredis/hiredis.h>
 #include <openssl/md5.h>
 #include <my_global.h>

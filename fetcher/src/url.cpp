@@ -5,7 +5,6 @@
 #include <regex.h>
 #include <openssl/md5.h>
 #include <ctype.h>
-#include <pthread.h>
 #include <url.h>
 
 Url::Url(char* url) {
