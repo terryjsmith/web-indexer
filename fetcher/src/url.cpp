@@ -66,24 +66,6 @@ bool Url::parse(Url* base) {
 		return(_split());
 	}
 
-	// Check for a URL relative to the site root
-	if(strncmp(m_url, "/", 1) == 0) {
-		// Initialize a temporary URL to put it all together
-		unsigned int copy_length = strlen(base->get_scheme()) + 3 + strlen(base->get_host());
-		unsigned int length = copy_length + strlen(m_url);
-		char* complete = (char*)malloc(length + 1);
-
-		memcpy(complete, base->get_url(), copy_length);
-		memcpy(complete + copy_length, m_url, strlen(m_url));
-		complete[length] = '\0';
-
-		// Free the current URL and replace it with the complete URL for splitting
-		free(m_url);
-		m_url = complete;
-
-		return(_split());
-	}
-
 	// Check for mailto and javascript links
 	if((strncmp(m_url, "mailto:", 7) == 0) || (strncmp(m_url, "javascript:", 11) == 0)) {
 		return(false);
@@ -92,6 +74,24 @@ bool Url::parse(Url* base) {
 	if(!base) {
 		return(false);
 	}
+
+	// Check for a URL relative to the site root
+        if(strncmp(m_url, "/", 1) == 0) {
+                // Initialize a temporary URL to put it all together
+                unsigned int copy_length = strlen(base->get_scheme()) + 3 + strlen(base->get_host());
+                unsigned int length = copy_length + strlen(m_url);
+                char* complete = (char*)malloc(length + 1);
+
+                memcpy(complete, base->get_url(), copy_length);
+                memcpy(complete + copy_length, m_url, strlen(m_url));
+                complete[length] = '\0';
+
+                // Free the current URL and replace it with the complete URL for splitting
+                free(m_url);
+                m_url = complete;
+
+                return(_split());
+        }
 	
 	// Strip out any "current directory" starting part of the URL (./)
 	if(strncmp(m_url, "./", 2) == 0) {
