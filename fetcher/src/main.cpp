@@ -51,7 +51,8 @@ int main(int argc, char** argv) {
         while(true) {
                 // Check if the PID is still running
                 for(int i = 0; i < NUM_THREADS; i++) {
-                        if(kill(pids[i], 0) < 0) {
+			int status = 0;
+			if(waitpid(pids[i], &status, WNOHANG)) {
                                 // It died, clean up and re-spawn
                                 delete workers[i];
                                 workers[i] = 0;
