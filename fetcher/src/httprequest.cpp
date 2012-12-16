@@ -533,7 +533,6 @@ bool HttpRequest::process(void* arg) {
 				}
 
 	                	free(buffer);
-				usleep(10);
 			}
 	        }
 		else {

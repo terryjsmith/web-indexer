@@ -203,8 +203,6 @@ void Worker::fill_list() {
 		if(counter >= max_tries) break;
 		counter++;
 
-		usleep(1000);
-
                 // Fetch a URL from redis
                 redisReply* reply = (redisReply*)redisCommand(m_context, "LPOP url_queue");
 		if(reply->type == REDIS_REPLY_ERROR) {
