@@ -629,8 +629,6 @@ void Worker::run() {
 		// Re-fill the list
 		if(m_active < CONNECTIONS_PER_THREAD)
 			fill_list();
-
-                usleep(1000);
         }
 
         // Clean up

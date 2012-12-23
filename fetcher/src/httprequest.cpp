@@ -465,7 +465,7 @@ bool HttpRequest::process(void* arg) {
 									free(m_content);
 								m_content = new_content;
 
-								handled += new_length + 1;
+								handled += new_length;
 								m_chunkread += new_length;
 								m_size += new_length;
 
