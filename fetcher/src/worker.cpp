@@ -194,7 +194,7 @@ void Worker::fill_list() {
 		exit(0);
 	}
 
-        max_tries = reply->integer;
+        max_tries = min(reply->integer, 10);
         freeReplyObject(reply);
 
 	unsigned int counter = 0;
@@ -530,7 +530,7 @@ void Worker::run() {
                                 event.data.fd = socket;
                                 event.events = EPOLLIN | EPOLLET | EPOLLOUT;
                                 if((epoll_ctl(m_epoll, EPOLL_CTL_ADD, socket, &event)) < 0) {
-                                        printf("Unable to setup epoll for %s: %s.\n", m_procid, url->get_url(), strerror(errno));
+                                        printf("Unable to setup epoll for %s: %s.\n", url->get_url(), strerror(errno));
 					delete m_requests[i];
                                         m_requests[i] = 0;
 
@@ -554,7 +554,6 @@ void Worker::run() {
 						continue;
 					}
 				}
-				//printf("Thread #%d checking on %s: %d\n", m_procid, m_requests[i]->get_url()->get_url(), m_requests[i]->get_last_check() - m_requests[i]->get_last_time());
 			}
 
 			state = m_requests[i]->get_state();

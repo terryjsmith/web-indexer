@@ -302,6 +302,8 @@ bool HttpRequest::process(void* arg) {
 						this->error("EPOLL READ ERROR\n");
 						return(false);
 					}
+
+					break;
 	                	}
 
 	               		if(count == 0) {
@@ -372,7 +374,10 @@ bool HttpRequest::process(void* arg) {
 						int header_length = strlen(m_header);
 						int offset = 0;
 						while(line_length < (header_length - offset)) {
-							if(line_length <= 1) break;
+							if(line_length <= 1) { 
+								offset += line_length + 1;
+								break;
+							}
 
 							// Get the line out
 							char* line = (char*)malloc(line_length + 1);
@@ -404,7 +409,7 @@ bool HttpRequest::process(void* arg) {
 								m_chunked = true;
 							}
 
-							offset += strlen(line) + 1;
+							offset += line_length + 1;
 							free(line);
 
 							if(offset >= header_length) break;
@@ -421,7 +426,7 @@ bool HttpRequest::process(void* arg) {
 
 								// If this is a blank line or just a newline character in it, move to the next line
 								if(length <= 1) {
-									handled++;
+									handled += length + 1;
 									continue;
 								}
 
@@ -460,7 +465,7 @@ bool HttpRequest::process(void* arg) {
 									free(m_content);
 								m_content = new_content;
 
-								handled += new_length;
+								handled += new_length + 1;
 								m_chunkread += new_length;
 								m_size += new_length;
 
@@ -528,7 +533,6 @@ bool HttpRequest::process(void* arg) {
 				if(m_size > MAX_PAGE_SIZE) {
 					free(buffer);
 					this->error("Exceed max page size.");
-					m_state = HTTPREQUESTSTATE_ERROR;
 					return(false);
 				}
 
@@ -554,7 +558,6 @@ bool HttpRequest::process(void* arg) {
 
 	if(m_state == HTTPREQUESTSTATE_WRITE) {
 		// First process the HTTP response headers
-		unsigned int offset = 0;
 		m_lasttime = time(NULL);
 
 		Url* url = (m_robots == NULL) ? m_url : m_robots;
