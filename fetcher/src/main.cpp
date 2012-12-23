@@ -45,6 +45,15 @@ int main(int argc, char** argv) {
         for(unsigned int i = 0; i < NUM_THREADS; i++) {
                 workers[i] = new Worker;
                 pids[i] = workers[i]->start(i);
+
+		char* filename = (char*)malloc(100);
+                sprintf(filename, "/var/run/fetcher%d.pid", i);
+
+		FILE* fp = fopen(filename, "w");
+		fprintf(fp, "%d", pids[i]);
+		fclose(fp);
+
+		free(filename);
         }
 
         // Enter the main loop
@@ -59,7 +68,16 @@ int main(int argc, char** argv) {
 
                                 workers[i] = new Worker;
                                 pids[i] = workers[i]->start(i);
-                        }
+
+				char* filename = (char*)malloc(100);
+		                sprintf(filename, "/var/run/fetcher%d.pid", i);
+
+                		FILE* fp = fopen(filename, "w");
+		                fprintf(fp, "%d", pids[i]);
+                		fclose(fp);
+
+		                free(filename);
+			}
                 }
 
                 sleep(1);

@@ -82,7 +82,7 @@ Domain* Worker::load_domain_info(char* strdomain) {
 
         // See if we have an existing domain
         char* query = (char*)malloc(100 + strlen(strdomain));
-        unsigned int length = sprintf(query, "SELECT domain_id, domain, last_access, robots_last_access FROM domain WHERE domain = '%s'", strdomain);
+        unsigned int length = sprintf(query, "SELECT domain_id, domain_name, last_access, robots_last_access FROM domain WHERE domain_name = '%s'", strdomain);
 
         mysql_query(m_conn, query);
         MYSQL_RES* result = mysql_store_result(m_conn);
